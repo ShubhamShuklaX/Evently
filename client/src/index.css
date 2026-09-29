@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "@fontsource/inter";
+@import "tailwindcss";
+@import "@heroui/styles";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/700.css";
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+body {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased; /* This makes the text look sharper */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,345 @@
+import {
+  ArrowRight,
+  Lock,
+  Mail,
+  ShieldCheck,
+  Spotlight,
+  User,
+  Users,
+} from "lucide-react";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
+import logo from "../../assets/Logo.png";
+import authHeroImg from "../../assets/AuthHeroImg.png";
+
+const Login = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [tab, setTab] = useState(
+    location.pathname === "/signup" ? "signup" : "login",
+  );
+
+  return (
+    <>
+      <div className="h-screen flex overflow-hidden">
+        {/* Left Form Div */}
+        <div className="flex-1 lg:w-1/2 px-25 py-15 flex flex-col gap-5 overflow-y-auto">
+          {/* Logo and Title */}
+          <div className="flex items-center justify-center gap-2">
+            <img src={logo} alt="logo" className="w-8 h-8" />
+            <h1 className="text-[30px] pt-0.5 font-mono font-extrabold">
+              Evently
+            </h1>
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-mono font-bold text-[#1D1F23]">
+              {tab === "login" ? "Welcome Back" : "Create Account"}
+            </h2>
+            <p className="text-neutral-500 text-sm mt-1.5">
+              {tab === "login"
+                ? "Access your tickets and personalized events."
+                : "Join Evently and start booking in seconds."}
+            </p>
+          </div>
+
+          <div className="flex bg-neutral-100 rounded-xl p-1 mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setTab("login");
+                navigate("/login");
+              }}
+              className={`flex-1 text-sm font-semibold py-2 rounded-lg cursor-pointer transition-colors ${
+                tab === "login"
+                  ? "bg-white text-[#1D1F23] shadow-md border border-neutral-300"
+                  : "text-neutral-500"
+              }`}
+            >
+              Log In
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setTab("signup");
+                navigate("/signup");
+              }}
+              className={`flex-1 text-sm font-semibold py-2 cursor-pointer rounded-lg transition-colors ${
+                tab === "signup"
+                  ? "bg-white text-[#1D1F23] shadow-md border border-neutral-300"
+                  : "text-neutral-500"
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <div className="min-h-75">
+            <AnimatePresence mode="wait">
+              {tab === "login" ? (
+                <motion.form
+                  key="login"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex flex-col gap-4"
+                >
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="text-neutral-800 font-semibold text-[15px]"
+                    >
+                      Email Address
+                    </label>
+                    <div className="flex items-center justify-between border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
+                      <Mail className="w-4 h-4 text-neutral-500" />
+                      <input
+                        id="email"
+                        type="email"
+                        placeholder="name@example.com"
+                        className="flex-1 outline-none text-neutral-800 bg-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="text-neutral-800 font-semibold text-[15px]"
+                    >
+                      Password
+                    </label>
+                    <div className="flex items-center border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
+                      <Lock className="w-4 h-4 text-neutral-500" />
+                      <input
+                        id="password"
+                        type="password"
+                        placeholder="••••••••"
+                        className="flex-1 outline-none text-neutral-800 bg-transparent"
+                      />
+                    </div>
+                    <div className="flex justify-end mt-1.5">
+                      <a
+                        href="#"
+                        className="text-sm text-[#6365f1] font-medium hover:underline"
+                      >
+                        Forgot password?
+                      </a>
+                    </div>
+                  </div>
+
+                  <label className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="accent-[#6365f1] w-4 h-4"
+                    />
+                    Remember me on this device
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors"
+                  >
+                    Log In <ArrowRight size={16} />
+                  </button>
+                </motion.form>
+              ) : (
+                <motion.form
+                  key="signup"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex flex-col gap-4"
+                >
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="text-neutral-800 font-semibold text-[15px]"
+                    >
+                      Full Name
+                    </label>
+                    <div className="flex items-center border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
+                      <User className="w-4 h-4 text-neutral-500" />
+                      <input
+                        id="name"
+                        type="text"
+                        placeholder="John Doe"
+                        className="flex-1 outline-none text-neutral-800 bg-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="signup-email"
+                      className="text-neutral-800 font-semibold text-[15px]"
+                    >
+                      Email Address
+                    </label>
+                    <div className="flex items-center border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
+                      <Mail className="w-4 h-4 text-neutral-500" />
+                      <input
+                        id="signup-email"
+                        type="email"
+                        placeholder="name@example.com"
+                        className="flex-1 outline-none text-neutral-800 bg-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="signup-password"
+                      className="text-neutral-800 font-semibold text-[15px]"
+                    >
+                      Password
+                    </label>
+                    <div className="flex items-center border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
+                      <Lock className="w-4 h-4 text-neutral-500" />
+                      <input
+                        id="signup-password"
+                        type="password"
+                        placeholder="••••••••"
+                        className="flex-1 outline-none text-neutral-800 bg-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors"
+                  >
+                    Sign Up <ArrowRight size={16} />
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px bg-neutral-400 flex-1" />
+            <span className="text-xs text-neutral-600 tracking-wide shrink-0">
+              OR CONTINUE WITH
+            </span>
+            <div className="h-px bg-neutral-400 flex-1" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              className="flex items-center justify-center gap-2 h-11 border-2 border-neutral-300 shadow-md cursor-pointer rounded-xl text-sm font-medium text-neutral-700 hover:bg-neutral-200 transition-colors"
+            >
+              <FaGoogle /> Google
+            </button>
+            <button
+              type="button"
+              className="flex items-center justify-center gap-2 h-11 border-2 border-neutral-300 shadow-md cursor-pointer rounded-xl text-sm font-medium text-neutral-700 hover:bg-neutral-200 transition-colors"
+            >
+              <FaGithub /> GitHub
+            </button>
+          </div>
+
+          <p className="text-center text-sm text-neutral-600">
+            {tab === "login" ? (
+              <>
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setTab("signup")}
+                  className="text-[#6365f1] font-semibold hover:underline"
+                >
+                  Sign up for free
+                </button>
+              </>
+            ) : (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setTab("login")}
+                  className="text-[#6365f1] font-semibold hover:underline"
+                >
+                  Log in
+                </button>
+              </>
+            )}
+          </p>
+        </div>
+
+        {/* Right Hero Div */}
+        <div className="relative w-[60%] h-screen top-0 overflow-hidden">
+          <img
+            src={authHeroImg}
+            alt="heroImg"
+            className="w-full h-full object-cover object-[center_75%]"
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent" />
+
+          <div className="absolute right-20 top-15 p-4 rounded-2xl border-2 border-neutral-800 bg-neutral-900 flex items-center gap-3 hover:scale-[1.03] transition-transform duration-300">
+            <div className="bg-indigo-600 text-white rounded-full flex items-center justify-center h-9 w-9 shrink-0">
+              <Spotlight size={18} />
+            </div>
+            <h3 className="text-white text-[13px] font-bold">
+              NEW DROP <br />
+              <span className="text-neutral-400 font-normal">
+                Global Tour: 2k26
+              </span>
+            </h3>
+          </div>
+
+          <div className="absolute bottom-20 left-20 w-[55%] flex flex-col gap-8">
+            <div>
+              <h1 className="text-white text-[55px]/[1.1] font-extrabold pb-1">
+                Experience the
+              </h1>
+              <h1 className="italic text-indigo-600 text-[55px]/[1.1] font-extrabold pb-1">
+                Best of Live
+                <span className="not-italic text-white"> Events</span>
+              </h1>
+              <p className="text-neutral-400 w-full mt-4">
+                Join a community of enthusiasts and get exclusive access to the
+                most anticipated concerts, sports matches, and theatre
+                performances worldwide.
+              </p>
+            </div>
+
+            <div className="w-full h-px bg-neutral-800" />
+
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h2 className="text-xl font-mono flex items-center gap-2 font-bold text-[#F4F6FF]">
+                  <ShieldCheck className="text-indigo-600" size={21} /> 100%
+                </h2>
+                <h3 className="text-[15px] font-medium text-neutral-300">
+                  Active Users
+                </h3>
+              </div>
+              <div>
+                <h2 className="text-xl font-mono flex items-center gap-2 font-bold text-[#F4F6FF]">
+                  <Users className="text-indigo-600" size={21} /> 2.5M+
+                </h2>
+                <h3 className="text-[15px] font-medium text-neutral-300">
+                  Global Venues
+                </h3>
+              </div>
+              <div>
+                <h2 className="text-xl font-mono flex items-center gap-2 font-bold text-[#F4F6FF]">
+                  <Lock className="text-indigo-600" size={21} /> Secure
+                </h2>
+                <h3 className="text-[15px] font-medium text-neutral-300">
+                  Customer Support
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Login;

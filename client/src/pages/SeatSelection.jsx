@@ -1,0 +1,31 @@
+import SeatBanner from "./../components/SeatSelection/SeatBanner";
+import SeatEventInfo from "./../components/SeatSelection/SeatEventInfo";
+import SeatMap from "./../components/SeatSelection/SeatMap";
+import SeatingInfo from "./../components/SeatSelection/SeatingInfo";
+import BookingSummary from "./../components/SeatSelection/BookingSummary";
+import Header from "./../components/Header";
+import Footer from "./../components/Footer";
+import SeatSelectionBar from "./../components/SeatSelection/SeatSelectionBar";
+
+const SeatSelection = () => {
+  return (
+    <>
+      <Header />
+      <SeatSelectionBar />
+      <div className="px-30 py-8 flex flex-col gap-8">
+        <SeatBanner variant="tip" /> {/* or variant="conflict" */}
+        <div className="grid grid-cols-[1fr_380px] gap-8 items-start">
+          <div className="flex flex-col gap-8">
+            <SeatEventInfo />
+            <SeatMap />
+            <SeatingInfo />
+          </div>
+          <BookingSummary />
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default SeatSelection;

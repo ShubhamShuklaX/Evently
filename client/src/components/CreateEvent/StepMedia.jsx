@@ -1,0 +1,22 @@
+import React from 'react';
+import { UploadCloud } from 'lucide-react';
+
+const StepMedia = () => {
+  return (
+    <div className="mb-8">
+      <h2 className="text-2xl font-bold text-[#1D1F23]">Media Assets</h2>
+      <p className="text-neutral-500 text-sm mt-1 mb-8">High-quality visuals are crucial for selling tickets.</p>
+      
+      <div className="border-2 border-dashed border-neutral-300 rounded-2xl bg-neutral-50 p-10 flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-100 transition-colors">
+        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+          <UploadCloud className="text-[#6365f1]" size={24} />
+        </div>
+        <h3 className="text-base font-bold text-[#1D1F23] mb-1">Upload Event Banner</h3>
+        <p className="text-sm text-neutral-500 mb-4">Drag and drop or click to browse files</p>
+        <p className="text-xs text-neutral-400 font-medium">PNG, JPG, or WEBP (Max 5MB)</p>
+      </div>
+    </div>
+  );
+};
+
+export default StepMedia;
