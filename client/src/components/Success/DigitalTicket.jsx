@@ -32,7 +32,7 @@ const DigitalTicket = () => {
       </div>
 
       <div 
-        className="p-8 flex items-stretch border-b border-neutral-200 border-dashed overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-thin"
+        className="p-8 flex justify-center items-stretch border-b border-neutral-200 border-dashed overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-thin"
       >
         {seats.map((seat, index) => (
           <React.Fragment key={index}>

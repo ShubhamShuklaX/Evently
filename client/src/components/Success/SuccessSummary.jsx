@@ -7,8 +7,8 @@ const SuccessSummary = () => {
   
   const event = completedOrder?.event || currentEvent;
   const seats = completedOrder?.seats || selectedSeats;
-  const total = completedOrder?.totalPaid || (event.pricePerTicket * seats.length + 19);
-  const ticketTotal = event.pricePerTicket * seats.length;
+  const total = completedOrder?.totalPaid || (event.price * seats.length + 19);
+  const ticketTotal = event.price * seats.length;
 
   return (
     <>
@@ -20,7 +20,7 @@ const SuccessSummary = () => {
 
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-100">
           <img
-            src={event.image}
+            src={event.img}
             alt="Event"
             className="w-14 h-14 rounded-lg object-cover"
           />

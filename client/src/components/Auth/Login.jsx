@@ -20,6 +20,46 @@ const Login = () => {
   const [tab, setTab] = useState(
     location.pathname === "/signup" ? "signup" : "login",
   );
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "organizer",
+  });
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
+    try {
+      const res = await fetch(`http://localhost:5000${endpoint}`, {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify(
+          tab === "login"
+            ? { email: formData.email, password: formData.password }
+            : formData,
+        ),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error);
+        return;
+      }
+
+      localStorage.setItem("evently_token", data.token);
+      localStorage.setItem("evently_user", JSON.stringify(data.user));
+      navigate("/organizer");
+    } catch (error) {
+      setError("something went wrong");
+    }
+  };
 
   return (
     <>
@@ -38,6 +78,7 @@ const Login = () => {
             <h2 className="text-3xl font-mono font-bold text-[#1D1F23]">
               {tab === "login" ? "Welcome Back" : "Create Account"}
             </h2>
+            {error && <p className="text-rose-500 font-bold mb-4">{error}</p>}
             <p className="text-neutral-500 text-sm mt-1.5">
               {tab === "login"
                 ? "Access your tickets and personalized events."
@@ -80,6 +121,7 @@ const Login = () => {
             <AnimatePresence mode="wait">
               {tab === "login" ? (
                 <motion.form
+                  onSubmit={handleSubmit}
                   key="login"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -89,7 +131,7 @@ const Login = () => {
                 >
                   <div>
                     <label
-                      htmlFor="email"
+                      htmlFor="login-email"
                       className="text-neutral-800 font-semibold text-[15px]"
                     >
                       Email Address
@@ -97,7 +139,10 @@ const Login = () => {
                     <div className="flex items-center justify-between border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
                       <Mail className="w-4 h-4 text-neutral-500" />
                       <input
-                        id="email"
+                        id="login-email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        name="email"
                         type="email"
                         placeholder="name@example.com"
                         className="flex-1 outline-none text-neutral-800 bg-transparent"
@@ -107,7 +152,7 @@ const Login = () => {
 
                   <div>
                     <label
-                      htmlFor="password"
+                      htmlFor="login-password"
                       className="text-neutral-800 font-semibold text-[15px]"
                     >
                       Password
@@ -115,7 +160,10 @@ const Login = () => {
                     <div className="flex items-center border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
                       <Lock className="w-4 h-4 text-neutral-500" />
                       <input
-                        id="password"
+                        id="login-password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        name="password"
                         type="password"
                         placeholder="••••••••"
                         className="flex-1 outline-none text-neutral-800 bg-transparent"
@@ -148,6 +196,7 @@ const Login = () => {
                 </motion.form>
               ) : (
                 <motion.form
+                  onSubmit={handleSubmit}
                   key="signup"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -157,7 +206,7 @@ const Login = () => {
                 >
                   <div>
                     <label
-                      htmlFor="name"
+                      htmlFor="signup-name"
                       className="text-neutral-800 font-semibold text-[15px]"
                     >
                       Full Name
@@ -165,7 +214,10 @@ const Login = () => {
                     <div className="flex items-center border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
                       <User className="w-4 h-4 text-neutral-500" />
                       <input
-                        id="name"
+                        id="signup-name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        name="name"
                         type="text"
                         placeholder="John Doe"
                         className="flex-1 outline-none text-neutral-800 bg-transparent"
@@ -184,6 +236,9 @@ const Login = () => {
                       <Mail className="w-4 h-4 text-neutral-500" />
                       <input
                         id="signup-email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        name="email"
                         type="email"
                         placeholder="name@example.com"
                         className="flex-1 outline-none text-neutral-800 bg-transparent"
@@ -201,6 +256,9 @@ const Login = () => {
                     <div className="flex items-center border border-neutral-300 rounded-xl p-2 gap-3 mt-1 focus-within:border-[#6365f1]">
                       <Lock className="w-4 h-4 text-neutral-500" />
                       <input
+                        value={formData.password}
+                        onChange={handleChange}
+                        name="password"
                         id="signup-password"
                         type="password"
                         placeholder="••••••••"

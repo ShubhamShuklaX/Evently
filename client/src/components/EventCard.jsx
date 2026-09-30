@@ -17,16 +17,18 @@ const EventCard = ({ layout = "grid", event }) => {
       }`}
     >
       {/* Image */}
-      <div className={`relative shrink-0 ${isList ? "w-[220px]" : ""}`}>
+      <div className={`relative shrink-0 ${isList ? "w-55" : ""}`}>
         <img
           className={
-            isList ? "w-[220px] h-full object-cover" : "w-[320px] h-[213.325px] object-cover"
+            isList
+              ? "w-55 h-full object-cover"
+              : "w-[320px] h-[213.325px] object-cover"
           }
-          src={event.image}
+          src={event.img}
           alt={event.title}
         />
         <h3 className="absolute top-4 left-3 bg-[#F6F7F9E6] px-2 opacity-90 text-xs flex items-center justify-center font-medium rounded-full h-5">
-          Music
+          {event.category}
         </h3>
       </div>
 
@@ -35,13 +37,14 @@ const EventCard = ({ layout = "grid", event }) => {
         className={
           isList
             ? "flex flex-1 items-center justify-between px-6 py-5 gap-6"
-            : "flex flex-col gap-3 px-5 pt-3"
+            : "flex flex-col gap-3 px-5 pt-3 flex-1"
         }
       >
         <div className={isList ? "flex flex-col gap-2" : "flex flex-col gap-3"}>
-          <h2 className="text-[#1D1F23FF] text-lg leading-6 font-semibold">
+          <h2 className="text-[#1D1F23FF] text-lg leading-6 font-semibold line-clamp-1">
             {event.title}
           </h2>
+
           <div className="text-[#696D72FF] text-sm">
             <h3 className="flex items-center justify-start gap-2 pb-1">
               <CalendarDays
@@ -54,7 +57,7 @@ const EventCard = ({ layout = "grid", event }) => {
             </h3>
             <h3 className="flex items-center justify-start gap-2">
               <MapPin color="#696D72FF" strokeWidth={1.7} className="w-4 h-4" />
-              {event.venue}
+              {event.location}
             </h3>
           </div>
         </div>
@@ -67,9 +70,9 @@ const EventCard = ({ layout = "grid", event }) => {
           }
         >
           <h2 className="font-medium text-xs text-[#6366F1]">
-            from <span className="text-lg font-bold">${event.pricePerTicket}</span>
+            from <span className="text-lg font-bold">${event.price}</span>
           </h2>
-          <button 
+          <button
             onClick={() => navigate(`/events/${event.id}`)}
             className="flex items-center justify-center gap-1 bg-[#6365f1] text-[#F4F6FF] font-medium px-3 h-9 rounded-full cursor-pointer hover:bg-[#4f51e9] shrink-0"
           >

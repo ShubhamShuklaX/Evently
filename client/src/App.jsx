@@ -10,6 +10,7 @@ import BookingSuccess from "./pages/BookingSuccess";
 import MyBookings from "./pages/MyBookings";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import CreateEvent from "./pages/CreateEvent";
+import MyEvents from "./components/Organizer/MyEvents";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -60,22 +61,32 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/organizer"
-            element={
-              <ProtectedRoute>
-                <OrganizerDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/organizer/create"
-            element={
-              <ProtectedRoute>
-                <CreateEvent />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/organizer">
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <OrganizerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="create"
+              element={
+                <ProtectedRoute>
+                  <CreateEvent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="my-events"
+              element={
+                <ProtectedRoute>
+                  <MyEvents />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
         </Routes>
       </BookingProvider>
     </div>
