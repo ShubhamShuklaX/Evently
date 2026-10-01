@@ -1,44 +1,38 @@
 import { Armchair, Check, Clock, MousePointer2, User } from "lucide-react";
-import Seat from "./Seat";
 import { useBooking } from "../../context/BookingContext";
+import SeatRow from "./SeatRow";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-// a = available, b = booked, h = held, s = selected
-const codes = {
-  a: "available",
-  b: "booked",
-  h: "held",
-  s: "selected",
-};
-
-const sections = [
-  {
-    name: "Premium Pit",
-    rows: [
-      { label: "A", left: "aabhaa", right: "abaaaa" },
-      { label: "B", left: "aaaabb", right: "abaaab" },
-      { label: "C", left: "abaaaa", right: "aabaaa" },
-    ],
-  },
-  {
-    name: "Front Orchestra",
-    rows: [
-      { label: "D", left: "aaaaaaaa", right: "haaaaaaa" },
-      { label: "E", left: "baabbaaa", right: "babbaaaa" },
-      { label: "F", left: "aaaaaaab", right: "abaaaaba" },
-      { label: "G", left: "baaabaaa", right: "aaaabaaa" },
-    ],
-  },
-  {
-    name: "Back Orchestra",
-    rows: [
-      { label: "H", left: "aaahaaaab", right: "aaaaabaaa" },
-      { label: "I", left: "aaaaaaaaa", right: "aaahaaaaa" },
-      { label: "J", left: "aahaaaaaa", right: "babbaabab" },
-      { label: "K", left: "aaaabaaaa", right: "baaaaahaa" },
-      { label: "L", left: "baaaababb", right: "abbaaaabb" },
-    ],
-  },
-];
+// const sections = [
+//   {
+//     name: "Premium Pit",
+//     rows: [
+//       { label: "A", left: "aabhaa", right: "abaaaa" },
+//       { label: "B", left: "aaaabb", right: "abaaab" },
+//       { label: "C", left: "abaaaa", right: "aabaaa" },
+//     ],
+//   },
+//   {
+//     name: "Front Orchestra",
+//     rows: [
+//       { label: "D", left: "aaaaaaaa", right: "haaaaaaa" },
+//       { label: "E", left: "baabbaaa", right: "babbaaaa" },
+//       { label: "F", left: "aaaaaaab", right: "abaaaaba" },
+//       { label: "G", left: "baaabaaa", right: "aaaabaaa" },
+//     ],
+//   },
+//   {
+//     name: "Back Orchestra",
+//     rows: [
+//       { label: "H", left: "aaahaaaab", right: "aaaaabaaa" },
+//       { label: "I", left: "aaaaaaaaa", right: "aaahaaaaa" },
+//       { label: "J", left: "aahaaaaaa", right: "babbaabab" },
+//       { label: "K", left: "aaaabaaaa", right: "baaaaahaa" },
+//       { label: "L", left: "baaaababb", right: "abbaaaabb" },
+//     ],
+//   },
+// ];
 
 const legend = [
   {
@@ -63,64 +57,75 @@ const legend = [
   },
 ];
 
-// Component to render a single row of seats
-const SeatRow = ({ row, sectionName, selectedSeats, toggleSeat }) => {
-  // Helper to check if a specific seat is in our cart
-  const isSelected = (seatNum) => 
-    selectedSeats.some(s => s.section === sectionName && s.row === row.label && s.seat === seatNum.toString());
-
-  return (
-    <div className="flex items-center justify-center gap-2">
-      <span className="w-6 text-center text-xs font-mono text-neutral-400">
-        {row.label}
-      </span>
-      <div className="flex gap-2">
-        {row.left.split("").map((code, i) => {
-          const seatNum = i + 1;
-          // Override status to "selected" if it's in our cart!
-          const status = isSelected(seatNum) ? "selected" : codes[code];
-          return (
-            <Seat 
-              key={i} 
-              status={status} 
-              label={`${row.label}${seatNum}`} 
-              onClick={() => toggleSeat({ section: sectionName, row: row.label, seat: seatNum.toString() })}
-            />
-          );
-        })}
-      </div>
-      <div className="w-8" />
-      <div className="flex gap-2">
-        {row.right.split("").map((code, i) => {
-          const seatNum = row.left.length + i + 1;
-          const status = isSelected(seatNum) ? "selected" : codes[code];
-          return (
-            <Seat
-              key={i}
-              status={status}
-              label={`${row.label}${seatNum}`}
-              onClick={() => toggleSeat({ section: sectionName, row: row.label, seat: seatNum.toString() })}
-            />
-          );
-        })}
-      </div>
-      <span className="w-6 text-center text-xs font-mono text-neutral-400">
-        {row.label}
-      </span>
-    </div>
-  );
-};
-
 const SeatMap = () => {
+  const { id } = useParams();
+  const [dbSeats, setDbSeats] = useState([]);
+
+  useEffect(() => {
+    const fetchSeats = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/seats/${id}`);
+        const data = await response.json();
+        setDbSeats(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (id) fetchSeats();
+  }, [id]);
+
+  const seatLookup = {};
+  dbSeats.forEach((s) => {
+    seatLookup[`${s.row}-${s.col}`] = s.status;
+  });
+
+  // Step 1: Group the flat array into rows
+  const groupedRows = {};
+  dbSeats.forEach((seat) => {
+    if (!groupedRows[seat.row]) groupedRows[seat.row] = [];
+    groupedRows[seat.row].push(seat);
+  });
+
+  // Step 2: Sort row labels (A, B, C...) and sort seats inside each row by column
+  const sortedRowLabels = Object.keys(groupedRows).sort();
+  sortedRowLabels.forEach((label) => {
+    groupedRows[label].sort((a, b) => a.col - b.col);
+  });
+
+  // Step 3: Divide rows evenly into 3 sections
+  const sectionNames = ["Premium Pit", "Front Orchestra", "Back Orchestra"];
+  const rowsPerSection = Math.ceil(sortedRowLabels.length / 3);
+
+  const dynamicSections = sectionNames
+    .map((name, i) => {
+      const sectionRowLabels = sortedRowLabels.slice(
+        i * rowsPerSection,
+        (i + 1) * rowsPerSection,
+      );
+      return {
+        name,
+        rows: sectionRowLabels.map((label) => {
+          const seats = groupedRows[label];
+          const mid = Math.ceil(seats.length / 2);
+          return {
+            label,
+            left: seats.slice(0, mid), // First half of seats
+            right: seats.slice(mid), // Second half of seats
+          };
+        }),
+      };
+    })
+    .filter((section) => section.rows.length > 0); // Remove empty sections
+
   const { selectedSeats, toggleSeat } = useBooking();
 
   return (
     <div className="bg-white border border-neutral-200 rounded-2xl p-10">
       <div className="overflow-x-auto">
-        <div className="min-w-[840px]">
+        <div className="min-w-210">
           {/* Stage */}
           <div className="flex flex-col items-center">
-            <div className="w-[660px] max-w-full bg-[#25272C] border-t-4 border-[#6365f1] rounded-2xl py-3.5 text-center text-white text-sm font-bold tracking-[0.5em] shadow-[0_20px_60px_-15px_rgba(99,101,241,0.35)]">
+            <div className="w-165 max-w-full bg-[#25272C] border-t-4 border-[#6365f1] rounded-2xl py-3.5 text-center text-white text-sm font-bold tracking-[0.5em] shadow-[0_20px_60px_-15px_rgba(99,101,241,0.35)]">
               STAGE
             </div>
             <div className="flex items-center gap-3 mt-3 text-[10px] font-semibold tracking-[0.2em] uppercase text-neutral-400">
@@ -151,7 +156,7 @@ const SeatMap = () => {
 
           {/* Sections */}
           <div className="flex flex-col gap-10 mt-12">
-            {sections.map((section) => (
+            {dynamicSections.map((section) => (
               <div key={section.name}>
                 <div className="flex items-center gap-4 mb-5">
                   <div className="h-px bg-neutral-200 flex-1" />
@@ -162,12 +167,13 @@ const SeatMap = () => {
                 </div>
                 <div className="flex flex-col gap-2.5">
                   {section.rows.map((row) => (
-                    <SeatRow 
-                      key={row.label} 
-                      row={row} 
+                    <SeatRow
+                      key={row.label}
+                      row={row}
                       sectionName={section.name}
                       selectedSeats={selectedSeats}
                       toggleSeat={toggleSeat}
+                      seatLookup={seatLookup}
                     />
                   ))}
                 </div>

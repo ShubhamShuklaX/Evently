@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import eventRoutes from "./routes/eventRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import seatRoutes from "./routes/seatRoutes.js";
+import { prisma } from "./config/prisma.js";
 
 const app = express();
 app.use(cors());
@@ -10,6 +12,14 @@ app.use(express.json());
 
 app.use("/api/events", eventRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/seats", seatRoutes);
+
+try {
+  await prisma.$connect();
+  console.log("Database connected successfully");
+} catch (error) {
+  console.error("Database connection failed:", error);
+}
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

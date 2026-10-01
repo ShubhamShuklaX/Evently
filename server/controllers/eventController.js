@@ -1,20 +1,33 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { prisma } from "../config/prisma.js";
 import { uploadToCloudinary } from "../middleware/uploadMiddleware.js";
-
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-
-const prisma = new PrismaClient({ adapter });
+import { createSeats } from "./seatController.js";
 
 export const createEvent = async (req, res) => {
   try {
-    const { title, location, price, category, date, time, description, img } =
-      req.body;
+    const {
+      title,
+      location,
+      price,
+      category,
+      date,
+      time,
+      description,
+      img,
+      capacity,
+    } = req.body;
 
     let finalImageUrl = img;
 
     if (req.file) {
       finalImageUrl = await uploadToCloudinary(req.file.buffer);
+    }
+
+    const eventCapacity = Number(capacity ?? 100);
+
+    if (!Number.isInteger(eventCapacity) || eventCapacity <= 0) {
+      return res.status(400).json({
+        error: "Capacity must be a positive integer",
+      });
     }
 
     const newEvent = await prisma.event.create({
@@ -28,32 +41,11 @@ export const createEvent = async (req, res) => {
         time,
         description,
         createdBy: req.user.id,
+        capacity: eventCapacity,
       },
     });
 
-    const rowsLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-    const colsPerRow = Math.ceil(newEvent.capacity / rowsLetters.length);
-
-    const seatsData = [];
-    let seatsCreated = 0;
-
-    for (const row of rowsLetters) {
-      for (let col = 1; col <= colsPerRow; col++) {
-        if (seatsCreated < newEvent.capacity) {
-          seatsData.push({
-            eventId: newEvent.id,
-            row: row,
-            col: col,
-            status: "available",
-          });
-          seatsCreated++;
-        }
-      }
-    }
-
-    await prisma.seat.createMany({
-      data: seatsData,
-    });
+    await createSeats(newEvent);
 
     res.status(201).json("Event successfully created");
   } catch (error) {
@@ -93,9 +85,7 @@ export const getMyEvents = async (req, res) => {
     const myEvents = await prisma.event.findMany({
       where: { createdBy: userId },
     });
-    if (!myEvents) {
-      return res.status(404).json({ error: "Failed to fetach myEvents" });
-    }
+
     res.json({ events: myEvents });
   } catch (error) {
     console.error(error);
