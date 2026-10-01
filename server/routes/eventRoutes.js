@@ -6,10 +6,11 @@ import {
   getEventById,
   getMyEvents,
 } from "../controllers/eventController.js";
+import { upload } from "../middleware/uploadMiddleware.js";
 
 const router = Router();
 
-router.post("/", protect, createEvent);
+router.post("/", protect, upload.single("img"), createEvent);
 
 router.get("/", getAllEvents);
 router.get("/my-events", protect, getMyEvents);

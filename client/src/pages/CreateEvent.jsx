@@ -31,16 +31,26 @@ const CreateEvent = () => {
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem("evently_token");
+
+      const submitData = new FormData();
+      submitData.append("title", formData.title);
+      submitData.append("location", formData.location);
+      submitData.append("price", formData.price);
+      submitData.append("date", formData.date);
+      submitData.append("time", formData.time);
+      submitData.append("category", formData.category);
+      submitData.append("description", formData.description);
+      submitData.append("img", formData.img);
+
       const res = await fetch("http://localhost:5000/api/events", {
         method: "POST",
         headers: {
-          "Content-type": "application/json",
           authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...formData, price: Number(formData.price) }),
+        body: submitData,
       });
       if (res.ok) {
-        navigate("/events");
+        navigate("/organizer/my-events");
       }
     } catch (error) {
       console.error(error);

@@ -9,7 +9,7 @@ const StepMedia = ({ formData, handleChange }) => {
         High-quality visuals are crucial for selling tickets.
       </p>
 
-      <div className="border-2 border-dashed border-neutral-300 rounded-2xl bg-neutral-50 p-10 flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-100 transition-colors">
+      <label className="border-2 border-dashed border-neutral-300 rounded-2xl bg-neutral-50 p-10 flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-100 transition-colors">
         <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
           <UploadCloud className="text-[#6365f1]" size={24} />
         </div>
@@ -20,21 +20,33 @@ const StepMedia = ({ formData, handleChange }) => {
           Drag and drop or click to browse files
         </p>
         <p className="text-xs text-neutral-400 font-medium">
-          PNG, JPG, or WEBP (Max 5MB)
+          PNG, JPG, or WEBP (Max 1MB)
         </p>
-        <div className="mt-6">
-          <label className="block text-sm font-bold text-[#1D1F23] mb-2">
-            Or paste an image URL
-          </label>
-          <input
-            name="img"
-            type="url"
-            value={formData.img}
-            onChange={handleChange}
-            placeholder="https://images.unsplash.com/..."
-            className="w-full bg-white border border-neutral-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#6365f1] focus:ring-1 focus:ring-[#6365f1] transition-all"
-          />
-        </div>
+        <input
+          className="hidden"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            // Grab the actual binary File object
+            const file = e.target.files[0];
+
+            // Fake the event structure so your handleChange function accepts it!
+            handleChange({ target: { name: "img", value: file } });
+          }}
+        />
+      </label>
+      <div className="mt-6">
+        <label className="block text-sm font-bold text-[#1D1F23] mb-2">
+          Or paste an image URL
+        </label>
+        <input
+          name="img"
+          type="url"
+          value={typeof formData.img === "string" ? formData.img : ""}
+          onChange={handleChange}
+          placeholder="https://images.unsplash.com/..."
+          className="w-full bg-white border border-neutral-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#6365f1] focus:ring-1 focus:ring-[#6365f1] transition-all"
+        />
       </div>
     </div>
   );

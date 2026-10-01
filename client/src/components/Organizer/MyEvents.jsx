@@ -39,7 +39,7 @@ const EventsManagement = () => {
           <MyEventsHeader />
           <MyEventsStats />
           <MyEventsFilters />
-          <EventsTable />
+          <EventsTable myEvents={myEvents} />
         </main>
       </div>
 

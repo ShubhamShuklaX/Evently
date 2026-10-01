@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { uploadToCloudinary } from "../middleware/uploadMiddleware.js";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 
@@ -7,14 +8,21 @@ const prisma = new PrismaClient({ adapter });
 
 export const createEvent = async (req, res) => {
   try {
-    const { title, location, price, img, category, date, time, description } =
+    const { title, location, price, category, date, time, description, img } =
       req.body;
-    await prisma.event.create({
+
+    let finalImageUrl = img;
+
+    if (req.file) {
+      finalImageUrl = await uploadToCloudinary(req.file.buffer);
+    }
+
+    const newEvent = await prisma.event.create({
       data: {
         title,
         location,
-        price,
-        img,
+        price: Number(price),
+        img: finalImageUrl,
         category,
         date,
         time,
@@ -22,6 +30,31 @@ export const createEvent = async (req, res) => {
         createdBy: req.user.id,
       },
     });
+
+    const rowsLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+    const colsPerRow = Math.ceil(newEvent.capacity / rowsLetters.length);
+
+    const seatsData = [];
+    let seatsCreated = 0;
+
+    for (const row of rowsLetters) {
+      for (let col = 1; col <= colsPerRow; col++) {
+        if (seatsCreated < newEvent.capacity) {
+          seatsData.push({
+            eventId: newEvent.id,
+            row: row,
+            col: col,
+            status: "available",
+          });
+          seatsCreated++;
+        }
+      }
+    }
+
+    await prisma.seat.createMany({
+      data: seatsData,
+    });
+
     res.status(201).json("Event successfully created");
   } catch (error) {
     console.error(error);
