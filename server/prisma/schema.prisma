@@ -55,6 +55,9 @@ model Seat {
   userId String?
   user User? @relation("UserBookings", fields: [userId], references: [id])
 
+orderId String?
+order Order? @relation(fields: [orderId],references: [id])
+
   @@unique([eventId,row,col])
 
 }
@@ -64,6 +67,8 @@ model Order {
   totalPaid Int
   idempotencyKey String @unique
   createdAt DateTime @default(now())
+
+  seats Seat[] 
   
   userId String
   user User @relation(fields: [userId],references: [id])

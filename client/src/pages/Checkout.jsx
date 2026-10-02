@@ -114,7 +114,7 @@ const Checkout = () => {
 
       const totalPaid = currentEvent.price * selectedSeats.length + 19;
 
-      const response = await fetch("http://localhost:5000/api/checkout", {
+      const response = await fetch("http://localhost:5000/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,13 +138,16 @@ const Checkout = () => {
         setCompletedOrder(finalOrder);
         setSelectedSeats([]);
         setStatus("success");
+        setTimeout(() => {
+          navigate("../success", { relative: "path" });
+        }, 1500);
       } else {
         alert(result.error || "Payment failed");
-        setStatus("error");
+        setStatus("failed");
       }
     } catch (error) {
       console.error(error);
-      setStatus("error");
+      setStatus("failed");
     }
   };
 

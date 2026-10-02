@@ -5,7 +5,7 @@ import eventRoutes from "./routes/eventRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import seatRoutes from "./routes/seatRoutes.js";
 import { prisma } from "./config/prisma.js";
-import checkoutRoutes from "./routes/checkoutRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use("/api/events", eventRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/seats", seatRoutes);
-app.use("/api/checkout", checkoutRoutes);
+app.use("/api/orders", orderRoutes);
 
 try {
   await prisma.$connect();

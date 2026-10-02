@@ -1,18 +1,30 @@
-import React from 'react';
-import { CalendarDays, MapPin, Ticket, MoreVertical, AlertCircle, ArrowRight } from 'lucide-react';
+import React from "react";
+import {
+  CalendarDays,
+  MapPin,
+  Ticket,
+  MoreVertical,
+  AlertCircle,
+  ArrowRight,
+} from "lucide-react";
 
 const BookingCard = ({ booking }) => {
   const { event, seats, totalPaid, status, orderId } = booking;
-  const isUpcoming = status === 'upcoming';
-  const isPending = status === 'pending';
+  const isUpcoming = status === "upcoming";
+  const isPending = status === "pending";
 
   return (
     <div className="flex flex-col md:flex-row bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Left: Image */}
-      <div className="relative w-full md:w-64 h-48 md:h-auto shrink-0 bg-neutral-100">
-        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-        <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-[#1D1F23] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
-          {event.category || 'Music'}
+      <div className="relative w-full md:w-48 h-48 md:h-auto shrink-0 bg-neutral-100">
+        <img
+          src={event.image}
+          alt={event.title}
+          className="w-full h-full absolute inset-0 object-cover object-top"
+        />
+
+        <span className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm text-[#1D1F23] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
+          {event.category || "Music"}
         </span>
       </div>
 
@@ -31,7 +43,9 @@ const BookingCard = ({ booking }) => {
                 <AlertCircle size={14} /> Payment Pending
               </span>
             )}
-            <span className="text-xs font-mono text-neutral-400">{orderId}</span>
+            <span className="text-xs font-mono text-neutral-400">
+              {orderId}
+            </span>
           </div>
           <button className="text-neutral-400 hover:text-[#1D1F23] transition-colors cursor-pointer p-1">
             <MoreVertical size={18} />
@@ -53,9 +67,9 @@ const BookingCard = ({ booking }) => {
           </div>
           <div className="flex items-center gap-2 text-sm text-neutral-600">
             <Ticket size={16} className="text-[#6365f1]" />
-            {seats && seats.length > 0 
-              ? `Sec ${seats[0].section}, Row ${seats[0].row}, Seat ${seats[0].seat} ${seats.length > 1 ? `(+${seats.length-1})` : ''}`
-              : 'General Admission'}
+            {seats && seats.length > 0
+              ? `Sec ${seats[0].section}, Row ${seats[0].row}, Seat ${seats[0].seat} ${seats.length > 1 ? `(+${seats.length - 1})` : ""}`
+              : "General Admission"}
           </div>
           <div className="flex items-center gap-2 text-sm font-semibold text-[#1D1F23]">
             ${totalPaid.toFixed(2)}
