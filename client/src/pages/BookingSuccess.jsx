@@ -8,6 +8,7 @@ import DigitalTicket from "../components/Success/DigitalTicket";
 import SuccessSummary from "../components/Success/SuccessSummary";
 import RecommendedEvents from "../components/Success/RecommendedEvents";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const BookingSuccess = () => {
   const { completedOrder } = useBooking();
@@ -15,6 +16,14 @@ const BookingSuccess = () => {
 
   const name = completedOrder?.customer?.firstName || "Guest";
   const email = completedOrder?.customer?.email || "your email";
+
+  useEffect(() => {
+    if (!completedOrder) {
+      navigate("/events", { replace: true });
+    }
+  }, [completedOrder, navigate]);
+
+  if (!completedOrder) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F7F9]">
@@ -41,7 +50,7 @@ const BookingSuccess = () => {
             <DigitalTicket />
 
             <div className="grid grid-cols-2 gap-4 mt-2">
-              <button 
+              <button
                 onClick={() => navigate("/bookings")}
                 className="h-14 bg-neutral-200 hover:bg-neutral-300 text-[#1D1F23] font-bold rounded-xl transition-colors cursor-pointer"
               >

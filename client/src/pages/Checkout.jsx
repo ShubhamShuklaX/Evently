@@ -34,7 +34,18 @@ const Checkout = () => {
       const event = getEventById(id);
       if (event) setCurrentEvent(event);
     }
-  }, [id, currentEvent, getEventById, setCurrentEvent]);
+    if (selectedSeats.length === 0 && !isProcessing) {
+      navigate(`/events/${id}/seats`, { replace: true });
+    }
+  }, [
+    id,
+    currentEvent,
+    getEventById,
+    setCurrentEvent,
+    selectedSeats,
+    navigate,
+    isProcessing,
+  ]);
 
   const methods = useForm({
     defaultValues: {

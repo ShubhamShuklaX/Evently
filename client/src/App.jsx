@@ -11,6 +11,7 @@ import MyBookings from "./pages/MyBookings";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import CreateEvent from "./pages/CreateEvent";
 import MyEvents from "./components/Organizer/MyEvents";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -27,6 +28,7 @@ const App = () => {
   return (
     <div>
       <BookingProvider>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

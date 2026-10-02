@@ -36,7 +36,19 @@ export const BookingProvider = ({ children }) => {
     });
   };
 
-  const [completedOrder, setCompletedOrder] = useState(null);
+  const [completedOrder, setCompletedOrderState] = useState(() => {
+    const saved = sessionStorage.getItem("evently_completed_order");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const setCompletedOrder = (order) => {
+    setCompletedOrderState(order);
+    if (order) {
+      sessionStorage.setItem("evently_completed_order", JSON.stringify(order));
+    } else {
+      sessionStorage.removeItem("evently_completed_order");
+    }
+  };
 
   const getEventById = (id) => events.find((e) => e.id === id);
 
@@ -50,6 +62,7 @@ export const BookingProvider = ({ children }) => {
         setSelectedSeats,
         toggleSeat,
         completedOrder,
+        setCompletedOrderState,
         setCompletedOrder,
         getEventById,
       }}
