@@ -42,9 +42,38 @@ export const getEventSeats = async (req, res) => {
       ],
     });
 
-    res.status(201).json(seats);
+    res.status(200).json(seats);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch event seats" });
+  }
+};
+
+export const bookSeat = async (req, res) => {
+  try {
+    const { seatId } = req.body;
+
+    if (!seatId) {
+      return res.status(400).json({
+        error: "Seat ID is required",
+      });
+    }
+
+    const result = await prisma.seat.updateMany({
+      where: { id: seatId, status: "available" },
+      data: { userId: req.user.id, status: "booked" },
+    });
+
+    if (result.count === 0) {
+      throw new Error("Seat is no longer available");
+    }
+
+    res.status(200).json({ message: "Seat booked successfully!" });
+  } catch (error) {
+    console.error(error);
+    if (error.message === "Seat is no longer available") {
+      return res.status(400).json({ error: "Seat is already booked!" });
+    }
+    res.status(500).json({ error: "Booking failed", details: error.message, stack: error.stack });
   }
 };
