@@ -1,9 +1,9 @@
 const token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM0NTI5OTI3LWJkNDQtNGRlMi1iMjRjLTBiNmUwODM1OTNiNyIsInJvbGUiOiJvcmdhbml6ZXIiLCJpYXQiOjE3OTA4NzE0NDksImV4cCI6MTc5MTQ3NjI0OX0.gk8qWjkIeMih5PVwJMVglQKcmI_UMAnsQcmuNaV63ro";
 
-const seatId = "1ac7725b-e3ad-47f3-8206-417a53f66057";
+const seatId = "9f43aac2-eab2-461f-aa67-9e8ceb8976cc";
 Promise.all([
-  fetch("http://localhost:5000/api/seats/book", {
+  fetch("http://localhost:5000/api/seats/hold", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -11,7 +11,7 @@ Promise.all([
     },
     body: JSON.stringify({ seatId }),
   }),
-  fetch("http://localhost:5000/api/seats/book", {
+  fetch("http://localhost:5000/api/seats/hold", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

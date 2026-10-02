@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useBooking } from "../context/BookingContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CheckoutStepBar from "../components/Checkout/CheckoutStepBar";
-import CheckoutBar from "../components/Checkout/CheckoutBar";
 import CheckoutEventCard from "../components/Checkout/CheckoutEventCard";
 import ContactInfo from "../components/Checkout/ContactInfo";
 import PaymentMethod from "../components/Checkout/PaymentMethod";
@@ -16,11 +15,27 @@ import StateSwitcher from "../components/Checkout/StateSwitcher";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { currentEvent, selectedSeats, setCompletedOrder } = useBooking();
+  const { id } = useParams();
+  const {
+    currentEvent,
+    setCurrentEvent,
+    getEventById,
+    selectedSeats,
+    setCompletedOrder,
+    setSelectedSeats,
+  } = useBooking();
   const [isProcessing, setIsProcessing] = useState(false);
   const [status, setStatus] = useState("initiating");
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
-  // Initialize the form with some default values
+  // Restore currentEvent from URL if we reloaded or went back
+  useEffect(() => {
+    if (!currentEvent || !currentEvent.id) {
+      const event = getEventById(id);
+      if (event) setCurrentEvent(event);
+    }
+  }, [id, currentEvent, getEventById, setCurrentEvent]);
+
   const methods = useForm({
     defaultValues: {
       firstName: "Alexander",
@@ -33,9 +48,7 @@ const Checkout = () => {
     },
   });
 
-  // ==========================================
-  // 1. COUNTDOWN TIMER LOGIC (10 mins = 600s)
-  // ==========================================
+  // 1. COUNTDOWN TIMER LOGIC
   const [timeLeft, setTimeLeft] = useState(600);
 
   useEffect(() => {
@@ -54,9 +67,7 @@ const Checkout = () => {
   // Helper to format seconds (e.g. 599 -> "09:59")
   const formattedTime = `${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, "0")}`;
 
-  // ==========================================
   // 2. SIMULATED BACKEND API DELAY
-  // ==========================================
   useEffect(() => {
     if (isProcessing && status === "initiating") {
       // Wait 2 seconds (Contacting Bank...)
@@ -78,35 +89,61 @@ const Checkout = () => {
     }
   }, [isProcessing, status, navigate]);
 
-  // ==========================================
   // 3. HANDLE FORM SUBMISSION
-  // ==========================================
-  const handlePaymentSubmit = (data) => {
-    // 1. Bundle up the order data
-    const finalOrder = {
-      customer: data,
-      event: currentEvent,
-      seats: selectedSeats,
-      totalPaid: currentEvent.pricePerTicket * selectedSeats.length + 19,
-    };
-
-    // 2. Save it to our fake backend Context
-    setCompletedOrder(finalOrder);
-
-    // 3. Trigger the UI
+  const handlePaymentSubmit = async (data) => {
     setIsProcessing(true);
     setStatus("initiating");
+
+    try {
+      const token = localStorage.getItem("evently_token");
+
+      const seatIds = [];
+
+      selectedSeats.map((s) => seatIds.push(s.id));
+
+      const totalPaid = currentEvent.price * selectedSeats.length + 19;
+
+      const response = await fetch("http://localhost:5000/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ seatIds, idempotencyKey, totalPaid }),
+      });
+
+      const result = await response.json();
+
+      // 1. Bundle up the order data
+      if (response.ok) {
+        const finalOrder = {
+          customer: data,
+          event: currentEvent,
+          seats: selectedSeats,
+          totalPaid: totalPaid,
+          orderId: result.order.id,
+        };
+
+        setCompletedOrder(finalOrder);
+        setSelectedSeats([]);
+        setStatus("success");
+      } else {
+        alert(result.error || "Payment failed");
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    }
   };
 
-  // ==========================================
   // 4. RENDERING THE LOADING SCREEN
-  // ==========================================
   if (isProcessing) {
     return (
       <div className="min-h-screen flex flex-col bg-white">
         <Header />
         <CheckoutStepBar timeLeft={formattedTime} />
-        <div className="px-30 py-20 flex flex-col items-center gap-16 flex-grow">
+        <div className="px-30 py-20 flex flex-col items-center gap-16 grow">
           <PaymentStatus status={status} />
           <TrustCards />
         </div>
@@ -116,14 +153,12 @@ const Checkout = () => {
     );
   }
 
-  // ==========================================
   // 5. RENDERING THE MAIN FORM
-  // ==========================================
   return (
     <div className="min-h-screen bg-[#F6F7F9]">
       <Header />
       {/* Pass the live timer down to the bars */}
-      <CheckoutBar timeLeft={formattedTime} />
+
       <CheckoutStepBar timeLeft={formattedTime} />
 
       {/* We wrap everything in FormProvider to share state with child components */}

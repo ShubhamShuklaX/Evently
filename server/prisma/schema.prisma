@@ -39,6 +39,7 @@ model User {
   role String @default("user")
   events Event[]
   bookedSeats Seat[] @relation("UserBookings")
+  order Order[]
 }
 
 model Seat {
@@ -46,6 +47,7 @@ model Seat {
   row String
   col Int 
   status String @default("available")
+  expiresAt DateTime?
 
   eventId String
   event Event @relation(fields: [eventId],references: [id]) 
@@ -55,4 +57,14 @@ model Seat {
 
   @@unique([eventId,row,col])
 
+}
+
+model Order {
+  id String @id @default(uuid())
+  totalPaid Int
+  idempotencyKey String @unique
+  createdAt DateTime @default(now())
+  
+  userId String
+  user User @relation(fields: [userId],references: [id])
 }

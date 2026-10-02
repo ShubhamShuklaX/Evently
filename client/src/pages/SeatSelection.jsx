@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useBooking } from "../context/BookingContext";
 import SeatBanner from "./../components/SeatSelection/SeatBanner";
 import SeatEventInfo from "./../components/SeatSelection/SeatEventInfo";
 import SeatMap from "./../components/SeatSelection/SeatMap";
@@ -8,6 +11,17 @@ import Footer from "./../components/Footer";
 import SeatSelectionBar from "./../components/SeatSelection/SeatSelectionBar";
 
 const SeatSelection = () => {
+  const { id } = useParams();
+  const { currentEvent, setCurrentEvent, getEventById } = useBooking();
+
+  // Restore currentEvent from URL if we reloaded or went back
+  useEffect(() => {
+    if (!currentEvent || !currentEvent.id) {
+      const event = getEventById(id);
+      if (event) setCurrentEvent(event);
+    }
+  }, [id, currentEvent, getEventById, setCurrentEvent]);
+
   return (
     <>
       <Header />

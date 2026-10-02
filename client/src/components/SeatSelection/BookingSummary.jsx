@@ -7,6 +7,23 @@ const BookingSummary = () => {
   const { id } = useParams();
   const { selectedSeats, currentEvent } = useBooking();
 
+  async function handleConfirm() {
+    const token = localStorage.getItem("evently_token");
+    await Promise.all(
+      selectedSeats.map((s) => {
+        return fetch("http://localhost:5000/api/seats/hold", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ seatId: s.id }),
+        });
+      }),
+    );
+    navigate(`/events/${id}/seats/checkout`);
+  }
+
   return (
     <div className="sticky top-24 flex flex-col gap-4">
       {/* Summary card */}
@@ -27,14 +44,17 @@ const BookingSummary = () => {
               <p className="font-semibold text-sm text-[#1D1F23] mt-4">
                 No seats selected
               </p>
-              <p className="text-xs text-neutral-500 mt-1 max-w-[210px] leading-relaxed">
+              <p className="text-xs text-neutral-500 mt-1 max-w-52.5 leading-relaxed">
                 Select available seats from the map to start your booking.
               </p>
             </div>
           ) : (
             <div className="flex flex-col gap-3 mt-5">
               {selectedSeats.map((seat, i) => (
-                <div key={i} className="flex justify-between items-center bg-neutral-50 p-3 rounded-lg border border-neutral-100">
+                <div
+                  key={i}
+                  className="flex justify-between items-center bg-neutral-50 p-3 rounded-lg border border-neutral-100"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-indigo-100 text-[#6365f1] flex items-center justify-center">
                       <Armchair size={14} />
@@ -43,10 +63,14 @@ const BookingSummary = () => {
                       <p className="text-sm font-semibold text-[#1D1F23]">
                         Sec {seat.section}, Row {seat.row}
                       </p>
-                      <p className="text-xs text-neutral-500">Seat {seat.seat}</p>
+                      <p className="text-xs text-neutral-500">
+                        Seat {seat.seat}
+                      </p>
                     </div>
                   </div>
-                  <span className="font-mono font-medium text-[#1D1F23]">${currentEvent?.pricePerTicket?.toFixed(2)}</span>
+                  <span className="font-mono font-medium text-[#1D1F23]">
+                    ${currentEvent?.price?.toFixed(2)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -59,15 +83,15 @@ const BookingSummary = () => {
               Total Payable
             </span>
             <span className="text-2xl font-mono font-bold text-[#6365f1]">
-              ${(currentEvent?.pricePerTicket * selectedSeats.length || 0).toFixed(2)}
+              ${(currentEvent?.price * selectedSeats.length || 0).toFixed(2)}
             </span>
           </div>
 
           <button
             type="button"
+            onClick={handleConfirm}
             disabled={selectedSeats.length === 0}
-            onClick={() => navigate(`/events/${id}/seats/checkout`)}
-            className={`w-full h-13 mt-5 flex items-center justify-center gap-2 font-semibold rounded-xl transition-colors ${selectedSeats.length === 0 ? 'bg-[#6365f1]/50 text-white/90 cursor-not-allowed' : 'bg-[#6365f1] hover:bg-[#4f51e9] text-white cursor-pointer active:scale-95'}`}
+            className={`w-full h-13 mt-5 flex items-center justify-center gap-2 font-semibold rounded-xl transition-colors ${selectedSeats.length === 0 ? "bg-[#6365f1]/50 text-white/90 cursor-not-allowed" : "bg-[#6365f1] hover:bg-[#4f51e9] text-white cursor-pointer active:scale-95"}`}
           >
             Confirm Selection
             <ChevronRight size={16} />

@@ -21,10 +21,6 @@ const SeatSelectionBar = () => {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg px-3 py-1.5 font-mono text-sm font-semibold">
-          <Clock size={15} />
-          09:52
-        </div>
       </div>
     </div>
   );

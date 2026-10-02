@@ -14,7 +14,7 @@ const OrderSummary = () => {
   const { currentEvent, selectedSeats } = useBooking();
 
   // Calculate dynamic totals
-  const ticketTotal = currentEvent.pricePerTicket * selectedSeats.length;
+  const ticketTotal = currentEvent.price * selectedSeats.length;
   const processingFee = 19.0;
   const finalTotal = ticketTotal + processingFee;
 

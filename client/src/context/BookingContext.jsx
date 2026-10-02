@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const BookingContext = createContext();
 
@@ -25,23 +25,12 @@ export const BookingProvider = ({ children }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
 
   // Helper function to add/remove a seat
-  const toggleSeat = (seatObj) => {
+  const toggleSeat = async (seatObj) => {
     setSelectedSeats((prev) => {
-      const exists = prev.find(
-        (s) =>
-          s.section === seatObj.section &&
-          s.row === seatObj.row &&
-          s.seat === seatObj.seat,
-      );
-      if (exists) {
-        return prev.filter(
-          (s) =>
-            !(
-              s.section === seatObj.section &&
-              s.row === seatObj.row &&
-              s.seat === seatObj.seat
-            ),
-        );
+      const alreadyInCart = prev.find((s) => s.id === seatObj.id);
+      if (alreadyInCart) {
+        // If it exists in the latest state, remove it
+        return prev.filter((s) => s.id !== seatObj.id);
       }
       return [...prev, seatObj];
     });
@@ -59,7 +48,7 @@ export const BookingProvider = ({ children }) => {
         setCurrentEvent,
         selectedSeats,
         setSelectedSeats,
-        toggleSeat, // EXPORT THIS TOO!
+        toggleSeat,
         completedOrder,
         setCompletedOrder,
         getEventById,

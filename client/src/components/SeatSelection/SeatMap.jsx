@@ -59,6 +59,7 @@ const legend = [
 
 const SeatMap = () => {
   const { id } = useParams();
+  const { selectedSeats, setSelectedSeats, toggleSeat } = useBooking();
   const [dbSeats, setDbSeats] = useState([]);
 
   useEffect(() => {
@@ -67,6 +68,12 @@ const SeatMap = () => {
         const response = await fetch(`http://localhost:5000/api/seats/${id}`);
         const data = await response.json();
         setDbSeats(data);
+        setSelectedSeats((prevSeats) => {
+          return prevSeats.filter((cartSeat) => {
+            const dbSeat = data.find((d) => d.id === cartSeat.id);
+            if (dbSeat && dbSeat.status === "available") return true;
+          });
+        });
       } catch (error) {
         console.error(error);
       }
@@ -116,8 +123,6 @@ const SeatMap = () => {
       };
     })
     .filter((section) => section.rows.length > 0); // Remove empty sections
-
-  const { selectedSeats, toggleSeat } = useBooking();
 
   return (
     <div className="bg-white border border-neutral-200 rounded-2xl p-10">

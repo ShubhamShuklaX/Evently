@@ -26,7 +26,11 @@ const SeatRow = ({
       <div className="flex gap-2">
         {row.left.map((seat) => {
           let finalStatus = seat.status;
-          if (isSelected(seat.col)) finalStatus = "selected";
+          if (seat.status === "available" && isSelected(seat.col)) {
+            finalStatus = "selected";
+          } else {
+            finalStatus = seat.status;
+          }
           return (
             <Seat
               key={seat.col}
@@ -37,6 +41,7 @@ const SeatRow = ({
                   section: sectionName,
                   row: row.label,
                   seat: seat.col.toString(),
+                  id: seat.id,
                 })
               }
             />
@@ -47,7 +52,11 @@ const SeatRow = ({
       <div className="flex gap-2">
         {row.right.map((seat) => {
           let finalStatus = seat.status;
-          if (isSelected(seat.col)) finalStatus = "selected";
+          if (seat.status === "available" && isSelected(seat.col)) {
+            finalStatus = "selected";
+          } else {
+            finalStatus = seat.status;
+          }
           return (
             <Seat
               key={seat.col}
@@ -58,6 +67,7 @@ const SeatRow = ({
                   section: sectionName,
                   row: row.label,
                   seat: seat.col.toString(),
+                  id: seat.id,
                 })
               }
             />
