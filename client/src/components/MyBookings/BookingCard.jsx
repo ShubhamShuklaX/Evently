@@ -7,11 +7,22 @@ import {
   AlertCircle,
   ArrowRight,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useBooking } from "../../context/BookingContext";
 
 const BookingCard = ({ booking }) => {
+  const navigate = useNavigate();
+  const { setCompletedOrder } = useBooking();
+
   const { event, seats, totalPaid, status, orderId } = booking;
   const isUpcoming = status === "upcoming";
   const isPending = status === "pending";
+
+  let seatSummary = "General Admission";
+  if (seats && seats.length > 0) {
+    const extra = seats.length > 1 ? ` (+${seats.length - 1})` : "";
+    seatSummary = `Sec ${seats[0].section}, Row ${seats[0].row}, Seat ${seats[0].seat}${extra}`;
+  }
 
   return (
     <div className="flex flex-col md:flex-row bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -67,9 +78,7 @@ const BookingCard = ({ booking }) => {
           </div>
           <div className="flex items-center gap-2 text-sm text-neutral-600">
             <Ticket size={16} className="text-[#6365f1]" />
-            {seats && seats.length > 0
-              ? `Sec ${seats[0].section}, Row ${seats[0].row}, Seat ${seats[0].seat} ${seats.length > 1 ? `(+${seats.length - 1})` : ""}`
-              : "General Admission"}
+            {seatSummary}
           </div>
           <div className="flex items-center gap-2 text-sm font-semibold text-[#1D1F23]">
             ${totalPaid.toFixed(2)}
@@ -89,10 +98,23 @@ const BookingCard = ({ booking }) => {
             </>
           ) : (
             <>
-              <button className="flex-1 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm">
+              <button
+                onClick={() => {
+                  setCompletedOrder(booking);
+                  void navigate(
+                    `/events/${event.id || "ticket"}/seats/success`,
+                  );
+                }}
+                className="flex-1 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm"
+              >
                 <Ticket size={16} /> View Ticket
               </button>
-              <button className="flex-1 bg-white border border-neutral-200 hover:bg-neutral-50 text-[#1D1F23] font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm">
+              <button
+                onClick={() =>
+                  void navigate(event.id ? `/events/${event.id}` : "/events")
+                }
+                className="flex-1 bg-white border border-neutral-200 hover:bg-neutral-50 text-[#1D1F23] font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm"
+              >
                 View Event Details <ArrowRight size={16} />
               </button>
             </>

@@ -10,7 +10,13 @@ import { apiLimiter, authLimiter } from "./middleware/rateLimiter.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
 const app = express();
-app.use(cors());
+app.disable("x-powered-by");
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 app.use(express.json());
 
 app.use("/api", apiLimiter);
@@ -27,10 +33,14 @@ try {
 }
 
 setInterval(async () => {
-  await prisma.seat.updateMany({
-    where: { status: "held", expiresAt: { lt: new Date() } },
-    data: { status: "available", userId: null, expiresAt: null },
-  });
+  try {
+    await prisma.seat.updateMany({
+      where: { status: "held", expiresAt: { lt: new Date() } },
+      data: { status: "available", userId: null, expiresAt: null },
+    });
+  } catch (error) {
+    console.error("Expired seats cleanup error:", error.message);
+  }
 }, 60000);
 
 app.use(notFound);

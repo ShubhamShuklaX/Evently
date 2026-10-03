@@ -1,29 +1,13 @@
 import { TrendingUp, CalendarDays, MapPin } from "lucide-react";
-import jazzImg from "../../assets/7b99fda3-8fb3-4566-aaaa-198850298360.webp";
-import nbaImg from "../../assets/ecc129ee-2d9b-48cc-a560-b282c7b79676.webp";
+import { useNavigate } from "react-router-dom";
+import { useBooking } from "../../context/BookingContext";
 
-const trendingEvents = [
-  {
-    category: "Music",
-    title: "Blue Note Jazz Sessions: The Quartet",
-    date: "Nov 05, 2024",
-    time: "10:00 PM",
-    location: "Blue Note, Greenwich Village",
-    price: "60.00",
-    img: jazzImg,
-  },
-  {
-    category: "Sports",
-    title: "NBA All-Stars: Rising Legends Match",
-    date: "Feb 14, 2025",
-    time: "7:00 PM",
-    location: "United Center, Chicago",
-    price: "180.00",
-    img: nbaImg,
-  },
-];
+const WhatsTrending = ({ events: propEvents }) => {
+  const { events: contextEvents } = useBooking();
+  const trendingEvents = propEvents || contextEvents.slice(0, 2);
 
-const WhatsTrending = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-[#1D1F23] px-30 py-16">
       <div className="flex items-center justify-between mb-8">
@@ -37,15 +21,18 @@ const WhatsTrending = () => {
             this week. Real-time availability on all premium seating.
           </p>
         </div>
-        <button className="bg-white text-[#1D1F23] font-semibold text-sm px-6 py-3 rounded-full hover:bg-neutral-200 transition-colors shrink-0 cursor-pointer active:scale-95">
+        <button
+          onClick={() => void navigate("/events")}
+          className="bg-white text-[#1D1F23] font-semibold text-sm px-6 py-3 rounded-full hover:bg-neutral-200 transition-colors shrink-0 cursor-pointer active:scale-95"
+        >
           Browse Trending
         </button>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {trendingEvents.map((event, i) => (
+        {trendingEvents.map((event) => (
           <div
-            key={i}
+            key={event.id || event.title}
             className="relative rounded-2xl overflow-hidden h-100 group"
           >
             <img
@@ -72,8 +59,13 @@ const WhatsTrending = () => {
                   {event.location}
                 </span>
               </div>
-              <button className="bg-white text-[#1D1F23] font-semibold text-sm py-3 rounded-full hover:bg-neutral-200 transition-colors cursor-pointer active:scale-95">
-                Book Your Spot - ${event.price}
+              <button
+                onClick={() =>
+                  void navigate(event.id ? `/events/${event.id}` : "/events")
+                }
+                className="bg-white text-[#1D1F23] font-semibold text-sm py-3 rounded-full hover:bg-neutral-200 transition-colors cursor-pointer active:scale-95"
+              >
+                Book Your Spot - ₹{event.price}
               </button>
             </div>
           </div>

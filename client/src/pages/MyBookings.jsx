@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import BookingCard from "../components/MyBookings/BookingCard";
@@ -6,7 +6,6 @@ import BookingStats from "../components/MyBookings/BookingStats";
 import BookingToolbar from "../components/MyBookings/BookingToolbar";
 import QuickLinks from "../components/MyBookings/QuickLinks";
 import PromoBanner from "../components/MyBookings/PromoBanner";
-import { useEffect } from "react";
 
 const MyBookings = () => {
   const [activeTab, setActiveTab] = useState("Upcoming");
@@ -14,39 +13,51 @@ const MyBookings = () => {
 
   useEffect(() => {
     async function fetchOrders() {
-      const token = localStorage.getItem("evently_token");
+      try {
+        const token = localStorage.getItem("evently_token");
 
-      const response = await fetch("http://localhost:5000/api/orders/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setOrders(data.myOrders);
+        const response = await fetch("http://localhost:5000/api/orders/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && Array.isArray(data.myOrders)) {
+          setOrders(data.myOrders);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
     }
-    fetchOrders();
+
+    void fetchOrders();
   }, []);
 
-  const formattedBookings = orders.map((order) => {
-    const firstSeatEvent = order.seats[0]?.event;
+  const formattedBookings = Array.isArray(orders)
+    ? orders.map((order) => {
+        const firstSeatEvent = order.seats?.[0]?.event;
 
-    return {
-      orderId: `EVT-${order.id.slice(0, 8).toUpperCase()}`,
-      status: "upcoming",
-      totalPaid: order.totalPaid,
-      seats: order.seats.map((s) => ({
-        section: "General",
-        row: s.row,
-        seat: s.col,
-      })),
-      event: {
-        title: firstSeatEvent?.title || "Event",
-        date: firstSeatEvent?.date || "TBD",
-        time: firstSeatEvent?.time || "TBD",
-        venue: firstSeatEvent?.location || "Venue",
-        image: firstSeatEvent?.img || "",
-        category: firstSeatEvent?.category || "Music",
-      },
-    };
-  });
+        return {
+          orderId: `EVT-${order.id.slice(0, 8).toUpperCase()}`,
+          status: "upcoming",
+          totalPaid: order.totalPaid,
+          seats: (order.seats || []).map((s) => ({
+            section: "General",
+            row: s.row,
+            seat: s.col,
+          })),
+          event: {
+            id: firstSeatEvent?.id,
+            title: firstSeatEvent?.title || "Event",
+            date: firstSeatEvent?.date || "TBD",
+            time: firstSeatEvent?.time || "TBD",
+            venue: firstSeatEvent?.location || "Venue",
+            image: firstSeatEvent?.img || "",
+            category: firstSeatEvent?.category || "Music",
+          },
+        };
+      })
+    : [];
 
   const tabs = ["Upcoming", "Past", "Cancelled", "All Bookings"];
 

@@ -30,12 +30,12 @@ const Checkout = () => {
 
   // Restore currentEvent from URL if we reloaded or went back
   useEffect(() => {
-    if (!currentEvent || !currentEvent.id) {
+    if (!currentEvent?.id) {
       const event = getEventById(id);
       if (event) setCurrentEvent(event);
     }
     if (selectedSeats.length === 0 && !isProcessing) {
-      navigate(`/events/${id}/seats`, { replace: true });
+      void navigate(`/events/${id}/seats`, { replace: true });
     }
   }, [
     id,
@@ -63,42 +63,25 @@ const Checkout = () => {
   const [timeLeft, setTimeLeft] = useState(600);
 
   useEffect(() => {
-    if (timeLeft <= 0) {
-      setIsProcessing(true);
-      setStatus("timeout");
-      return;
-    }
-    // Only tick down if we are NOT processing a payment
-    if (!isProcessing) {
-      const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-      return () => clearInterval(timer);
-    }
-  }, [timeLeft, isProcessing]);
+    if (isProcessing) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsProcessing(true);
+          setStatus("timeout");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isProcessing]);
 
   // Helper to format seconds (e.g. 599 -> "09:59")
   const formattedTime = `${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, "0")}`;
-
-  // 2. SIMULATED BACKEND API DELAY
-  useEffect(() => {
-    if (isProcessing && status === "initiating") {
-      // Wait 2 seconds (Contacting Bank...)
-      const t1 = setTimeout(() => {
-        setStatus("processing");
-
-        // Wait 2.5 more seconds (Verifying Transaction...)
-        const t2 = setTimeout(() => {
-          setStatus("success");
-
-          // Wait 1.5 seconds so they can see the green checkmark,
-          // then redirect them to the success page!
-          setTimeout(() => navigate("../success", { relative: "path" }), 1500);
-        }, 2500);
-
-        return () => clearTimeout(t2);
-      }, 2000);
-      return () => clearTimeout(t1);
-    }
-  }, [isProcessing, status, navigate]);
 
   // 3. HANDLE FORM SUBMISSION
   const handlePaymentSubmit = async (data) => {
@@ -139,7 +122,7 @@ const Checkout = () => {
         setSelectedSeats([]);
         setStatus("success");
         setTimeout(() => {
-          navigate("../success", { relative: "path" });
+          void navigate("../success", { relative: "path" });
         }, 1500);
       } else {
         alert(result.error || "Payment failed");
@@ -158,7 +141,17 @@ const Checkout = () => {
         <Header />
         <CheckoutStepBar timeLeft={formattedTime} />
         <div className="px-30 py-20 flex flex-col items-center gap-16 grow">
-          <PaymentStatus status={status} />
+          <PaymentStatus
+            status={status}
+            onAction={() => {
+              if (status === "timeout") {
+                void navigate(`/events/${currentEvent?.id}/seats`);
+              } else {
+                setIsProcessing(false);
+                setStatus("initiating");
+              }
+            }}
+          />
           <TrustCards />
         </div>
         <Footer />
@@ -171,11 +164,9 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-[#F6F7F9]">
       <Header />
-      {/* Pass the live timer down to the bars */}
 
       <CheckoutStepBar timeLeft={formattedTime} />
 
-      {/* We wrap everything in FormProvider to share state with child components */}
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit(handlePaymentSubmit)}

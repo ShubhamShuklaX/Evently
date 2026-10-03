@@ -14,13 +14,11 @@ import MyEvents from "./components/Organizer/MyEvents";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 
-// Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
-  // Replace this with your actual auth logic (e.g., Context/Redux)
-  const isAuthenticated = true;
+  const token = localStorage.getItem("evently_token");
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+  if (!token) {
+    return <Navigate to="/login" replace />;
   }
   return children;
 };

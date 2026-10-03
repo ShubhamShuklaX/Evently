@@ -11,18 +11,32 @@ const quickFilters = [
   "Student Discounts",
 ];
 
-const EventList = ({ activeCategory, locationQuery }) => {
+const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
   const [layout, setLayout] = useState("grid");
   const { events } = useBooking();
 
-  // Step 5: The Magic Filtering Concept
-  // We take the full list of events and "filter" out the ones that don't match our criteria
   const filteredEvents = events.filter((event) => {
-    // 1. Check category (if a category is selected, ensure it matches)
-    if (activeCategory && event.category !== activeCategory) return false;
-    
-    // 2. Check location (simple text search in the venue name)
-    if (locationQuery && !event.venue.toLowerCase().includes(locationQuery.toLowerCase())) return false;
+    if (
+      activeCategory &&
+      event.category?.toLowerCase() !== activeCategory.toLowerCase()
+    ) {
+      return false;
+    }
+
+    if (
+      locationQuery &&
+      !event.location?.toLowerCase().includes(locationQuery.toLowerCase())
+    ) {
+      return false;
+    }
+
+    if (
+      searchQuery &&
+      !event.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !event.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
+      return false;
+    }
 
     // If it passes both tests, keep it!
     return true;
@@ -40,7 +54,9 @@ const EventList = ({ activeCategory, locationQuery }) => {
             </h1>
             <p className="text-neutral-600 text-[17px] mt-1">
               Showing{" "}
-              <span className="text-neutral-900 font-semibold">{filteredEvents.length} events</span>
+              <span className="text-neutral-900 font-semibold">
+                {filteredEvents.length} events
+              </span>
             </p>
           </div>
 
@@ -128,8 +144,15 @@ const EventList = ({ activeCategory, locationQuery }) => {
       <div className="flex flex-col items-center gap-3 mt-12 mb-8">
         {/* Count Indicator */}
         <p className="text-sm text-neutral-500 font-medium">
-          Showing <span className="font-semibold text-neutral-900">{filteredEvents.length}</span> of{" "}
-          <span className="font-semibold text-neutral-900">{events.length}</span> events
+          Showing{" "}
+          <span className="font-semibold text-neutral-900">
+            {filteredEvents.length}
+          </span>{" "}
+          of{" "}
+          <span className="font-semibold text-neutral-900">
+            {events.length}
+          </span>{" "}
+          events
         </p>
 
         {/* Progress Bar */}

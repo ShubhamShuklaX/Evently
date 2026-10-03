@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 export const protect = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return res
         .status(401)
         .json({ error: "Unauthorized - No tokens provided" });
@@ -15,6 +15,6 @@ export const protect = (req, res, next) => {
     next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Unauthorized - Invalid token" });
+    res.status(401).json({ error: "Unauthorized - Invalid token" });
   }
 };

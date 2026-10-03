@@ -1,4 +1,4 @@
-import { CheckCircle2, Info, Lock, ShieldCheck } from "lucide-react";
+import { Info, Lock, ShieldCheck } from "lucide-react";
 import { useBooking } from "../../context/BookingContext";
 
 const fees = [
@@ -13,10 +13,11 @@ const OrderSummary = () => {
   // Grab the fake data from context!
   const { currentEvent, selectedSeats } = useBooking();
 
-  // Calculate dynamic totals
-  const ticketTotal = currentEvent.price * selectedSeats.length;
+  const seatCount = selectedSeats?.length || 0;
+  const ticketPrice = currentEvent?.price || 0;
+  const ticketTotal = ticketPrice * seatCount;
   const processingFee = 19.0;
-  const finalTotal = ticketTotal + processingFee;
+  const finalTotal = ticketTotal > 0 ? ticketTotal + processingFee : 0;
 
   return (
     <div className="sticky top-24 flex flex-col gap-4">
@@ -34,10 +35,10 @@ const OrderSummary = () => {
           <div className="flex items-start justify-between">
             <div>
               <p className="flex items-center gap-2 font-semibold text-[#1D1F23]">
-                {currentEvent.title}
+                {currentEvent?.title || "Event"}{" "}
               </p>
               <p className="text-sm text-neutral-500 mt-1">
-                {selectedSeats.length}x General Admission
+                {selectedSeats?.length || 0}x General Admission
               </p>
             </div>
             <span className="font-mono font-semibold text-[#1D1F23]">
@@ -47,9 +48,9 @@ const OrderSummary = () => {
 
           {/* Fees list */}
           <div className="mt-5 pt-5 border-t border-neutral-100 flex flex-col gap-3">
-            {fees.map((fee, idx) => (
+            {fees.map((fee) => (
               <div
-                key={idx}
+                key={fee.label}
                 className="flex items-center justify-between text-sm"
               >
                 <span className="text-neutral-500 flex items-center gap-1.5 cursor-help">
@@ -81,21 +82,20 @@ const OrderSummary = () => {
 
           <p className="text-center text-[11px] text-neutral-400 mt-4 leading-relaxed">
             By clicking Confirm & Pay, you agree to Evently's{" "}
-            <a href="#" className="underline">
+            <a href="/terms" className="underline">
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="#" className="underline">
+            <a href="/policy" className="underline">
               Privacy Policy
             </a>
-            .
           </p>
         </div>
       </div>
 
       <div className="flex items-center justify-center gap-4 text-neutral-400">
-        {cards.map((card, idx) => (
-          <span key={idx} className="text-[10px] font-bold tracking-widest">
+        {cards.map((card) => (
+          <span key={card} className="text-[10px] font-bold tracking-widest">
             {card}
           </span>
         ))}

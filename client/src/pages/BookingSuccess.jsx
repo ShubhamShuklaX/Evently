@@ -19,7 +19,7 @@ const BookingSuccess = () => {
 
   useEffect(() => {
     if (!completedOrder) {
-      navigate("/events", { replace: true });
+      void navigate("/events", { replace: true });
     }
   }, [completedOrder, navigate]);
 
@@ -56,7 +56,10 @@ const BookingSuccess = () => {
               >
                 Manage My Bookings
               </button>
-              <button className="h-14 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2">
+              <button
+                onClick={() => void navigate("/events")}
+                className="h-14 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
                 Browse More Events &rarr;
               </button>
             </div>

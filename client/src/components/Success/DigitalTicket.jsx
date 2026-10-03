@@ -26,44 +26,50 @@ const DigitalTicket = () => {
             <CalendarDays size={16} /> {event.date}
           </span>
           <span className="flex items-center gap-1.5">
-            <MapPin size={16} /> {event.venue}
+            <MapPin size={16} /> {event?.location || "Location TBA"}
           </span>
         </div>
       </div>
 
-      <div 
-        className="p-8 flex justify-center items-stretch border-b border-neutral-200 border-dashed overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-thin"
-      >
+      <div className="p-8 flex justify-center items-stretch border-b border-neutral-200 border-dashed overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-thin">
         {seats.map((seat, index) => (
-          <React.Fragment key={index}>
+          <React.Fragment key={seat.id}>
             {index > 0 && (
               <div className="w-px border-l-2 border-dashed border-neutral-200 shrink-0 mx-6 sm:mx-8"></div>
             )}
-            
+
             <div className="flex flex-col items-center relative z-10 shrink-0 w-48 sm:w-56 snap-center">
               <div className="w-full flex justify-between text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-6">
-                <span>Ticket 0{index + 1} of 0{seats.length}</span>
+                <span>
+                  Ticket 0{index + 1} of 0{seats.length}
+                </span>
                 <span>GA Admission</span>
               </div>
-              
+
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TKT-${event.id}-${seat.seat}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TKT-${seat.row}-${seat.col}`}
                 alt="QR Code"
                 className="w-32 h-32 mb-6"
               />
 
               <div className="w-full grid grid-cols-3 text-center divide-x divide-neutral-200">
                 <div>
-                  <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1">Section</p>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1">
+                    Section
+                  </p>
                   <p className="font-bold text-[#1D1F23]">{seat.section}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1">Row</p>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1">
+                    Row
+                  </p>
                   <p className="font-bold text-[#1D1F23]">{seat.row}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1">Seat</p>
-                  <p className="font-bold text-[#1D1F23]">{seat.seat}</p>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1">
+                    Seat
+                  </p>
+                  <p className="font-bold text-[#1D1F23]">{seat.col}</p>
                 </div>
               </div>
             </div>

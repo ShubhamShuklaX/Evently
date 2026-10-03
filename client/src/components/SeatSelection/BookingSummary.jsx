@@ -9,7 +9,12 @@ const BookingSummary = () => {
 
   async function handleConfirm() {
     const token = localStorage.getItem("evently_token");
-    await Promise.all(
+    if (!token) {
+      void navigate("/login");
+      return;
+    }
+
+    const responses = await Promise.all(
       selectedSeats.map((s) => {
         return fetch("http://localhost:5000/api/seats/hold", {
           method: "POST",
@@ -21,12 +26,18 @@ const BookingSummary = () => {
         });
       }),
     );
-    navigate(`/events/${id}/seats/checkout`);
+    const allHeld = responses.every((res) => res.ok);
+    if (!allHeld) {
+      alert(
+        "One or more selected seats are no longer available. Please select available seats.",
+      );
+      return;
+    }
+    void navigate(`/events/${id}/seats/checkout`);
   }
 
   return (
     <div className="sticky top-24 flex flex-col gap-4">
-      {/* Summary card */}
       <div className="bg-white border border-neutral-200 rounded-2xl shadow-lg shadow-black/5 overflow-hidden">
         <div className="h-1.5 bg-[#6365f1]" />
 
@@ -50,9 +61,9 @@ const BookingSummary = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-3 mt-5">
-              {selectedSeats.map((seat, i) => (
+              {selectedSeats.map((seat) => (
                 <div
-                  key={i}
+                  key={seat.id}
                   className="flex justify-between items-center bg-neutral-50 p-3 rounded-lg border border-neutral-100"
                 >
                   <div className="flex items-center gap-3">
@@ -114,16 +125,19 @@ const BookingSummary = () => {
       {/* Venue card */}
       <div className="flex items-center gap-3 bg-white border border-neutral-200 rounded-xl p-4">
         <img
-          src="/venue-thumb.jpg"
-          alt="A-Stage Grand Arena"
+          src={
+            currentEvent?.img ||
+            "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?"
+          }
+          alt={currentEvent?.location || "Venue"}
           className="w-12 h-12 rounded-lg object-cover shrink-0"
         />
         <div>
           <p className="font-semibold text-sm text-[#1D1F23]">
-            A-Stage Grand Arena
+            {currentEvent?.location || "Grand Arena"}
           </p>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Maximum Capacity: 12,500
+            Capacity : {currentEvent?.capacity?.toLocaleString() || "100"}
           </p>
         </div>
       </div>

@@ -90,7 +90,16 @@ export const holdSeat = async (req, res) => {
     const expireTime = new Date(Date.now() + 10 * 60 * 1000);
 
     const result = await prisma.seat.updateMany({
-      where: { id: seatId, status: "available" },
+      where: {
+        id: seatId,
+        OR: [
+          { status: "available" },
+          {
+            status: "held",
+            expiresAt: { lt: new Date() },
+          },
+        ],
+      },
       data: { expiresAt: expireTime, userId: req.user.id, status: "held" },
     });
 

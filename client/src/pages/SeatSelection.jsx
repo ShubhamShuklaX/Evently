@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useBooking } from "../context/BookingContext";
-import SeatBanner from "./../components/SeatSelection/SeatBanner";
 import SeatEventInfo from "./../components/SeatSelection/SeatEventInfo";
 import SeatMap from "./../components/SeatSelection/SeatMap";
 import SeatingInfo from "./../components/SeatSelection/SeatingInfo";
@@ -16,7 +15,7 @@ const SeatSelection = () => {
 
   // Restore currentEvent from URL if we reloaded or went back
   useEffect(() => {
-    if (!currentEvent || !currentEvent.id) {
+    if (!currentEvent?.id) {
       const event = getEventById(id);
       if (event) setCurrentEvent(event);
     }
@@ -27,7 +26,6 @@ const SeatSelection = () => {
       <Header />
       <SeatSelectionBar />
       <div className="px-30 py-8 flex flex-col gap-8">
-        <SeatBanner variant="tip" /> {/* or variant="conflict" */}
         <div className="grid grid-cols-[1fr_380px] gap-8 items-start">
           <div className="flex flex-col gap-8">
             <SeatEventInfo />

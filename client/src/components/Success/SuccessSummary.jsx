@@ -1,35 +1,38 @@
-import React from "react";
 import { CheckCircle2, MapPin, Clock, Mail } from "lucide-react";
 import { useBooking } from "../../context/BookingContext";
 
 const SuccessSummary = () => {
   const { completedOrder, currentEvent, selectedSeats } = useBooking();
-  
+
   const event = completedOrder?.event || currentEvent;
   const seats = completedOrder?.seats || selectedSeats;
-  const total = completedOrder?.totalPaid || (event.price * seats.length + 19);
-  const ticketTotal = event.price * seats.length;
+  const ticketPrice = event?.price || 0;
+  const seatCount = seats?.length || 0;
+  const ticketTotal = ticketPrice * seatCount;
+  const total =
+    completedOrder?.totalPaid || (ticketTotal > 0 ? ticketTotal + 19 : 0);
 
   return (
     <>
       <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
         <h3 className="font-bold text-lg text-[#1D1F23] mb-1">Order Summary</h3>
         <p className="text-xs text-neutral-500 mb-6 font-mono">
-          Transaction ID: EVT-{Math.floor(Math.random() * 10000000)}
+          Transaction ID: EVT-
+          {(completedOrder?.orderId || completedOrder?.id || "SUCCESS")
+            .slice(0, 8)
+            .toUpperCase()}
         </p>
 
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-100">
           <img
-            src={event.img}
+            src={event?.img}
             alt="Event"
             className="w-14 h-14 rounded-lg object-cover"
           />
           <div>
-            <h4 className="font-bold text-[#1D1F23] text-sm">
-              {event.title}
-            </h4>
+            <h4 className="font-bold text-[#1D1F23] text-sm">{event?.title}</h4>
             <p className="text-xs text-neutral-500 mt-1">
-              {event.date} • {event.time}
+              {event?.date} • {event?.time}
             </p>
           </div>
         </div>
@@ -60,7 +63,7 @@ const SuccessSummary = () => {
           </span>
           If you have questions about your order, visit our{" "}
           <a
-            href="#"
+            href="/help"
             className="font-semibold text-[#1D1F23] underline hover:text-[#6365f1]"
           >
             Help Center

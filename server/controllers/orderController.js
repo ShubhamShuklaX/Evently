@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma.js";
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 export const processCheckout = async (req, res) => {
   try {
@@ -14,6 +14,20 @@ export const processCheckout = async (req, res) => {
 
     if (exist) {
       return res.status(200).json({ success: true, order: exist });
+    }
+
+    const holdCount = await prisma.seat.count({
+      where: {
+        id: { in: seatIds },
+        userId: req.user.id,
+        status: "held",
+        expiresAt: { gt: new Date() },
+      },
+    });
+    if (holdCount !== seatIds.length) {
+      return res.status(400).json({
+        error: "Your seat hold has expired. Please select your seats again",
+      });
     }
 
     const orderId = crypto.randomUUID();

@@ -10,16 +10,25 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from "../assets/Logo.png";
+import { useState } from "react";
 
 const Header = () => {
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("evently_token");
-  const user = JSON.parse(localStorage.getItem("evently_user") || null);
 
   const handleSignOut = () => {
     localStorage.removeItem("evently_token");
     localStorage.removeItem("evently_user");
-    navigate("/");
+    void navigate("/");
+  };
+
+  const handleSearch = () => {
+    if (query.trim()) {
+      void navigate(`/events?search=${encodeURIComponent(query.trim())}`);
+    } else {
+      void navigate("/events");
+    }
   };
 
   return (
@@ -51,11 +60,11 @@ const Header = () => {
             />
             <input
               className="h-10 w-full min-w-90 pl-9 pr-3 bg-[#F6F7F9] text-[14px] leading-5.5 font-normal text-[#1D1F23] placeholder:text-[#696D72] rounded-[10px] border border-[#D4D6DA] outline-none hover:text-[#696D72] hover:border-[#D4D6DA] focus:text-[#696D72] focus:border-[#D4D6DA] disabled:text-[#696D72] disabled:bg-[#F6F7F9] disabled:border-[#D4D6DA]"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               type="search"
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search for concerts, sports, theater..."
-              onKeyDown={(e) => {
-                if (e.key === "Enter") navigate("/events");
-              }}
             />
           </div>
 

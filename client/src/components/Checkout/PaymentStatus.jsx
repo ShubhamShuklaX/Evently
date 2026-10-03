@@ -1,7 +1,5 @@
 import { CheckCircle2, Clock, ShieldCheck, XCircle } from "lucide-react";
 
-// initiating + processing come from your screenshots.
-// success / failed / timeout are inferred - edit the copy freely.
 const states = {
   initiating: {
     type: "loading",
@@ -38,7 +36,7 @@ const states = {
   },
 };
 
-const PaymentStatus = ({ status = "initiating" }) => {
+const PaymentStatus = ({ status = "initiating", onAction }) => {
   const state = states[status];
   const isLoading = state.type === "loading";
   const Icon = state.icon;
@@ -74,6 +72,7 @@ const PaymentStatus = ({ status = "initiating" }) => {
       )}
       {state.action && (
         <button
+          onClick={onAction}
           type="button"
           className="mt-8 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold text-sm px-6 h-11 rounded-xl transition-colors cursor-pointer active:scale-95"
         >

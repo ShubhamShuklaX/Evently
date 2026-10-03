@@ -1,7 +1,12 @@
 import { ChevronDown, MapPin, Sparkles } from "lucide-react";
 
 // Step 4: Accept the state and setters as props
-const FilterBar = ({ activeCategory, setActiveCategory, locationQuery, setLocationQuery }) => {
+const FilterBar = ({
+  activeCategory,
+  setActiveCategory,
+  locationQuery,
+  setLocationQuery,
+}) => {
   return (
     <div className="w-70 shrink-0 bg-white border border-neutral-200 p-6 h-fit">
       {/* Header */}
@@ -78,13 +83,30 @@ const FilterBar = ({ activeCategory, setActiveCategory, locationQuery, setLocati
 
         <div className="flex flex-col gap-2.5">
           {/* We can dynamically render these check boxes instead of writing them out 8 times! */}
-          {["Music", "Sports", "Theatre", "Comedy", "Art", "Tech", "Food", "Yoga"].map(cat => (
-            <label key={cat} className="flex items-center gap-2 cursor-pointer text-sm text-neutral-700">
+          {[
+            "Music",
+            "Sports",
+            "Theater",
+            "Comedy",
+            "Conference",
+            "Festival",
+            "Art",
+          ].map((cat) => (
+            <label
+              key={cat}
+              className="flex items-center gap-2 cursor-pointer text-sm text-neutral-700"
+            >
               <input
                 type="checkbox"
                 className="accent-[#6365f1] cursor-pointer w-4 h-4"
-                checked={activeCategory === cat}
-                onChange={() => setActiveCategory(activeCategory === cat ? "" : cat)}
+                checked={activeCategory.toLowerCase() === cat.toLowerCase()}
+                onChange={() =>
+                  setActiveCategory(
+                    activeCategory.toLowerCase() === cat.toLowerCase()
+                      ? ""
+                      : cat,
+                  )
+                }
               />
               {cat}
             </label>

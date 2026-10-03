@@ -18,12 +18,9 @@ const AppPromo = () => {
           </p>
 
           <div className="flex items-center gap-4 mt-8">
-            <button className="bg-white text-[#4338ca] font-semibold text-sm px-6 py-3.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer active:scale-95">
-              Download for iOS
-            </button>
-            <button className="bg-white text-[#4338ca] font-semibold text-sm px-6 py-3.5 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer active:scale-95">
-              Download for Android
-            </button>
+            <span className="bg-white  text-[#4338ca] font-semibold text-sm px-6 py-3.5 rounded-full ">
+              Coming Soon
+            </span>
           </div>
         </div>
 
