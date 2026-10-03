@@ -6,13 +6,16 @@ import authRoutes from "./routes/authRoutes.js";
 import seatRoutes from "./routes/seatRoutes.js";
 import { prisma } from "./config/prisma.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import { apiLimiter, authLimiter } from "./middleware/rateLimiter.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use("/api", apiLimiter);
 app.use("/api/events", eventRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/seats", seatRoutes);
 app.use("/api/orders", orderRoutes);
 
@@ -29,6 +32,9 @@ setInterval(async () => {
     data: { status: "available", userId: null, expiresAt: null },
   });
 }, 60000);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

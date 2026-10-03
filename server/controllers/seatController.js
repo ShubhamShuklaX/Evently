@@ -77,7 +77,6 @@ export const bookSeat = async (req, res) => {
     res.status(500).json({
       error: "Booking failed",
       details: error.message,
-      stack: error.stack,
     });
   }
 };
