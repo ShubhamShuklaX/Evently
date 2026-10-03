@@ -1,16 +1,18 @@
 import { CalendarDays, Heart, MapPin, Share2, Star } from "lucide-react";
 
-const EventHero = () => {
+const EventHero = ({ event }) => {
   return (
-    <div className="relative h-[520px] w-full overflow-hidden">
+    <div className="relative h-130 w-full overflow-hidden">
       <img
-        src="/venue.jpg"
-        alt="Event venue"
-        className="absolute inset-0 w-full h-full object-cover"
+        src={
+          event?.img ||
+          "https://images.unsplash.com/photo-1540575467063-178a50c2df87"
+        }
+        alt={event?.title || "Event Image"}
+        className="absolute inset-0 w-full h-full object-cover "
       />
       <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/40 to-black/20" />
 
-      {/* Action buttons */}
       <div className="absolute top-8 right-30 flex items-center gap-3">
         <button
           type="button"
@@ -32,7 +34,7 @@ const EventHero = () => {
       <div className="absolute bottom-12 left-30 right-30 text-white">
         <div className="flex items-center gap-3">
           <span className="bg-[#6365f1] text-xs font-semibold px-2.5 py-1 rounded-full">
-            Concert
+            {event.category}
           </span>
           <span className="flex items-center gap-1.5 text-sm font-medium">
             <Star size={14} />
@@ -41,20 +43,20 @@ const EventHero = () => {
         </div>
 
         <h1 className="text-5xl font-extrabold uppercase leading-tight mt-4 max-w-4xl">
-          Galactic Symphony: A Night of Modern Classics
+          {event.title}
         </h1>
-        <p className="text-neutral-200 text-lg mt-3">
-          Experience the universe through the lens of a world-class orchestra.
+        <p className="text-neutral-200 text-lg mt-3 w-180">
+          {event.description}
         </p>
 
         <div className="flex items-center gap-6 mt-6 text-sm font-medium">
           <span className="flex items-center gap-2">
             <CalendarDays size={18} className="text-indigo-300" />
-            Saturday, November 18, 2024
+            {event.date}
           </span>
           <span className="flex items-center gap-2">
             <MapPin size={18} className="text-indigo-300" />
-            The Grand Atrium, New York
+            {event.location}
           </span>
         </div>
       </div>

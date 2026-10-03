@@ -1,24 +1,12 @@
 import { CalendarDays, Clock, MapPin } from "lucide-react";
 
-const info = [
-  {
-    icon: CalendarDays,
-    label: "Date",
-    value: "Saturday, November 18, 2024",
-  },
-  {
-    icon: Clock,
-    label: "Time",
-    value: "7:30 PM - 10:30 PM",
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: "The Grand Atrium, New York",
-  },
-];
+const EventInfoBar = ({ event }) => {
+  const info = [
+    { icon: CalendarDays, label: "Date", value: event?.date || "TBA" },
+    { icon: Clock, label: "Time", value: event?.time || "TBA" },
+    { icon: MapPin, label: "Location", value: event?.location || "TBA" },
+  ];
 
-const EventInfoBar = () => {
   return (
     <div className="grid grid-cols-3 gap-6 bg-white border border-neutral-200 rounded-2xl p-6">
       {info.map(({ icon: Icon, label, value }) => (
