@@ -29,25 +29,29 @@ export const createEvent = async (req, res) => {
         error: "Capacity must be a positive integer",
       });
     }
+    const newEvent = await prisma.$transaction(async (tx) => {
+      const event = await tx.event.create({
+        data: {
+          title,
+          location,
+          price: Number(price),
+          img: finalImageUrl,
+          category,
+          date,
+          time,
+          description,
+          createdBy: req.user.id,
+          capacity: eventCapacity,
+        },
+      });
 
-    const newEvent = await prisma.event.create({
-      data: {
-        title,
-        location,
-        price: Number(price),
-        img: finalImageUrl,
-        category,
-        date,
-        time,
-        description,
-        createdBy: req.user.id,
-        capacity: eventCapacity,
-      },
+      await createSeats(event, tx);
+      return event;
     });
 
-    await createSeats(newEvent);
-
-    res.status(201).json("Event successfully created");
+    res
+      .status(201)
+      .json({ message: "Event successfully created", event: newEvent });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create event" });

@@ -14,25 +14,23 @@ const BookingSummary = () => {
       return;
     }
 
-    const responses = await Promise.all(
-      selectedSeats.map((s) => {
-        return fetch("http://localhost:5000/api/seats/hold", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ seatId: s.id }),
-        });
-      }),
-    );
-    const allHeld = responses.every((res) => res.ok);
-    if (!allHeld) {
+    const response = await fetch("http://localhost:5000/api/seats/hold", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ seatIds: selectedSeats.map((s) => s.id) }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
       alert(
-        "One or more selected seats are no longer available. Please select available seats.",
+        data.error || "One or more selected seats are no longer available.",
       );
       return;
     }
+
     void navigate(`/events/${id}/seats/checkout`);
   }
 

@@ -9,12 +9,17 @@ import orderRoutes from "./routes/orderRoutes.js";
 import { apiLimiter, authLimiter } from "./middleware/rateLimiter.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
+if (!process.env.JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET environment variable is missing.");
+  process.exit(1);
+}
+
 const app = express();
 app.disable("x-powered-by");
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
   }),
 );
 app.use(express.json());
@@ -25,14 +30,7 @@ app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/seats", seatRoutes);
 app.use("/api/orders", orderRoutes);
 
-try {
-  await prisma.$connect();
-  console.log("Database connected successfully");
-} catch (error) {
-  console.error("Database connection failed:", error);
-}
-
-setInterval(async () => {
+const cleanupTimer = setInterval(async () => {
   try {
     await prisma.seat.updateMany({
       where: { status: "held", expiresAt: { lt: new Date() } },
@@ -46,6 +44,29 @@ setInterval(async () => {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
+try {
+  await prisma.$connect();
+  console.log("Database connected successfully");
+
+  const PORT = process.env.PORT || 5000;
+
+  const server = app.listen(PORT || 5000, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+
+  const gracefulShutdown = async () => {
+    console.log("Shutting down gracefully...");
+    clearInterval(cleanupTimer);
+    server.close(async () => {
+      console.log("HTTP server closed. Disconnecting database...");
+      await prisma.$disconnect();
+      process.exit(0);
+    });
+  };
+
+  process.on("SIGINT", gracefulShutdown);
+  process.on("SIGTERM", gracefulShutdown);
+} catch (error) {
+  console.error("Database connection failed:", error);
+  process.exit(1);
+}

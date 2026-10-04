@@ -18,3 +18,13 @@ export const protect = (req, res, next) => {
     res.status(401).json({ error: "Unauthorized - Invalid token" });
   }
 };
+
+export const authorizedRole = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
+      res.status(403).json({ error: "Forbidden - Access denied" });
+    } else {
+      next();
+    }
+  };
+};

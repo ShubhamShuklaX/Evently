@@ -1,6 +1,6 @@
 import { prisma } from "../config/prisma.js";
 
-export const createSeats = async (newEvent) => {
+export const createSeats = async (newEvent, tx = prisma) => {
   const rowsLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
   const colsPerRow = Math.ceil(newEvent.capacity / rowsLetters.length);
 
@@ -12,8 +12,8 @@ export const createSeats = async (newEvent) => {
       if (seatsCreated < newEvent.capacity) {
         seatsData.push({
           eventId: newEvent.id,
-          row: row,
-          col: col,
+          row,
+          col,
           status: "available",
         });
         seatsCreated++;
@@ -21,7 +21,7 @@ export const createSeats = async (newEvent) => {
     }
   }
 
-  await prisma.seat.createMany({
+  await tx.seat.createMany({
     data: seatsData,
   });
 };
@@ -31,7 +31,13 @@ export const getEventSeats = async (req, res) => {
     const { eventId } = req.params;
 
     const seats = await prisma.seat.findMany({
-      where: { eventId: eventId },
+      where: { eventId },
+      select: {
+        id: true,
+        row: true,
+        col: true,
+        status: true,
+      },
       orderBy: [
         {
           row: "asc",
@@ -49,66 +55,53 @@ export const getEventSeats = async (req, res) => {
   }
 };
 
-export const bookSeat = async (req, res) => {
-  try {
-    const { seatId } = req.body;
-
-    if (!seatId) {
-      return res.status(400).json({
-        error: "Seat ID is required",
-      });
-    }
-
-    const result = await prisma.seat.updateMany({
-      where: { id: seatId, status: "available" },
-      data: { userId: req.user.id, status: "booked" },
-    });
-
-    if (result.count === 0) {
-      throw new Error("Seat is no longer available");
-    }
-
-    res.status(200).json({ message: "Seat booked successfully!" });
-  } catch (error) {
-    console.error(error);
-    if (error.message === "Seat is no longer available") {
-      return res.status(400).json({ error: "Seat is already booked!" });
-    }
-    res.status(500).json({
-      error: "Booking failed",
-      details: error.message,
-    });
-  }
-};
-
 export const holdSeat = async (req, res) => {
   try {
-    const { seatId } = req.body;
-
-    if (!seatId) return res.status(404).json({ error: "Seat Id is required" });
+    const seatIds =
+      req.body.seatIds || (req.body.seatId ? [req.body.seatId] : []);
+    if (!seatIds || seatIds.length === 0) {
+      return res.status(400).json({ error: "Seat IDs are required" });
+    }
 
     const expireTime = new Date(Date.now() + 10 * 60 * 1000);
 
-    const result = await prisma.seat.updateMany({
-      where: {
-        id: seatId,
-        OR: [
-          { status: "available" },
-          {
-            status: "held",
-            expiresAt: { lt: new Date() },
-          },
-        ],
-      },
-      data: { expiresAt: expireTime, userId: req.user.id, status: "held" },
+    const seat = await prisma.$transaction(async (tx) => {
+      const result = await tx.seat.updateMany({
+        where: {
+          id: { in: seatIds },
+          OR: [
+            { status: "available" },
+            {
+              status: "held",
+              expiresAt: { lt: new Date() },
+            },
+          ],
+        },
+        data: { expiresAt: expireTime, userId: req.user.id, status: "held" },
+      });
+
+      if (result.count !== seatIds.length) {
+        throw new Error("SEATS_UNAVAILABLE");
+      }
+
+      return result;
     });
 
-    if (result.count === 0) {
-      return res.status(404).json({ error: "Seat is no longer available" });
-    }
-    res.status(200).json("Successfully hold seat");
+    return res.status(200).json({
+      message: "Successfully held seats",
+      count: seat.count,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to hold seat" });
+
+    if (error.message === "SEATS_UNAVAILABLE") {
+      return res.status(409).json({
+        error: "One or more seats are no longer available",
+      });
+    }
+
+    return res.status(500).json({
+      error: "Failed to hold seat",
+    });
   }
 };
