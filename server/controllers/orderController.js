@@ -1,12 +1,26 @@
 import { prisma } from "../config/prisma.js";
 import crypto from "node:crypto";
 
-const returnExistingOrder = (order, userId, res) => {
+const returnExistingOrder = (order, userId, requestedSeatIds, res) => {
   if (order.userId !== userId) {
     return res
       .status(403)
       .json({ error: "Idempotency key belongs to another user" });
   }
+
+  const existingSeatIds = order.seats?.map((s) => s.id) || [];
+  const isSameCount = existingSeatIds.length === requestedSeatIds.length;
+  const isSameSeats = requestedSeatIds.every((id) =>
+    existingSeatIds.includes(id),
+  );
+
+  if (!isSameCount || !isSameSeats) {
+    return res.status(409).json({
+      error:
+        "Idempotency key has already been used for a different booking intent",
+    });
+  }
+
   return res.status(200).json({ success: true, order });
 };
 
@@ -25,9 +39,9 @@ const validateHoldSeats = (holdSeats, expectedCount) => {
 };
 
 export const processCheckout = async (req, res) => {
+  const { seatIds, idempotencyKey } = req.body;
+  let uniqueSeatIds = [];
   try {
-    const { seatIds, idempotencyKey } = req.body;
-
     if (!idempotencyKey)
       return res.status(400).json({ error: "Idempotency key is required" });
 
@@ -37,18 +51,19 @@ export const processCheckout = async (req, res) => {
         .json({ error: "A valid array of seat IDs is required" });
 
     const exist = await prisma.order.findUnique({
-      where: { idempotencyKey: idempotencyKey },
+      where: { idempotencyKey },
+      include: { seats: true },
     });
 
-    if (exist) {
-      return returnExistingOrder(exist, req.user.id, res);
-    }
-
-    const uniqueSeatIds = [...new Set(seatIds)];
+    uniqueSeatIds = [...new Set(seatIds)];
     if (uniqueSeatIds.length > 10) {
       return res
         .status(400)
         .json({ error: "You can only book up to 10 seats per transaction" });
+    }
+
+    if (exist) {
+      return returnExistingOrder(exist, req.user.id, uniqueSeatIds, res);
     }
 
     const holdSeats = await prisma.seat.findMany({
@@ -115,9 +130,16 @@ export const processCheckout = async (req, res) => {
     if (error.code === "P2002") {
       const existingOrder = await prisma.order.findUnique({
         where: { idempotencyKey },
+        include: { seats: true },
       });
       if (existingOrder) {
-        return returnExistingOrder(existingOrder, req.user.id, res);
+        return returnExistingOrder(
+          existingOrder,
+          req.user.id,
+          uniqueSeatIds,
+
+          res,
+        );
       }
     }
 

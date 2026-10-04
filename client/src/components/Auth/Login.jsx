@@ -69,7 +69,7 @@ const Login = () => {
   return (
     <div className="h-screen flex overflow-hidden">
       {/* Left Form Div */}
-      <div className="flex-1 lg:w-1/2 px-25 py-15 flex flex-col gap-5 overflow-y-auto">
+      <div className="flex-1 lg:w-1/2 px-25 py-14 flex flex-col gap-5 overflow-y-auto">
         {/* Logo and Title */}
         <div className="flex items-center justify-center gap-2">
           <img src={logo} alt="logo" className="w-8 h-8" />
