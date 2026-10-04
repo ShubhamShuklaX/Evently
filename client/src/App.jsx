@@ -14,12 +14,18 @@ import MyEvents from "./components/Organizer/MyEvents";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem("evently_token");
+  const user = JSON.parse(localStorage.getItem("evently_user") || "null");
 
   if (!token) {
     return <Navigate to="/login" replace />;
   }
+
+  if (allowedRoles && (!user || !allowedRoles.includes(user.role))) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 };
 
@@ -66,7 +72,7 @@ const App = () => {
             <Route
               index
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
                   <OrganizerDashboard />
                 </ProtectedRoute>
               }
@@ -74,7 +80,7 @@ const App = () => {
             <Route
               path="create"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
                   <CreateEvent />
                 </ProtectedRoute>
               }
@@ -82,7 +88,7 @@ const App = () => {
             <Route
               path="my-events"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
                   <MyEvents />
                 </ProtectedRoute>
               }

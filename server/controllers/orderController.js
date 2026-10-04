@@ -1,6 +1,29 @@
 import { prisma } from "../config/prisma.js";
 import crypto from "node:crypto";
 
+const returnExistingOrder = (order, userId, res) => {
+  if (order.userId !== userId) {
+    return res
+      .status(403)
+      .json({ error: "Idempotency key belongs to another user" });
+  }
+  return res.status(200).json({ success: true, order });
+};
+
+const validateHoldSeats = (holdSeats, expectedCount) => {
+  if (holdSeats.length !== expectedCount) {
+    return "Your seat hold has expired. Please select your seats again";
+  }
+  const firstEventId = holdSeats[0].eventId;
+  if (!holdSeats.every((seat) => seat.eventId === firstEventId)) {
+    return "All seats must be from the same events";
+  }
+  if (holdSeats[0].event.status !== "Live") {
+    return `Cannot book seats for an event that is ${holdSeats[0].event.status.toLowerCase()}`;
+  }
+  return null;
+};
+
 export const processCheckout = async (req, res) => {
   try {
     const { seatIds, idempotencyKey } = req.body;
@@ -8,25 +31,29 @@ export const processCheckout = async (req, res) => {
     if (!idempotencyKey)
       return res.status(400).json({ error: "Idempotency key is required" });
 
-    if (!seatIds || seatIds.length === 0)
-      return res.status(404).json({ error: "Seat Id is required" });
+    if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0)
+      return res
+        .status(400)
+        .json({ error: "A valid array of seat IDs is required" });
 
     const exist = await prisma.order.findUnique({
       where: { idempotencyKey: idempotencyKey },
     });
 
     if (exist) {
-      if (exist.userId !== req.user.id) {
-        return res
-          .status(403)
-          .json({ error: "Idempotency key belongs to another user" });
-      }
-      return res.status(200).json({ success: true, order: exist });
+      return returnExistingOrder(exist, req.user.id, res);
+    }
+
+    const uniqueSeatIds = [...new Set(seatIds)];
+    if (uniqueSeatIds.length > 10) {
+      return res
+        .status(400)
+        .json({ error: "You can only book up to 10 seats per transaction" });
     }
 
     const holdSeats = await prisma.seat.findMany({
       where: {
-        id: { in: seatIds },
+        id: { in: uniqueSeatIds },
         userId: req.user.id,
         status: "held",
         expiresAt: { gt: new Date() },
@@ -35,20 +62,10 @@ export const processCheckout = async (req, res) => {
         event: true,
       },
     });
-    if (holdSeats.length !== seatIds.length) {
-      return res.status(400).json({
-        error: "Your seat hold has expired. Please select your seats again",
-      });
-    }
 
-    const firstEventId = holdSeats[0].eventId;
-    const allSameEvents = holdSeats.every(
-      (seat) => seat.eventId === firstEventId,
-    );
-    if (!allSameEvents) {
-      return res
-        .status(400)
-        .json({ error: "All seats must be from the same events" });
+    const holdError = validateHoldSeats(holdSeats, uniqueSeatIds.length);
+    if (holdError) {
+      return res.status(400).json({ error: holdError });
     }
 
     const ticketPrice = holdSeats[0].event.price;
@@ -59,7 +76,7 @@ export const processCheckout = async (req, res) => {
     const order = await prisma.$transaction(async (tx) => {
       const updated = await tx.seat.updateMany({
         where: {
-          id: { in: seatIds },
+          id: { in: uniqueSeatIds },
           userId: req.user.id,
           status: "held",
           expiresAt: { gt: new Date() },
@@ -71,7 +88,7 @@ export const processCheckout = async (req, res) => {
         },
       });
 
-      if (updated.count !== seatIds.length) {
+      if (updated.count !== uniqueSeatIds.length) {
         throw new Error(
           "One or more seat holds expired before completing checkout",
         );
@@ -89,8 +106,22 @@ export const processCheckout = async (req, res) => {
 
     res.status(200).json({ success: true, order: order });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+    console.error("Checkout error:", error);
+
+    if (error.message.includes("expired")) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    if (error.code === "P2002") {
+      const existingOrder = await prisma.order.findUnique({
+        where: { idempotencyKey },
+      });
+      if (existingOrder) {
+        return returnExistingOrder(existingOrder, req.user.id, res);
+      }
+    }
+
+    return res.status(500).json({ error: "Failed to process checkout" });
   }
 };
 

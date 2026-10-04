@@ -69,6 +69,7 @@ export const holdSeat = async (req, res) => {
       const result = await tx.seat.updateMany({
         where: {
           id: { in: seatIds },
+          event: { status: "Live" },
           OR: [
             { status: "available" },
             {
@@ -103,5 +104,40 @@ export const holdSeat = async (req, res) => {
     return res.status(500).json({
       error: "Failed to hold seat",
     });
+  }
+};
+
+export const releaseSeats = async (req, res) => {
+  try {
+    const { seatIds } = req.body;
+
+    if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "A valid array of seat IDs is required" });
+    }
+
+    const uniqueSeatIds = [...new Set(seatIds)];
+
+    const releasedSeats = await prisma.seat.updateMany({
+      where: {
+        id: { in: uniqueSeatIds },
+        status: "held",
+        userId: req.user.id,
+      },
+      data: {
+        status: "available",
+        userId: null,
+        expiresAt: null,
+      },
+    });
+
+    res.status(200).json({
+      message: "Successfuly released seats",
+      releasedCount: releasedSeats.count,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to release seats" });
   }
 };
