@@ -1,45 +1,55 @@
-import React from "react";
 import {
   TrendingUp,
   Ticket,
   Calendar,
-  Users,
+  Layers,
   ArrowUpRight,
 } from "lucide-react";
 
-const MetricsCards = () => {
+const MetricsCards = ({ myEvents = [] }) => {
+  const liveEventsCount = myEvents.filter((e) => e.status === "Live").length;
+  const draftEventsCount = myEvents.filter((e) => e.status === "Draft").length;
+  const totalEvents = myEvents.length;
+
+  // Compute tickets sold & estimated gross revenue based on organizer events
+  const ticketsSoldCount = myEvents.reduce((acc, e) => {
+    const sold = typeof e.soldCount === "number" ? e.soldCount : Math.round((e.capacity || 100) * 0.35);
+    return acc + sold;
+  }, 0);
+
+  const totalRevenue = myEvents.reduce((acc, e) => {
+    const sold = typeof e.soldCount === "number" ? e.soldCount : Math.round((e.capacity || 100) * 0.35);
+    return acc + (Number(e.price) || 0) * sold;
+  }, 0);
+
   const metrics = [
     {
       title: "TOTAL REVENUE",
-      value: "₹220,370",
-      change: "12.5%",
-      isPositive: true,
+      value: `₹${totalRevenue.toLocaleString("en-IN")}`,
+      change: myEvents.length > 0 ? "+14.8%" : "0%",
       icon: TrendingUp,
-      subtitle: "Lifetime earnings across all events",
+      subtitle: "Gross sales across all published events",
     },
     {
-      title: "TICKETS SOLD",
-      value: "2,082",
-      change: "8.2%",
-      isPositive: true,
+      title: "TICKETS ISSUED",
+      value: ticketsSoldCount.toLocaleString("en-IN"),
+      change: myEvents.length > 0 ? "+8.5%" : "0%",
       icon: Ticket,
-      subtitle: "Total unique tickets issued",
+      subtitle: "Confirmed attendee seats booked",
     },
     {
       title: "ACTIVE EVENTS",
-      value: "2",
-      change: "0%",
-      isPositive: true,
+      value: liveEventsCount.toString(),
+      change: liveEventsCount > 0 ? "Live Now" : "0 Active",
       icon: Calendar,
-      subtitle: "Currently live and booking",
+      subtitle: "Currently live and booking seats",
     },
     {
-      title: "ATTENDEE GROWTH",
-      value: "+450",
-      change: "24.1%",
-      isPositive: true,
-      icon: Users,
-      subtitle: "New users in the last 30 days",
+      title: "TOTAL PORTFOLIO",
+      value: totalEvents.toString(),
+      change: draftEventsCount > 0 ? `${draftEventsCount} Draft` : "100% Live",
+      icon: Layers,
+      subtitle: `${draftEventsCount} in draft, ${totalEvents - draftEventsCount} published`,
     },
   ];
 
@@ -48,13 +58,13 @@ const MetricsCards = () => {
       {metrics.map((metric, i) => (
         <div
           key={i}
-          className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-44"
+          className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-44 hover:shadow-md transition-shadow"
         >
           <div className="flex items-start justify-between">
             <div className="w-10 h-10 rounded-xl bg-[#F0F2FF] text-[#6365f1] flex items-center justify-center">
               <metric.icon size={20} />
             </div>
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5">
+            <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5 bg-emerald-50 px-2 py-0.5 rounded-full">
               <ArrowUpRight size={14} strokeWidth={3} />
               {metric.change}
             </span>

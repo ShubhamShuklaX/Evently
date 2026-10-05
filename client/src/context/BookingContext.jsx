@@ -67,7 +67,7 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
-  const getEventById = (id) => events.find((e) => e.id === id);
+  const getEventById = useCallback((id) => events.find((e) => e.id === id), [events]);
 
   const contextValue = useMemo(
     () => ({
@@ -82,7 +82,7 @@ export const BookingProvider = ({ children }) => {
       getEventById,
       fetchEvents,
     }),
-    [events, currentEvent, selectedSeats, orderData],
+    [events, currentEvent, selectedSeats, orderData, getEventById, fetchEvents],
   );
 
   return (
@@ -92,4 +92,5 @@ export const BookingProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useBooking = () => useContext(BookingContext);

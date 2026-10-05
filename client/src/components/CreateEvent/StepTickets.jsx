@@ -1,5 +1,3 @@
-import React from "react";
-
 const StepTickets = ({ formData, handleChange }) => {
   return (
     <div className="mb-8">

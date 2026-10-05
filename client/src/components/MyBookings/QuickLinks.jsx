@@ -1,4 +1,3 @@
-import React from 'react';
 import { Download, HelpCircle, Settings, ChevronRight } from 'lucide-react';
 
 const QuickLinks = () => {

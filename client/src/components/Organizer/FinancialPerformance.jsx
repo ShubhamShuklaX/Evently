@@ -1,7 +1,16 @@
-import React from "react";
-import { BellRing } from "lucide-react";
+import { useState } from "react";
+import { BellRing, CalendarDays, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const FinancialPerformance = () => {
+const FinancialPerformance = ({ myEvents = [] }) => {
+  const [timeRange, setTimeRange] = useState("Last 6 Months");
+
+  // Select top events for performance breakdown
+  const displayEvents = myEvents.slice(0, 4);
+
+  // Pick top active event for Selling Fast alert
+  const topLiveEvent = myEvents.find((e) => e.status === "Live") || myEvents[0];
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 mb-6">
       {/* Revenue Trends Chart */}
@@ -10,26 +19,39 @@ const FinancialPerformance = () => {
           <div>
             <h3 className="text-xl font-bold text-[#1D1F23]">Revenue Trends</h3>
             <p className="text-neutral-500 text-sm mt-1">
-              Monthly breakdown of sales performance
+              Monthly breakdown of ticketing performance
             </p>
           </div>
-          <button className="bg-[#F0F2FF] text-[#6365f1] text-xs font-bold px-3 py-1.5 rounded-full">
-            Last 6 Months
-          </button>
+          <div className="flex gap-1 bg-neutral-100 p-1 rounded-xl">
+            {["Last 30 Days", "Last 6 Months", "All Time"].map((range) => (
+              <button
+                key={range}
+                type="button"
+                onClick={() => setTimeRange(range)}
+                className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                  timeRange === range
+                    ? "bg-white text-[#6365f1] shadow-xs"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                {range}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="relative h-64 w-full mt-4">
           {/* Y Axis Labels */}
-          <div className="absolute left-0 top-0 bottom-6 w-12 flex flex-col justify-between text-xs text-neutral-400 font-medium">
-            <span>₹10000</span>
-            <span>₹7500</span>
-            <span>₹5000</span>
-            <span>₹2500</span>
+          <div className="absolute left-0 top-0 bottom-6 w-14 flex flex-col justify-between text-xs text-neutral-400 font-medium">
+            <span>₹50,000</span>
+            <span>₹35,000</span>
+            <span>₹20,000</span>
+            <span>₹10,000</span>
             <span>₹0</span>
           </div>
 
           {/* Grid Lines */}
-          <div className="absolute left-14 right-0 top-2 bottom-6 flex flex-col justify-between">
+          <div className="absolute left-16 right-0 top-2 bottom-6 flex flex-col justify-between">
             <div className="border-b border-neutral-100 w-full h-px"></div>
             <div className="border-b border-neutral-100 w-full h-px"></div>
             <div className="border-b border-neutral-100 w-full h-px"></div>
@@ -38,109 +60,118 @@ const FinancialPerformance = () => {
           </div>
 
           {/* SVG Area Chart */}
-          <div className="absolute left-14 right-0 top-2 bottom-6 overflow-hidden">
+          <div className="absolute left-16 right-0 top-2 bottom-6 overflow-hidden">
             <svg
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
               className="w-full h-full"
             >
               <defs>
-                <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6365f1" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#6365f1" stopOpacity="0" />
+                <linearGradient id="financialGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6365f1" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#6365f1" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
               <path
-                d="M 0,60 C 15,50 25,55 40,50 C 50,40 60,45 75,30 C 85,20 95,15 100,10 L 100,100 L 0,100 Z"
-                fill="url(#gradient)"
+                d="M 0,65 C 15,55 25,60 40,45 C 55,30 65,40 75,25 C 85,15 95,20 100,10 L 100,100 L 0,100 Z"
+                fill="url(#financialGradient)"
               />
               <path
-                d="M 0,60 C 15,50 25,55 40,50 C 50,40 60,45 75,30 C 85,20 95,15 100,10"
+                d="M 0,65 C 15,55 25,60 40,45 C 55,30 65,40 75,25 C 85,15 95,20 100,10"
                 fill="none"
                 stroke="#6365f1"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 vectorEffect="non-scaling-stroke"
               />
             </svg>
           </div>
 
           {/* X Axis Labels */}
-          <div className="absolute left-14 right-0 bottom-0 flex justify-between text-xs text-neutral-400 font-medium px-4">
-            <span>Jan</span>
-            <span>Feb</span>
-            <span>Mar</span>
-            <span>Apr</span>
+          <div className="absolute left-16 right-0 bottom-0 flex justify-between text-xs text-neutral-400 font-medium px-4">
             <span>May</span>
             <span>Jun</span>
             <span>Jul</span>
+            <span>Aug</span>
+            <span>Sep</span>
+            <span>Oct</span>
           </div>
         </div>
       </div>
 
       {/* Ticket Breakdown */}
-      <div className="w-87.5 shrink-0 flex flex-col gap-6">
-        <div className="bg-white border border-neutral-200 rounded-2xl shadow-sm p-8">
-          <h3 className="text-xl font-bold text-[#1D1F23]">Ticket Breakdown</h3>
-          <p className="text-neutral-500 text-sm mt-1 mb-8">
-            Sales by seat category
+      <div className="w-full lg:w-96 shrink-0 flex flex-col gap-6">
+        <div className="bg-white border border-neutral-200 rounded-2xl shadow-sm p-7">
+          <h3 className="text-xl font-bold text-[#1D1F23]">Event Capacity</h3>
+          <p className="text-neutral-500 text-sm mt-1 mb-6">
+            Occupancy rate of your listings
           </p>
 
-          <div className="flex flex-col gap-6">
-            <div>
-              <div className="flex justify-between text-sm font-semibold mb-2">
-                <span className="text-[#1D1F23]">VIP Pit</span>
-                <span className="text-neutral-500">420 / 500 sold</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
-                <div className="h-full bg-[#6365f1] w-[84%] rounded-full"></div>
-              </div>
-            </div>
+          {displayEvents.length > 0 ? (
+            <div className="flex flex-col gap-5">
+              {displayEvents.map((event) => {
+                const capacity = Number(event.capacity) || 100;
+                const sold = typeof event.soldCount === "number" ? event.soldCount : Math.round(capacity * 0.45);
+                const percent = Math.min(100, Math.round((sold / capacity) * 100));
 
-            <div>
-              <div className="flex justify-between text-sm font-semibold mb-2">
-                <span className="text-[#1D1F23]">Front Orchestra</span>
-                <span className="text-neutral-500">850 / 1000 sold</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
-                <div className="h-full bg-[#6365f1] w-[85%] rounded-full"></div>
-              </div>
+                return (
+                  <div key={event.id}>
+                    <div className="flex justify-between items-center text-sm font-semibold mb-1.5">
+                      <span className="text-[#1D1F23] truncate max-w-[170px]" title={event.title}>
+                        {event.title}
+                      </span>
+                      <span className="text-neutral-500 text-xs font-mono">
+                        {sold} / {capacity} sold ({percent}%)
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#6365f1] rounded-full transition-all duration-500"
+                        style={{ width: `${percent}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            <div>
-              <div className="flex justify-between text-sm font-semibold mb-2">
-                <span className="text-[#1D1F23]">Back Orchestra</span>
-                <span className="text-neutral-500">612 / 800 sold</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
-                <div className="h-full bg-[#6365f1] w-[76%] rounded-full"></div>
-              </div>
+          ) : (
+            <div className="text-center py-6 bg-neutral-50 rounded-xl border border-dashed border-neutral-200">
+              <Sparkles size={24} className="mx-auto text-[#6365f1] mb-2" />
+              <p className="text-sm font-semibold text-neutral-700">No events yet</p>
+              <p className="text-xs text-neutral-400 mt-1 mb-3">
+                List an event to see capacity analytics.
+              </p>
+              <Link
+                to="/organizer/create"
+                className="inline-block text-xs font-bold text-[#6365f1] hover:underline"
+              >
+                + Create Event
+              </Link>
             </div>
-
-            <div>
-              <div className="flex justify-between text-sm font-semibold mb-2">
-                <span className="text-[#1D1F23]">Mezzanine</span>
-                <span className="text-neutral-500">200 / 400 sold</span>
-              </div>
-              <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
-                <div className="h-full bg-[#6365f1] w-[50%] rounded-full"></div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Selling Fast Alert */}
-        <div className="bg-[#F8F9FA] border border-neutral-200 rounded-2xl p-5">
-          <div className="flex items-center gap-2 text-[#6365f1] text-xs font-bold tracking-wider uppercase mb-2">
-            <BellRing size={14} />
-            Selling Fast
+        {/* Dynamic Selling Fast Alert */}
+        {topLiveEvent ? (
+          <div className="bg-[#F8F9FA] border border-neutral-200 rounded-2xl p-5">
+            <div className="flex items-center gap-2 text-[#6365f1] text-xs font-bold tracking-wider uppercase mb-2">
+              <BellRing size={14} />
+              Performance Insight
+            </div>
+            <p className="text-sm text-neutral-600 leading-relaxed">
+              "<strong className="text-neutral-900">{topLiveEvent.title}</strong>" is currently{" "}
+              <span className="text-emerald-600 font-semibold">{topLiveEvent.status}</span> priced at{" "}
+              <strong className="text-neutral-900">₹{topLiveEvent.price}</strong>.
+              Review your seat allocations or update details anytime.
+            </p>
           </div>
-          <p className="text-sm text-neutral-600 leading-relaxed">
-            "Midnight Sun Music Festival"{" "}
-            <strong className="text-neutral-900">Front Orchestra</strong>{" "}
-            tickets are at 85% capacity. Consider raising prices for the final
-            batch.
-          </p>
-        </div>
+        ) : (
+          <div className="bg-[#F8F9FA] border border-neutral-200 rounded-2xl p-5 flex items-center gap-3">
+            <CalendarDays size={20} className="text-neutral-400 shrink-0" />
+            <p className="text-xs text-neutral-500">
+              Your listings will show live capacity recommendations here once published.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

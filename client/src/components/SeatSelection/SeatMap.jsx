@@ -50,7 +50,7 @@ const SeatMap = () => {
       }
     };
     if (id) void fetchSeats();
-  }, [id]);
+  }, [id, setSelectedSeats]);
 
   const seatLookup = {};
   dbSeats.forEach((s) => {

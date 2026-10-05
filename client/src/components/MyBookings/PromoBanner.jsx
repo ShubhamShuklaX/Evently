@@ -1,4 +1,3 @@
-import React from 'react';
 import { Crown } from 'lucide-react';
 import img1 from "../../assets/7b99fda3-8fb3-4566-aaaa-198850298360.webp";
 import img2 from "../../assets/7cd4cbd7-d18a-44e7-927d-ddc166223295.webp";

@@ -10,7 +10,13 @@ import BookingSuccess from "./pages/BookingSuccess";
 import MyBookings from "./pages/MyBookings";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
 import MyEvents from "./components/Organizer/MyEvents";
+import OrganizerAnalytics from "./pages/OrganizerAnalytics";
+import OrganizerAttendees from "./pages/OrganizerAttendees";
+import OrganizerDiscounts from "./pages/OrganizerDiscounts";
+import OrganizerSettings from "./pages/OrganizerSettings";
+import OrganizerHelp from "./pages/OrganizerHelp";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 
@@ -86,10 +92,66 @@ const App = () => {
               }
             />
             <Route
+              path="edit/:id"
+              element={
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                  <EditEvent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="events/edit/:id"
+              element={
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                  <EditEvent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="my-events"
               element={
                 <ProtectedRoute allowedRoles={["organizer", "admin"]}>
                   <MyEvents />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="analytics"
+              element={
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                  <OrganizerAnalytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="attendees"
+              element={
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                  <OrganizerAttendees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="discounts"
+              element={
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                  <OrganizerDiscounts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                  <OrganizerSettings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="help"
+              element={
+                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                  <OrganizerHelp />
                 </ProtectedRoute>
               }
             />

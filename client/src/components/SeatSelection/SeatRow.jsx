@@ -7,7 +7,6 @@ const SeatRow = ({
   sectionName,
   selectedSeats,
   toggleSeat,
-  seatLookup,
 }) => {
   // Helper to check if a specific seat is in our cart
   const isSelected = (seatNum) =>
@@ -25,12 +24,10 @@ const SeatRow = ({
       </span>
       <div className="flex gap-2">
         {row.left.map((seat) => {
-          let finalStatus = seat.status;
-          if (seat.status === "available" && isSelected(seat.col)) {
-            finalStatus = "selected";
-          } else {
-            finalStatus = seat.status;
-          }
+          const finalStatus =
+            seat.status === "available" && isSelected(seat.col)
+              ? "selected"
+              : seat.status;
           return (
             <Seat
               key={seat.col}
@@ -51,12 +48,10 @@ const SeatRow = ({
       <div className="w-8" />
       <div className="flex gap-2">
         {row.right.map((seat) => {
-          let finalStatus = seat.status;
-          if (seat.status === "available" && isSelected(seat.col)) {
-            finalStatus = "selected";
-          } else {
-            finalStatus = seat.status;
-          }
+          const finalStatus =
+            seat.status === "available" && isSelected(seat.col)
+              ? "selected"
+              : seat.status;
           return (
             <Seat
               key={seat.col}

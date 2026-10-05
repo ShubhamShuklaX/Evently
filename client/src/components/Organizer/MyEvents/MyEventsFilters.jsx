@@ -1,37 +1,50 @@
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { Search, X } from "lucide-react";
 
 const statusFilters = ["All", "Live", "Draft", "Past"];
 
-// Local-only filter state for now - no actual filtering logic wired to the
-// table yet, this just tracks which chip is selected visually.
-const MyEventsFilters = () => {
-  const [activeStatus, setActiveStatus] = useState("All");
-
+const MyEventsFilters = ({
+  searchQuery = "",
+  setSearchQuery,
+  statusFilter = "All",
+  setStatusFilter,
+}) => {
   return (
-    <div className="flex items-center justify-between">
-      <div className="relative w-80">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      {/* Search Input */}
+      <div className="relative w-full sm:w-80">
         <Search
           size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
         />
         <input
           type="text"
-          placeholder="Search your events..."
-          className="w-full h-10 pl-9 pr-3 text-sm rounded-lg border border-neutral-300 outline-none focus:border-[#6365f1] text-neutral-800 placeholder:text-neutral-400"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
+          placeholder="Search your events by title or venue..."
+          className="w-full h-10.5 pl-10 pr-9 text-sm rounded-xl border border-neutral-200 bg-white outline-none focus:border-[#6365f1] focus:ring-1 focus:ring-[#6365f1] text-neutral-800 placeholder:text-neutral-400 shadow-2xs transition-all"
         />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery && setSearchQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
+          >
+            <X size={14} />
+          </button>
+        )}
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Status Chips */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
         {statusFilters.map((status) => (
           <button
             key={status}
             type="button"
-            onClick={() => setActiveStatus(status)}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer ${
-              activeStatus === status
-                ? "bg-[#1D1F23] text-white"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+            onClick={() => setStatusFilter && setStatusFilter(status)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === status
+                ? "bg-[#1D1F23] text-white shadow-xs"
+                : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
             }`}
           >
             {status}
