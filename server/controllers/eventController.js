@@ -1,6 +1,7 @@
 import { prisma } from "../config/prisma.js";
 import { uploadToCloudinary } from "../middleware/uploadMiddleware.js";
 import { createSeats } from "./seatController.js";
+import { ROLES } from "./../config/roles.js";
 
 export const createEvent = async (req, res) => {
   try {
@@ -141,5 +142,83 @@ export const getMyEvents = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetach myEvents" });
+  }
+};
+
+export const updateEvent = async (req, res) => {
+  const {
+    title,
+    location,
+    price,
+    category,
+    date,
+    time,
+    description,
+    img,
+    capacity,
+    status,
+  } = req.body;
+
+  try {
+    const eventCapacity = Number(capacity ?? 100);
+
+    if (!Number.isInteger(eventCapacity) || eventCapacity <= 0) {
+      return res.status(400).json({
+        error: "Capacity must be a positive integer",
+      });
+    }
+
+    const parsedPrice = Number(price);
+    if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
+      return res
+        .status(400)
+        .json({ error: "Price must be a valid positive number" });
+    }
+
+    const existingEvent = await prisma.event.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existingEvent) {
+      return res.status(404).json({ error: "Event does not exist" });
+    }
+
+    if (
+      existingEvent.createdBy !== req.user.id &&
+      req.user.role !== ROLES.ADMIN
+    ) {
+      return res.status(403).json({ error: "Forbidden Access to event" });
+    }
+
+    let finalImageUrl = existingEvent.img;
+
+    if (req.file) {
+      finalImageUrl = await uploadToCloudinary(req.file.buffer);
+    } else if (img) {
+      finalImageUrl = img;
+    }
+
+    const updatedEvent = await prisma.event.update({
+      where: { id: req.params.id },
+      data: {
+        title,
+        location,
+        price: parsedPrice,
+        capacity: eventCapacity,
+        img: finalImageUrl,
+        status,
+        date,
+        time,
+        category,
+        description,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ message: "Event updated successfully", event: updatedEvent });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update event" });
   }
 };

@@ -15,8 +15,6 @@ import MyEvents from "./components/Organizer/MyEvents";
 import OrganizerAnalytics from "./pages/OrganizerAnalytics";
 import OrganizerAttendees from "./pages/OrganizerAttendees";
 import OrganizerDiscounts from "./pages/OrganizerDiscounts";
-import OrganizerSettings from "./pages/OrganizerSettings";
-import OrganizerHelp from "./pages/OrganizerHelp";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 
@@ -136,22 +134,6 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={["organizer", "admin"]}>
                   <OrganizerDiscounts />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="settings"
-              element={
-                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                  <OrganizerSettings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="help"
-              element={
-                <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                  <OrganizerHelp />
                 </ProtectedRoute>
               }
             />
