@@ -1,4 +1,4 @@
-import { Heart, ShoppingBag, CalendarDays, Search, LogOut } from "lucide-react";
+import { Heart, ShoppingBag, Search, LogOut } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from "../assets/Logo.png";
@@ -73,14 +73,6 @@ const Header = () => {
         {/* Right side: categories, icons, sign in */}
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-7">
-            <button
-              title="Saved Events"
-              aria-label="Saved Events"
-              onClick={() => navigate("/events")}
-              className="relative p-2 text-neutral-700 hover:text-indigo-600 hover:bg-neutral-100 rounded-xl transition-all duration-200 cursor-pointer active:scale-95"
-            >
-              <CalendarDays size={20} strokeWidth={1.8} />
-            </button>
             <button
               title="Saved Events"
               aria-label="Saved Events"

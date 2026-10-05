@@ -41,13 +41,24 @@ const MyBookings = () => {
     void fetchOrders();
   }, []);
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const formattedBookings = Array.isArray(orders)
     ? orders.map((order) => {
         const firstSeatEvent = order.seats?.[0]?.event;
+        const eventDate = firstSeatEvent?.date ? new Date(firstSeatEvent.date) : null;
+        const isPast =
+          eventDate && !Number.isNaN(eventDate.getTime()) ? eventDate < today : false;
+        const isCancelled = order.status === "cancelled";
+
+        let calculatedStatus = "upcoming";
+        if (isCancelled) calculatedStatus = "cancelled";
+        else if (isPast) calculatedStatus = "past";
 
         return {
           orderId: `EVT-${order.id.slice(0, 8).toUpperCase()}`,
-          status: "upcoming",
+          status: calculatedStatus,
           totalPaid: order.totalPaid,
           seats: (order.seats || []).map((s) => ({
             section: "General",
@@ -66,6 +77,13 @@ const MyBookings = () => {
         };
       })
     : [];
+
+  const filteredBookings = formattedBookings.filter((booking) => {
+    if (activeTab === "Upcoming") return booking.status === "upcoming";
+    if (activeTab === "Past") return booking.status === "past";
+    if (activeTab === "Cancelled") return booking.status === "cancelled";
+    return true; // "All Bookings"
+  });
 
   const tabs = ["Upcoming", "Past", "Cancelled", "All Bookings"];
 
@@ -87,9 +105,9 @@ const MyBookings = () => {
           <div className="py-20 flex flex-col items-center justify-center">
             <LoadingSpinner message="Fetching your tickets & reservations..." fullScreen={false} />
           </div>
-        ) : formattedBookings.length > 0 ? (
+        ) : filteredBookings.length > 0 ? (
           <div className="flex flex-col gap-6 mb-16">
-            {formattedBookings.map((booking) => (
+            {filteredBookings.map((booking) => (
               <BookingCard key={booking.orderId} booking={booking} />
             ))}
           </div>
@@ -98,9 +116,15 @@ const MyBookings = () => {
             <div className="w-16 h-16 rounded-full bg-indigo-50 text-[#6365f1] flex items-center justify-center mx-auto mb-4">
               <Ticket size={28} />
             </div>
-            <h3 className="text-xl font-bold text-neutral-800">No bookings yet</h3>
+            <h3 className="text-xl font-bold text-neutral-800">
+              No {activeTab.toLowerCase()} bookings found
+            </h3>
             <p className="text-neutral-500 text-sm mt-1 max-w-sm mx-auto mb-6">
-              You haven't reserved tickets for any experiences yet. Browse upcoming events to get started!
+              {activeTab === "Past"
+                ? "You haven't attended any past events yet."
+                : activeTab === "Cancelled"
+                ? "You have no cancelled ticket reservations."
+                : "You have no upcoming experiences booked. Explore what's trending now!"}
             </p>
             <Link
               to="/events"

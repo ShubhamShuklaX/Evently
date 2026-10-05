@@ -303,3 +303,72 @@ export const deleteEvent = async (req, res) => {
     res.status(500).json({ error: "Failed to delete event" });
   }
 };
+
+export const getOrganizerAttendees = async (req, res) => {
+  try {
+    const eventFilter =
+      req.user.role === ROLES.ADMIN ? {} : { createdBy: req.user.id };
+
+    const bookedSeats = await prisma.seat.findMany({
+      where: {
+        status: "booked",
+        event: eventFilter,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        event: {
+          select: {
+            id: true,
+            title: true,
+            date: true,
+            time: true,
+          },
+        },
+        order: {
+          select: {
+            id: true,
+            createdAt: true,
+            status: true,
+          },
+        },
+      },
+      orderBy: {
+        event: {
+          date: "asc",
+        },
+      },
+    });
+
+    const attendees = bookedSeats.map((seat) => ({
+      id: `ATT-${seat.id.slice(0, 6).toUpperCase()}`,
+      seatId: seat.id,
+      name: seat.user?.name || "Guest Attendee",
+      email: seat.user?.email || "guest@evently.io",
+      event: seat.event?.title || "Event",
+      eventId: seat.event?.id,
+      seat: `Row ${seat.row} - Seat ${seat.col}`,
+      status: "Confirmed",
+      orderId: seat.orderId
+        ? `EVT-${seat.orderId.slice(0, 8).toUpperCase()}`
+        : "-",
+      time: seat.order?.createdAt
+        ? new Date(seat.order.createdAt).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "-",
+    }));
+
+    res.status(200).json({ attendees });
+  } catch (error) {
+    console.error("Get attendees error:", error);
+    res.status(500).json({ error: "Failed to fetch attendees" });
+  }
+};
+

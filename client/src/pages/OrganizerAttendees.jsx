@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Organizer/Sidebar";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { Search, Download, UserCheck, Clock, Ticket } from "lucide-react";
 import { API_BASE } from "../utils/api";
 
@@ -17,21 +18,40 @@ const OrganizerAttendees = () => {
   const [attendees, setAttendees] = useState(sampleAttendees);
   const [search, setSearch] = useState("");
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadEvents() {
+    async function loadData() {
       const token = localStorage.getItem("evently_token");
       try {
-        const res = await fetch(`${API_BASE}/api/events/my-events`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setEvents(Array.isArray(data.events) ? data.events : []);
+        setLoading(true);
+        const [eventsRes, attendeesRes] = await Promise.all([
+          fetch(`${API_BASE}/api/events/my-events`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${API_BASE}/api/events/organizer/attendees`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        const eventsData = await eventsRes.json();
+        const attendeesData = await attendeesRes.json();
+
+        setEvents(Array.isArray(eventsData.events) ? eventsData.events : []);
+
+        if (Array.isArray(attendeesData.attendees) && attendeesData.attendees.length > 0) {
+          setAttendees(attendeesData.attendees);
+        } else {
+          setAttendees(sampleAttendees);
+        }
       } catch (err) {
-        console.error(err);
+        console.error("Error loading attendee data:", err);
+        setAttendees(sampleAttendees);
+      } finally {
+        setLoading(false);
       }
     }
-    void loadEvents();
+    void loadData();
   }, []);
 
   const toggleCheckIn = (id) => {
@@ -130,65 +150,71 @@ const OrganizerAttendees = () => {
             />
           </div>
 
-          {/* Attendees Table */}
-          <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="grid grid-cols-[1fr_2fr_1.5fr_1fr_120px] gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              <span>Ticket ID</span>
-              <span>Attendee</span>
-              <span>Seat & Event</span>
-              <span>Status</span>
-              <span className="text-right">Action</span>
+          {/* Attendees Table or Spinner */}
+          {loading ? (
+            <div className="py-20 flex flex-col items-center justify-center bg-white border border-neutral-200 rounded-2xl">
+              <LoadingSpinner message="Fetching attendee manifests..." fullScreen={false} />
             </div>
+          ) : (
+            <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="grid grid-cols-[1fr_2fr_1.5fr_1fr_120px] gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                <span>Ticket ID</span>
+                <span>Attendee</span>
+                <span>Seat & Event</span>
+                <span>Status</span>
+                <span className="text-right">Action</span>
+              </div>
 
-            <div className="divide-y divide-neutral-100">
-              {filteredAttendees.map((att) => (
-                <div
-                  key={att.id}
-                  className="grid grid-cols-[1fr_2fr_1.5fr_1fr_120px] gap-4 px-6 py-4 items-center hover:bg-neutral-50/80 transition-colors text-sm"
-                >
-                  <span className="font-mono text-xs font-semibold text-neutral-600">
-                    {att.id}
-                  </span>
-
-                  <div>
-                    <p className="font-bold text-[#1D1F23]">{att.name}</p>
-                    <p className="text-xs text-neutral-400">{att.email}</p>
-                  </div>
-
-                  <div>
-                    <p className="font-medium text-[#1D1F23]">{att.seat}</p>
-                    <p className="text-xs text-neutral-400 truncate">{att.event}</p>
-                  </div>
-
-                  <div>
-                    <span
-                      className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        att.status === "Checked In"
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                          : "bg-neutral-100 text-neutral-600"
-                      }`}
-                    >
-                      {att.status} {att.time !== "-" ? `(${att.time})` : ""}
+              <div className="divide-y divide-neutral-100">
+                {filteredAttendees.map((att) => (
+                  <div
+                    key={att.id}
+                    className="grid grid-cols-[1fr_2fr_1.5fr_1fr_120px] gap-4 px-6 py-4 items-center hover:bg-neutral-50/80 transition-colors text-sm"
+                  >
+                    <span className="font-mono text-xs font-semibold text-neutral-600">
+                      {att.id}
                     </span>
-                  </div>
 
-                  <div className="text-right">
-                    <button
-                      type="button"
-                      onClick={() => toggleCheckIn(att.id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                        att.status === "Checked In"
-                          ? "bg-neutral-100 hover:bg-rose-50 text-neutral-600 hover:text-rose-600"
-                          : "bg-[#6365f1] hover:bg-[#4f51e9] text-white"
-                      }`}
-                    >
-                      {att.status === "Checked In" ? "Undo" : "Check In"}
-                    </button>
+                    <div>
+                      <p className="font-bold text-[#1D1F23]">{att.name}</p>
+                      <p className="text-xs text-neutral-400">{att.email}</p>
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-[#1D1F23]">{att.seat}</p>
+                      <p className="text-xs text-neutral-400 truncate">{att.event}</p>
+                    </div>
+
+                    <div>
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
+                          att.status === "Checked In"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-neutral-100 text-neutral-600"
+                        }`}
+                      >
+                        {att.status} {att.time !== "-" ? `(${att.time})` : ""}
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <button
+                        type="button"
+                        onClick={() => toggleCheckIn(att.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                          att.status === "Checked In"
+                            ? "bg-neutral-100 hover:bg-rose-50 text-neutral-600 hover:text-rose-600"
+                            : "bg-[#6365f1] hover:bg-[#4f51e9] text-white"
+                        }`}
+                      >
+                        {att.status === "Checked In" ? "Undo" : "Check In"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
 

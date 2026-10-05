@@ -48,6 +48,16 @@ const BookingCard = ({ booking }) => {
                 <Ticket size={14} /> Upcoming
               </span>
             )}
+            {status === "past" && (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-neutral-600 bg-neutral-100 px-2.5 py-1 rounded-md">
+                <Ticket size={14} /> Completed
+              </span>
+            )}
+            {status === "cancelled" && (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-md">
+                <AlertCircle size={14} /> Cancelled
+              </span>
+            )}
             {isPending && (
               <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md">
                 <AlertCircle size={14} /> Payment Pending

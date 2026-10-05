@@ -6,6 +6,7 @@ import {
   getAllEvents,
   getEventById,
   getMyEvents,
+  getOrganizerAttendees,
   updateEvent,
 } from "../controllers/eventController.js";
 import { upload, verifyImageSignature } from "../middleware/uploadMiddleware.js";
@@ -29,6 +30,12 @@ router.get(
   authorizedRole(ROLES.ADMIN, ROLES.ORGANIZER),
 
   getMyEvents,
+);
+router.get(
+  "/organizer/attendees",
+  protect,
+  authorizedRole(ROLES.ADMIN, ROLES.ORGANIZER),
+  getOrganizerAttendees,
 );
 router.get("/:id", getEventById);
 

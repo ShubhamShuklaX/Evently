@@ -48,9 +48,7 @@ const Home = () => {
   return (
     <div>
       <Header />
-      <Reveal>
-        <HeroSection />
-      </Reveal>
+      <HeroSection />
       <Reveal>
         <CategoryBar />
       </Reveal>
