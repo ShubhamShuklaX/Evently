@@ -1,10 +1,7 @@
-import { CreditCard, Lock } from "lucide-react";
-import Field from "./Field";
-import { useFormContext } from "react-hook-form";
+import { CreditCard, ShieldCheck } from "lucide-react";
+import { PaymentElement } from "@stripe/react-stripe-js";
 
 const PaymentMethod = () => {
-  const { register } = useFormContext(); // Grab the form tools
-
   return (
     <section>
       <div className="flex items-center gap-3 mb-5">
@@ -15,53 +12,23 @@ const PaymentMethod = () => {
       </div>
 
       <div className="bg-white border border-neutral-200 rounded-2xl p-6 flex flex-col gap-6">
-        {/* Method tiles (No changes here for now) */}
-        <div className="grid grid-cols-3 gap-4">
-          <button
-            type="button"
-            className="h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-[#6365f1] bg-[#EEF0FF] text-[#1D1F23] text-sm font-semibold cursor-pointer"
-          >
-            <CreditCard size={20} className="text-[#6365f1]" />
-            Credit Card
-          </button>
+        <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
+          <div className="flex items-center gap-2">
+            <CreditCard size={18} className="text-[#6365f1]" />
+            <span className="font-semibold text-sm text-[#1D1F23]">
+              Credit or Debit Card
+            </span>
+          </div>
+          <span className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium bg-emerald-50 px-2.5 py-1 rounded-full">
+            <ShieldCheck size={14} />
+            Encrypted by Stripe
+          </span>
         </div>
 
-        {/* Card fields */}
-        <Field
-          label="Card Number"
-          type="text"
-          placeholder="0000 0000 0000 0000"
-          icon={CreditCard}
-          mono
-          {...register("cardNumber")}
-        />
-
-        <div className="grid grid-cols-2 gap-5">
-          <Field
-            label="Expiry Date"
-            type="text"
-            placeholder="MM / YY"
-            mono
-            {...register("expiryDate")}
-          />
-          <Field
-            label="CVC"
-            type="text"
-            placeholder="123"
-            icon={Lock}
-            mono
-            {...register("cvc")}
-          />
+        {/* Real Stripe Payment Element iframe */}
+        <div className="py-2">
+          <PaymentElement options={{ layout: "tabs" }} />
         </div>
-
-        <label className="flex items-center gap-2.5 text-sm text-neutral-600 cursor-pointer">
-          <input
-            type="checkbox"
-            {...register("saveCard")}
-            className="accent-[#6365f1] w-4 h-4"
-          />
-          Securely save card details for future bookings
-        </label>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  Loader2,
   Lock,
   Mail,
   ShieldCheck,
@@ -26,6 +27,7 @@ const Login = () => {
     password: "",
     role: "organizer",
   });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -35,6 +37,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
     const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
     try {
       const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -49,7 +52,7 @@ const Login = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error);
+        setError(data.error || "Authentication failed");
         return;
       }
 
@@ -63,6 +66,8 @@ const Login = () => {
     } catch (error) {
       console.error("Auth error:", error);
       setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -182,9 +187,19 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  className="w-full h-11 mt-3 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors"
+                  disabled={loading}
+                  className="w-full h-11 mt-3 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  Log In <ArrowRight size={16} />
+                  {loading ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin text-white" />
+                      Signing In...
+                    </>
+                  ) : (
+                    <>
+                      Log In <ArrowRight size={16} />
+                    </>
+                  )}
                 </button>
               </motion.form>
             ) : (
@@ -262,9 +277,19 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors"
+                  disabled={loading}
+                  className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  Sign Up <ArrowRight size={16} />
+                  {loading ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin text-white" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    <>
+                      Sign Up <ArrowRight size={16} />
+                    </>
+                  )}
                 </button>
               </motion.form>
             )}

@@ -1,5 +1,10 @@
 import { prisma } from "../config/prisma.js";
 import crypto from "node:crypto";
+import Stripe from "stripe";
+
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 const returnExistingOrder = (order, userId, requestedSeatIds, res) => {
   if (order.userId !== userId) {
@@ -38,29 +43,43 @@ const validateHoldSeats = (holdSeats, expectedCount) => {
   return null;
 };
 
-export const processCheckout = async (req, res) => {
-  const { seatIds, idempotencyKey } = req.body;
-  let uniqueSeatIds = [];
-  try {
-    if (!idempotencyKey)
-      return res.status(400).json({ error: "Idempotency key is required" });
+const verifyPayment = async (paymentIntentId) => {
+  if (!paymentIntentId || !stripe) return true;
+  const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  return intent.status === "succeeded";
+};
 
-    if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0)
-      return res
-        .status(400)
-        .json({ error: "A valid array of seat IDs is required" });
+const validateCheckoutInputs = (idempotencyKey, seatIds) => {
+  if (!idempotencyKey) return "Idempotency key is required";
+  if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0) {
+    return "A valid array of seat IDs is required";
+  }
+  const unique = [...new Set(seatIds)];
+  if (unique.length > 10) {
+    return "You can only book up to 10 seats per transaction";
+  }
+  return null;
+};
+
+export const processCheckout = async (req, res) => {
+  const { seatIds, idempotencyKey, paymentIntentId } = req.body;
+  const uniqueSeatIds = [...new Set(seatIds || [])];
+
+  try {
+    const inputError = validateCheckoutInputs(idempotencyKey, seatIds);
+    if (inputError) {
+      return res.status(400).json({ error: inputError });
+    }
+
+    const isPaid = await verifyPayment(paymentIntentId);
+    if (!isPaid) {
+      return res.status(400).json({ error: "Payment verification failed" });
+    }
 
     const exist = await prisma.order.findUnique({
       where: { idempotencyKey },
       include: { seats: true },
     });
-
-    uniqueSeatIds = [...new Set(seatIds)];
-    if (uniqueSeatIds.length > 10) {
-      return res
-        .status(400)
-        .json({ error: "You can only book up to 10 seats per transaction" });
-    }
 
     if (exist) {
       return returnExistingOrder(exist, req.user.id, uniqueSeatIds, res);
@@ -88,37 +107,47 @@ export const processCheckout = async (req, res) => {
 
     const orderId = crypto.randomUUID();
 
-    const order = await prisma.$transaction(async (tx) => {
-      const updated = await tx.seat.updateMany({
-        where: {
-          id: { in: uniqueSeatIds },
-          userId: req.user.id,
-          status: "held",
-          expiresAt: { gt: new Date() },
-        },
-        data: {
-          status: "booked",
-          orderId,
-          expiresAt: null,
-        },
-      });
+    const order = await prisma.$transaction(
+      async (tx) => {
+        // 1. Create order FIRST to satisfy foreign key constraint on seat.orderId
+        const newOrder = await tx.order.create({
+          data: {
+            id: orderId,
+            totalPaid: serverTotalPrice,
+            idempotencyKey,
+            userId: req.user.id,
+            status: "paid",
+          },
+        });
 
-      if (updated.count !== uniqueSeatIds.length) {
-        throw new Error(
-          "One or more seat holds expired before completing checkout",
-        );
-      }
+        // 2. Link held seats to the newly created order
+        const updated = await tx.seat.updateMany({
+          where: {
+            id: { in: uniqueSeatIds },
+            userId: req.user.id,
+            status: "held",
+            expiresAt: { gt: new Date() },
+          },
+          data: {
+            status: "booked",
+            orderId: newOrder.id,
+            expiresAt: null,
+          },
+        });
 
-      return await tx.order.create({
-        data: {
-          id: orderId,
-          totalPaid: serverTotalPrice,
-          idempotencyKey,
-          userId: req.user.id,
-          status: "paid",
-        },
-      });
-    });
+        if (updated.count !== uniqueSeatIds.length) {
+          throw new Error(
+            "One or more seat holds expired before completing checkout",
+          );
+        }
+
+        return newOrder;
+      },
+      {
+        maxWait: 10000,
+        timeout: 15000,
+      },
+    );
 
     res.status(200).json({ success: true, order: order });
   } catch (error) {
@@ -170,5 +199,65 @@ export const getMyOrders = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch my orders" });
+  }
+};
+
+export const createPaymentIntent = async (req, res) => {
+  try {
+    const { seatIds } = req.body;
+    if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0) {
+      return res.status(400).json({ error: "Seat IDs are required" });
+    }
+
+    const uniqueSeatIds = [...new Set(seatIds)];
+
+    const holdSeats = await prisma.seat.findMany({
+      where: {
+        id: { in: uniqueSeatIds },
+        userId: req.user.id,
+        status: "held",
+        expiresAt: { gt: new Date() },
+      },
+      include: { event: true },
+    });
+
+    const holdError = validateHoldSeats(holdSeats, uniqueSeatIds.length);
+    if (holdError) {
+      return res.status(400).json({ error: holdError });
+    }
+
+    const ticketPrice = holdSeats[0].event.price;
+    const totalAmount = ticketPrice * holdSeats.length + 19;
+
+    if (!stripe) {
+      return res.status(500).json({
+        error:
+          "Stripe is not configured. Please set STRIPE_SECRET_KEY in server/.env",
+      });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(totalAmount * 100),
+      currency: "inr",
+      metadata: {
+        userId: req.user.id,
+        eventId: holdSeats[0].eventId,
+        seatIds: uniqueSeatIds.join(","),
+      },
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+
+    return res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+      amount: totalAmount,
+    });
+  } catch (error) {
+    console.error("Create payment intent error:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to initialize payment intent" });
   }
 };

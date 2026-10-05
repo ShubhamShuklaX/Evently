@@ -65,35 +65,44 @@ export const holdSeat = async (req, res) => {
 
     const expireTime = new Date(Date.now() + 10 * 60 * 1000);
 
-    const seat = await prisma.$transaction(async (tx) => {
-      const result = await tx.seat.updateMany({
-        where: {
-          id: { in: seatIds },
-          event: { status: "Live" },
-          OR: [
-            { status: "available" },
-            {
-              status: "held",
-              expiresAt: { lt: new Date() },
-            },
-          ],
-        },
-        data: { expiresAt: expireTime, userId: req.user.id, status: "held" },
-      });
+    const seat = await prisma.$transaction(
+      async (tx) => {
+        const result = await tx.seat.updateMany({
+          where: {
+            id: { in: seatIds },
+            event: { status: "Live" },
+            OR: [
+              { status: "available" },
+              {
+                status: "held",
+                OR: [
+                  { expiresAt: { lt: new Date() } },
+                  { userId: req.user.id },
+                ],
+              },
+            ],
+          },
+          data: { expiresAt: expireTime, userId: req.user.id, status: "held" },
+        });
 
-      if (result.count !== seatIds.length) {
-        throw new Error("SEATS_UNAVAILABLE");
-      }
+        if (result.count !== seatIds.length) {
+          throw new Error("SEATS_UNAVAILABLE");
+        }
 
-      return result;
-    });
+        return result;
+      },
+      {
+        maxWait: 10000,
+        timeout: 15000,
+      },
+    );
 
     return res.status(200).json({
       message: "Successfully held seats",
       count: seat.count,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Hold seats error:", error);
 
     if (error.message === "SEATS_UNAVAILABLE") {
       return res.status(409).json({

@@ -67,7 +67,13 @@ const FinancialPerformance = ({ myEvents = [] }) => {
               className="w-full h-full"
             >
               <defs>
-                <linearGradient id="financialGradient" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient
+                  id="financialGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
                   <stop offset="0%" stopColor="#6365f1" stopOpacity="0.25" />
                   <stop offset="100%" stopColor="#6365f1" stopOpacity="0.0" />
                 </linearGradient>
@@ -110,13 +116,22 @@ const FinancialPerformance = ({ myEvents = [] }) => {
             <div className="flex flex-col gap-5">
               {displayEvents.map((event) => {
                 const capacity = Number(event.capacity) || 100;
-                const sold = typeof event.soldCount === "number" ? event.soldCount : Math.round(capacity * 0.45);
-                const percent = Math.min(100, Math.round((sold / capacity) * 100));
+                const sold =
+                  typeof event.soldCount === "number"
+                    ? event.soldCount
+                    : Math.round(capacity * 0.45);
+                const percent = Math.min(
+                  100,
+                  Math.round((sold / capacity) * 100),
+                );
 
                 return (
                   <div key={event.id}>
                     <div className="flex justify-between items-center text-sm font-semibold mb-1.5">
-                      <span className="text-[#1D1F23] truncate max-w-[170px]" title={event.title}>
+                      <span
+                        className="text-[#1D1F23] truncate max-w-42.5"
+                        title={event.title}
+                      >
                         {event.title}
                       </span>
                       <span className="text-neutral-500 text-xs font-mono">
@@ -136,7 +151,9 @@ const FinancialPerformance = ({ myEvents = [] }) => {
           ) : (
             <div className="text-center py-6 bg-neutral-50 rounded-xl border border-dashed border-neutral-200">
               <Sparkles size={24} className="mx-auto text-[#6365f1] mb-2" />
-              <p className="text-sm font-semibold text-neutral-700">No events yet</p>
+              <p className="text-sm font-semibold text-neutral-700">
+                No events yet
+              </p>
               <p className="text-xs text-neutral-400 mt-1 mb-3">
                 List an event to see capacity analytics.
               </p>
@@ -158,17 +175,25 @@ const FinancialPerformance = ({ myEvents = [] }) => {
               Performance Insight
             </div>
             <p className="text-sm text-neutral-600 leading-relaxed">
-              "<strong className="text-neutral-900">{topLiveEvent.title}</strong>" is currently{" "}
-              <span className="text-emerald-600 font-semibold">{topLiveEvent.status}</span> priced at{" "}
-              <strong className="text-neutral-900">₹{topLiveEvent.price}</strong>.
-              Review your seat allocations or update details anytime.
+              "
+              <strong className="text-neutral-900">{topLiveEvent.title}</strong>
+              " is currently{" "}
+              <span className="text-emerald-600 font-semibold">
+                {topLiveEvent.status}
+              </span>{" "}
+              priced at{" "}
+              <strong className="text-neutral-900">
+                ₹{topLiveEvent.price}
+              </strong>
+              . Review your seat allocations or update details anytime.
             </p>
           </div>
         ) : (
           <div className="bg-[#F8F9FA] border border-neutral-200 rounded-2xl p-5 flex items-center gap-3">
             <CalendarDays size={20} className="text-neutral-400 shrink-0" />
             <p className="text-xs text-neutral-500">
-              Your listings will show live capacity recommendations here once published.
+              Your listings will show live capacity recommendations here once
+              published.
             </p>
           </div>
         )}

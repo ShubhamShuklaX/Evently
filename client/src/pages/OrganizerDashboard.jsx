@@ -45,8 +45,23 @@ const OrganizerDashboard = () => {
     };
   }, []);
 
-  const handleDeleteEvent = (eventId) => {
-    setMyEvents((prev) => prev.filter((e) => e.id !== eventId));
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      const token = localStorage.getItem("evently_token");
+      const res = await fetch(`${API_BASE}/api/events/${eventId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Failed to delete event.");
+        return;
+      }
+      setMyEvents((prev) => prev.filter((e) => e.id !== eventId));
+    } catch (err) {
+      console.error("Error deleting event:", err);
+      alert("Network error while deleting event. Please try again.");
+    }
   };
 
   const exportData = () => {

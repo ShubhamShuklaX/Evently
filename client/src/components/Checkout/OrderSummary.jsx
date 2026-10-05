@@ -1,4 +1,4 @@
-import { Info, Lock, ShieldCheck } from "lucide-react";
+import { Info, Lock, Loader2, ShieldCheck } from "lucide-react";
 import { useBooking } from "../../context/BookingContext";
 
 const fees = [
@@ -9,7 +9,7 @@ const fees = [
 
 const cards = ["VISA", "MC", "AMEX"];
 
-const OrderSummary = () => {
+const OrderSummary = ({ isProcessing = false }) => {
   // Grab the fake data from context!
   const { currentEvent, selectedSeats } = useBooking();
 
@@ -26,7 +26,7 @@ const OrderSummary = () => {
         <div className="flex items-center justify-between bg-neutral-100 px-6 py-5">
           <h2 className="font-semibold text-[#1D1F23]">Order Summary</h2>
           <span className="bg-white border border-neutral-200 rounded-full px-2.5 py-1 font-mono text-[10px] text-neutral-600">
-            DEMO MODE
+            STRIPE SECURE
           </span>
         </div>
 
@@ -74,10 +74,20 @@ const OrderSummary = () => {
           {/* Dynamic Button */}
           <button
             type="submit"
-            className="w-full h-14 mt-5 flex items-center justify-center gap-2 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-bold uppercase tracking-wide rounded-xl transition-colors cursor-pointer active:scale-[0.98]"
+            disabled={isProcessing || seatCount === 0}
+            className="w-full h-14 mt-5 flex items-center justify-center gap-2 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-bold uppercase tracking-wide rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]"
           >
-            <Lock size={17} />
-            Confirm & Pay ₹{finalTotal.toFixed(2)}
+            {isProcessing ? (
+              <>
+                <Loader2 size={18} className="animate-spin text-white" />
+                Processing Payment...
+              </>
+            ) : (
+              <>
+                <Lock size={17} />
+                Confirm & Pay ₹{finalTotal.toFixed(2)}
+              </>
+            )}
           </button>
 
           <p className="text-center text-[11px] text-neutral-400 mt-4 leading-relaxed">

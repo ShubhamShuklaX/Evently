@@ -12,6 +12,7 @@ console.log(
 const pool = new Pool({
   connectionString,
   ssl: { rejectUnauthorized: false },
+  connectionTimeoutMillis: 10000,
 });
 
 const adapter = new PrismaPg(pool);

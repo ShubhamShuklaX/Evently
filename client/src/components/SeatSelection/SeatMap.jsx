@@ -1,4 +1,4 @@
-import { Armchair, Check, Clock, MousePointer2, User } from "lucide-react";
+import { Armchair, Check, Clock, Loader2, MousePointer2, User } from "lucide-react";
 import { useBooking } from "../../context/BookingContext";
 import SeatRow from "./SeatRow";
 import { useState, useEffect } from "react";
@@ -32,10 +32,12 @@ const SeatMap = () => {
   const { id } = useParams();
   const { selectedSeats, setSelectedSeats, toggleSeat } = useBooking();
   const [dbSeats, setDbSeats] = useState([]);
+  const [loadingSeats, setLoadingSeats] = useState(true);
 
   useEffect(() => {
     const fetchSeats = async () => {
       try {
+        setLoadingSeats(true);
         const response = await fetch(`${API_BASE}/api/seats/${id}`);
         const data = await response.json();
         setDbSeats(data);
@@ -47,6 +49,8 @@ const SeatMap = () => {
         });
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoadingSeats(false);
       }
     };
     if (id) void fetchSeats();
@@ -133,31 +137,40 @@ const SeatMap = () => {
           </div>
 
           {/* Sections */}
-          <div className="flex flex-col gap-10 mt-12">
-            {dynamicSections.map((section) => (
-              <div key={section.name}>
-                <div className="flex items-center gap-4 mb-5">
-                  <div className="h-px bg-neutral-200 flex-1" />
-                  <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-400">
-                    {section.name}
-                  </span>
-                  <div className="h-px bg-neutral-200 flex-1" />
+          {loadingSeats ? (
+            <div className="py-24 flex flex-col items-center justify-center gap-3">
+              <Loader2 size={32} className="animate-spin text-[#6365f1]" />
+              <p className="text-xs uppercase tracking-wider text-neutral-400 font-semibold animate-pulse">
+                Loading Venue Layout & Available Seats...
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-10 mt-12">
+              {dynamicSections.map((section) => (
+                <div key={section.name}>
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="h-px bg-neutral-200 flex-1" />
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-400">
+                      {section.name}
+                    </span>
+                    <div className="h-px bg-neutral-200 flex-1" />
+                  </div>
+                  <div className="flex flex-col gap-2.5">
+                    {section.rows.map((row) => (
+                      <SeatRow
+                        key={row.label}
+                        row={row}
+                        sectionName={section.name}
+                        selectedSeats={selectedSeats}
+                        toggleSeat={toggleSeat}
+                        seatLookup={seatLookup}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2.5">
-                  {section.rows.map((row) => (
-                    <SeatRow
-                      key={row.label}
-                      row={row}
-                      sectionName={section.name}
-                      selectedSeats={selectedSeats}
-                      toggleSeat={toggleSeat}
-                      seatLookup={seatLookup}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Hint */}
           <div className="flex justify-end mt-8">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import Stepper from "../components/CreateEvent/Stepper";
 import StepInfo from "../components/CreateEvent/StepInfo";
 import StepMedia from "../components/CreateEvent/StepMedia";
@@ -15,6 +15,8 @@ const CreateEvent = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitAction, setSubmitAction] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -72,6 +74,10 @@ const CreateEvent = () => {
         return;
       }
 
+      setSubmitting(true);
+      setSubmitAction(status);
+      setError("");
+
       const submitData = new FormData();
       submitData.append("title", formData.title);
       submitData.append("location", formData.location);
@@ -100,6 +106,10 @@ const CreateEvent = () => {
       }
     } catch (error) {
       console.error(error);
+      setError("An unexpected error occurred while creating the event.");
+    } finally {
+      setSubmitting(false);
+      setSubmitAction("");
     }
   };
 
@@ -152,8 +162,10 @@ const CreateEvent = () => {
           <div className="mt-8 pt-6 border-t border-neutral-200 flex items-center justify-between">
             {currentStep > 1 ? (
               <button
+                type="button"
+                disabled={submitting}
                 onClick={() => setCurrentStep((prev) => prev - 1)}
-                className="px-6 py-3 rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors flex items-center gap-2"
+                className="px-6 py-3 rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ArrowLeft size={18} />
                 Back
@@ -176,18 +188,34 @@ const CreateEvent = () => {
                 <>
                   <button
                     type="button"
+                    disabled={submitting}
                     onClick={() => void handleSubmit("Draft")}
-                    className="px-6 py-3 cursor-pointer rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors"
+                    className="px-6 py-3 cursor-pointer rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
-                    Save Draft
+                    {submitting && submitAction === "Draft" ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin text-neutral-600" />
+                        Saving Draft...
+                      </>
+                    ) : (
+                      "Save Draft"
+                    )}
                   </button>
 
                   <button
                     type="button"
+                    disabled={submitting}
                     onClick={() => void handleSubmit("Live")}
-                    className="px-6 py-3 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2"
+                    className="px-6 py-3 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
-                    Publish Event
+                    {submitting && submitAction === "Live" ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin text-white" />
+                        Publishing Event...
+                      </>
+                    ) : (
+                      "Publish Event"
+                    )}
                   </button>
                 </>
               )}

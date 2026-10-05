@@ -1,5 +1,8 @@
 import { prisma } from "../config/prisma.js";
-import { uploadToCloudinary } from "../middleware/uploadMiddleware.js";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+} from "../middleware/uploadMiddleware.js";
 import { createSeats } from "./seatController.js";
 import { ROLES } from "./../config/roles.js";
 
@@ -78,6 +81,9 @@ export const createEvent = async (req, res) => {
 
       await createSeats(event, tx);
       return event;
+    }, {
+      maxWait: 10000,
+      timeout: 15000,
     });
 
     res
@@ -146,20 +152,19 @@ export const getMyEvents = async (req, res) => {
 };
 
 export const updateEvent = async (req, res) => {
-  const {
-    title,
-    location,
-    price,
-    category,
-    date,
-    time,
-    description,
-    img,
-    capacity,
-    status,
-  } = req.body;
-
   try {
+    const {
+      title,
+      location,
+      price,
+      category,
+      date,
+      time,
+      description,
+      img,
+      capacity,
+      status,
+    } = req.body;
     const eventCapacity = Number(capacity ?? 100);
 
     if (!Number.isInteger(eventCapacity) || eventCapacity <= 0) {
@@ -194,8 +199,28 @@ export const updateEvent = async (req, res) => {
 
     if (req.file) {
       finalImageUrl = await uploadToCloudinary(req.file.buffer);
+
+      if (existingEvent.img) {
+        await deleteFromCloudinary(existingEvent.img);
+      }
     } else if (img) {
       finalImageUrl = img;
+    }
+
+    if (eventCapacity !== existingEvent.capacity) {
+      const activeSeats = await prisma.seat.count({
+        where: {
+          eventId: req.params.id,
+          status: { in: ["booked", "held"] },
+        },
+      });
+
+      if (activeSeats > 0) {
+        return res.status(400).json({
+          error:
+            "Cannot change seating capacity after tickets have already been held or booked.",
+        });
+      }
     }
 
     const updatedEvent = await prisma.event.update({
@@ -220,5 +245,61 @@ export const updateEvent = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update event" });
+  }
+};
+
+export const deleteEvent = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+
+    if (!eventId) {
+      return res.status(404).json({ error: "Event Id is required" });
+    }
+
+    const existingEvent = await prisma.event.findUnique({
+      where: { id: eventId },
+    });
+
+    if (!existingEvent) {
+      return res.status(404).json({ error: "Event does not exist" });
+    }
+
+    if (
+      existingEvent.createdBy !== req.user.id &&
+      req.user.role !== ROLES.ADMIN
+    ) {
+      return res.status(403).json({ error: "Forbidden Access to event" });
+    }
+
+    const bookedCount = await prisma.seat.count({
+      where: { eventId, status: "booked" },
+    });
+
+    if (bookedCount > 0) {
+      return res.status(400).json({
+        error:
+          "Cannot delete an event that already has confirmed attendee bookings. Change status to 'Past' instead.",
+      });
+    }
+    if (existingEvent.img) {
+      await deleteFromCloudinary(existingEvent.img);
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.seat.deleteMany({
+        where: { eventId },
+      });
+      await tx.event.delete({
+        where: { id: eventId },
+      });
+    }, {
+      maxWait: 10000,
+      timeout: 15000,
+    });
+
+    res.status(200).json({ message: "Event deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete event" });
   }
 };

@@ -9,11 +9,14 @@ import BookingSummary from "./../components/SeatSelection/BookingSummary";
 import Header from "./../components/Header";
 import Footer from "./../components/Footer";
 import SeatSelectionBar from "./../components/SeatSelection/SeatSelectionBar";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const SeatSelection = () => {
   const { id } = useParams();
   const { currentEvent, setCurrentEvent, getEventById, setSelectedSeats } =
     useBooking();
+
+  const activeEvent = currentEvent?.id === id ? currentEvent : getEventById(id);
 
   // Keep currentEvent in sync with the route ID and reset cart if event changed
   useEffect(() => {
@@ -48,6 +51,21 @@ const SeatSelection = () => {
       isMounted = false;
     };
   }, [id, currentEvent?.id, getEventById, setCurrentEvent, setSelectedSeats]);
+
+  if (!activeEvent) {
+    return (
+      <div className="min-h-screen bg-[#F8F9FB] flex flex-col font-sans">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+          <LoadingSpinner
+            message="Loading interactive seating map..."
+            fullScreen={false}
+          />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <>

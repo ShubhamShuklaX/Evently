@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import BookingCard from "../components/MyBookings/BookingCard";
@@ -6,15 +7,19 @@ import BookingStats from "../components/MyBookings/BookingStats";
 import BookingToolbar from "../components/MyBookings/BookingToolbar";
 import QuickLinks from "../components/MyBookings/QuickLinks";
 import PromoBanner from "../components/MyBookings/PromoBanner";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { Ticket, ArrowRight } from "lucide-react";
 import { API_BASE } from "../utils/api";
 
 const MyBookings = () => {
   const [activeTab, setActiveTab] = useState("Upcoming");
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchOrders() {
       try {
+        setLoading(true);
         const token = localStorage.getItem("evently_token");
 
         const response = await fetch(`${API_BASE}/api/orders`, {
@@ -28,6 +33,8 @@ const MyBookings = () => {
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -75,12 +82,34 @@ const MyBookings = () => {
           setActiveTab={setActiveTab}
         />
 
-        {/* Bookings List */}
-        <div className="flex flex-col gap-6 mb-16">
-          {formattedBookings.map((booking) => (
-            <BookingCard key={booking.orderId} booking={booking} />
-          ))}
-        </div>
+        {/* Bookings List or Spinner */}
+        {loading ? (
+          <div className="py-20 flex flex-col items-center justify-center">
+            <LoadingSpinner message="Fetching your tickets & reservations..." fullScreen={false} />
+          </div>
+        ) : formattedBookings.length > 0 ? (
+          <div className="flex flex-col gap-6 mb-16">
+            {formattedBookings.map((booking) => (
+              <BookingCard key={booking.orderId} booking={booking} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white border border-neutral-200 rounded-2xl p-12 text-center my-8 shadow-sm">
+            <div className="w-16 h-16 rounded-full bg-indigo-50 text-[#6365f1] flex items-center justify-center mx-auto mb-4">
+              <Ticket size={28} />
+            </div>
+            <h3 className="text-xl font-bold text-neutral-800">No bookings yet</h3>
+            <p className="text-neutral-500 text-sm mt-1 max-w-sm mx-auto mb-6">
+              You haven't reserved tickets for any experiences yet. Browse upcoming events to get started!
+            </p>
+            <Link
+              to="/events"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold text-sm rounded-xl transition-colors shadow-sm"
+            >
+              Discover Events <ArrowRight size={16} />
+            </Link>
+          </div>
+        )}
 
         <QuickLinks />
         <PromoBanner />
@@ -92,3 +121,4 @@ const MyBookings = () => {
 };
 
 export default MyBookings;
+

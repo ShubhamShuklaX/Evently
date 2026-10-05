@@ -5,14 +5,18 @@ const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
   const fetchEvents = useCallback(async () => {
     try {
+      setEventsLoading(true);
       const response = await fetch(`${API_BASE}/api/events`);
       const result = await response.json();
       setEvents(result.events || []);
     } catch (error) {
       console.error(error);
+    } finally {
+      setEventsLoading(false);
     }
   }, []);
 
@@ -20,6 +24,7 @@ export const BookingProvider = ({ children }) => {
     let isMounted = true;
     async function loadInitialEvents() {
       try {
+        setEventsLoading(true);
         const response = await fetch(`${API_BASE}/api/events`);
         const result = await response.json();
         if (isMounted) {
@@ -27,6 +32,10 @@ export const BookingProvider = ({ children }) => {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        if (isMounted) {
+          setEventsLoading(false);
+        }
       }
     }
     void loadInitialEvents();
@@ -72,6 +81,7 @@ export const BookingProvider = ({ children }) => {
   const contextValue = useMemo(
     () => ({
       events,
+      eventsLoading,
       currentEvent,
       setCurrentEvent,
       selectedSeats,
@@ -82,7 +92,7 @@ export const BookingProvider = ({ children }) => {
       getEventById,
       fetchEvents,
     }),
-    [events, currentEvent, selectedSeats, orderData, getEventById, fetchEvents],
+    [events, eventsLoading, currentEvent, selectedSeats, orderData, getEventById, fetchEvents],
   );
 
   return (

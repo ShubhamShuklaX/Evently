@@ -25,7 +25,8 @@
     "express-rate-limit": "^8.7.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.4.0",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "stripe": "^23.0.0"
   },
   "devDependencies": {
     "prisma": "^7.10.0"

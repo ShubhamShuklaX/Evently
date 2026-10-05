@@ -1,4 +1,5 @@
-import { Armchair, ChevronRight, ShieldCheck, Ticket } from "lucide-react";
+import { useState } from "react";
+import { Armchair, ChevronRight, Loader2, ShieldCheck, Ticket } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useBooking } from "../../context/BookingContext";
 import { API_BASE } from "../../utils/api";
@@ -7,6 +8,7 @@ const BookingSummary = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { selectedSeats, currentEvent } = useBooking();
+  const [isHolding, setIsHolding] = useState(false);
 
   async function handleConfirm() {
     const token = localStorage.getItem("evently_token");
@@ -15,24 +17,32 @@ const BookingSummary = () => {
       return;
     }
 
-    const response = await fetch(`${API_BASE}/api/seats/hold`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ seatIds: selectedSeats.map((s) => s.id) }),
-    });
+    try {
+      setIsHolding(true);
+      const response = await fetch(`${API_BASE}/api/seats/hold`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ seatIds: selectedSeats.map((s) => s.id) }),
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      alert(
-        data.error || "One or more selected seats are no longer available.",
-      );
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        alert(
+          data.error || "One or more selected seats are no longer available.",
+        );
+        return;
+      }
+
+      void navigate(`/events/${id}/seats/checkout`);
+    } catch (err) {
+      console.error("Hold seats error:", err);
+      alert("Unable to hold seats. Please check your connection and try again.");
+    } finally {
+      setIsHolding(false);
     }
-
-    void navigate(`/events/${id}/seats/checkout`);
   }
 
   return (
@@ -100,11 +110,20 @@ const BookingSummary = () => {
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={selectedSeats.length === 0}
-            className={`w-full h-13 mt-5 flex items-center justify-center gap-2 font-semibold rounded-xl transition-colors ${selectedSeats.length === 0 ? "bg-[#6365f1]/50 text-white/90 cursor-not-allowed" : "bg-[#6365f1] hover:bg-[#4f51e9] text-white cursor-pointer active:scale-95"}`}
+            disabled={selectedSeats.length === 0 || isHolding}
+            className={`w-full h-13 mt-5 flex items-center justify-center gap-2 font-semibold rounded-xl transition-colors ${selectedSeats.length === 0 || isHolding ? "bg-[#6365f1]/50 text-white/90 cursor-not-allowed" : "bg-[#6365f1] hover:bg-[#4f51e9] text-white cursor-pointer active:scale-95"}`}
           >
-            Confirm Selection
-            <ChevronRight size={16} />
+            {isHolding ? (
+              <>
+                <Loader2 size={18} className="animate-spin text-white" />
+                Holding Seats...
+              </>
+            ) : (
+              <>
+                Confirm Selection
+                <ChevronRight size={16} />
+              </>
+            )}
           </button>
 
           <div className="flex items-center justify-center gap-4 mt-4 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">

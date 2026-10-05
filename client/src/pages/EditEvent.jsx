@@ -109,14 +109,48 @@ const EditEvent = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      setError(
+        "File size exceeds 2MB limit. Please upload an image under 2MB.",
+      );
+      return;
+    }
+
+    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+    if (!validTypes.includes(file.type)) {
+      setError(
+        "Invalid format! Only JPG, PNG, and WEBP image files are allowed.",
+      );
+      return;
+    }
+
+    const imgObj = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    imgObj.src = objectUrl;
+    imgObj.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      if (imgObj.naturalWidth < imgObj.naturalHeight) {
+        setError(
+          "Invalid orientation! Please upload a landscape image (recommended 16:9 ratio, width must be greater than height).",
+        );
+        return;
+      }
+      setError("");
       setFormData((prev) => ({ ...prev, img: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
-    }
+    };
+    imgObj.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      setError(
+        "Unable to read image dimensions. Please select a valid image file.",
+      );
+    };
   };
 
   const handleSubmit = async (overrideStatus) => {
@@ -188,7 +222,7 @@ const EditEvent = () => {
         // If backend route is not created yet (404/501), simulate frontend save so user can test UI
         if (res.status === 404 || res.status === 405 || res.status === 501) {
           setSuccessMsg(
-            "Frontend update verified! (Backend PUT endpoint is ready to be hooked up when you return)."
+            "Frontend update verified! (Backend PUT endpoint is ready to be hooked up when you return).",
           );
           setFormData((prev) => ({ ...prev, status: targetStatus }));
         } else {
@@ -199,7 +233,7 @@ const EditEvent = () => {
     } catch {
       // Network/Endpoint not implemented yet - graceful frontend feedback
       setSuccessMsg(
-        "Frontend update validated! Ready for backend controller integration."
+        "Frontend update validated! Ready for backend controller integration.",
       );
     } finally {
       setSubmitting(false);
@@ -212,7 +246,9 @@ const EditEvent = () => {
         <Header />
         <div className="flex-1 flex flex-col items-center justify-center p-8 gap-3">
           <Loader2 className="w-10 h-10 text-[#6365f1] animate-spin" />
-          <p className="text-neutral-500 font-medium">Loading event details...</p>
+          <p className="text-neutral-500 font-medium">
+            Loading event details...
+          </p>
         </div>
         <Footer />
       </div>
@@ -248,15 +284,16 @@ const EditEvent = () => {
                     formData.status === "Live"
                       ? "bg-emerald-100 text-emerald-700"
                       : formData.status === "Draft"
-                      ? "bg-amber-100 text-amber-700"
-                      : "bg-neutral-200 text-neutral-600"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-neutral-200 text-neutral-600"
                   }`}
                 >
                   {formData.status}
                 </span>
               </div>
               <p className="text-neutral-500 text-sm mt-1">
-                Modify event information, ticketing, venue, or promotional assets.
+                Modify event information, ticketing, venue, or promotional
+                assets.
               </p>
             </div>
 
@@ -570,22 +607,30 @@ const EditEvent = () => {
               </div>
 
               <div>
-                <label
-                  htmlFor="edit-capacity"
-                  className="block text-sm font-bold text-[#1D1F23] mb-2"
-                >
-                  Venue Total Capacity
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="edit-capacity"
+                    className="block text-sm font-bold text-[#1D1F23]"
+                  >
+                    Venue Total Capacity
+                  </label>
+                  <span className="text-[11px] font-bold text-neutral-400 bg-neutral-100 px-2 py-0.5 rounded-md">
+                    Locked to Seat Map
+                  </span>
+                </div>
                 <input
                   id="edit-capacity"
                   name="capacity"
                   type="number"
-                  min="1"
+                  disabled
                   value={formData.capacity}
-                  onChange={handleChange}
-                  placeholder="100"
-                  className="w-full bg-white border border-neutral-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#6365f1] focus:ring-1 focus:ring-[#6365f1] transition-all font-semibold text-neutral-800"
+                  title="Capacity is locked to the generated seat map"
+                  className="w-full bg-neutral-100 border border-neutral-200 rounded-xl px-4 py-3 text-sm text-neutral-500 font-semibold cursor-not-allowed"
                 />
+                <p className="text-[11px] text-neutral-400 mt-1.5">
+                  Capacity is mapped directly to physical row and seat
+                  coordinates.
+                </p>
               </div>
             </div>
           </section>

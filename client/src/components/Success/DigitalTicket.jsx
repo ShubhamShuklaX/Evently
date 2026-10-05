@@ -1,5 +1,5 @@
 import React from "react";
-import { Download, Share2, Printer, MapPin, CalendarDays } from "lucide-react";
+import { MapPin, CalendarDays } from "lucide-react";
 import { useBooking } from "../../context/BookingContext";
 
 const DigitalTicket = () => {
@@ -33,7 +33,7 @@ const DigitalTicket = () => {
 
       <div className="p-8 flex justify-center items-stretch border-b border-neutral-200 border-dashed overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-thin">
         {seats.map((seat, index) => (
-          <React.Fragment key={seat.id}>
+          <React.Fragment key={index}>
             {index > 0 && (
               <div className="w-px border-l-2 border-dashed border-neutral-200 shrink-0 mx-6 sm:mx-8"></div>
             )}
@@ -69,37 +69,12 @@ const DigitalTicket = () => {
                   <p className="text-[9px] text-neutral-400 font-bold uppercase mb-1">
                     Seat
                   </p>
-                  <p className="font-bold text-[#1D1F23]">{seat.col}</p>
+                  <p className="font-bold text-[#1D1F23]">{seat.seat}</p>
                 </div>
               </div>
             </div>
           </React.Fragment>
         ))}
-      </div>
-
-      <div className="p-6 bg-neutral-50 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <p className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider mr-2 hidden sm:block">
-            Add to Digital Wallet
-          </p>
-          <button className="bg-black text-white text-xs font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 hover:bg-neutral-800 transition cursor-pointer">
-            Apple Wallet
-          </button>
-          <button className="bg-white border border-neutral-200 text-black text-xs font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 hover:bg-neutral-50 transition cursor-pointer">
-            Google Pay
-          </button>
-        </div>
-        <div className="flex items-center gap-2 text-neutral-400">
-          <button className="p-2 hover:bg-neutral-200 rounded-full transition hover:text-[#1D1F23] cursor-pointer">
-            <Download size={18} />
-          </button>
-          <button className="p-2 hover:bg-neutral-200 rounded-full transition hover:text-[#1D1F23] cursor-pointer">
-            <Share2 size={18} />
-          </button>
-          <button className="p-2 hover:bg-neutral-200 rounded-full transition hover:text-[#1D1F23] cursor-pointer">
-            <Printer size={18} />
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { ArrowUpDown, LayoutGrid, List } from "lucide-react";
+import { ArrowUpDown, LayoutGrid, List, Loader2 } from "lucide-react";
 import EventCard from "./../EventCard";
 import { useState } from "react";
 import { useBooking } from "../../context/BookingContext";
@@ -10,7 +10,7 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
   const [layout, setLayout] = useState("grid");
   const [sortBy, setSortBy] = useState("relevance");
   const [currentPage, setCurrentPage] = useState(1);
-  const { events } = useBooking();
+  const { events, eventsLoading } = useBooking();
 
   const filteredEvents = events.filter((event) => {
     if (
@@ -77,7 +77,7 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
             <p className="text-neutral-600 text-[17px] mt-1">
               Showing{" "}
               <span className="text-neutral-900 font-semibold">
-                {sortedEvents.length} events
+                {eventsLoading ? "..." : `${sortedEvents.length} events`}
               </span>
             </p>
           </div>
@@ -141,7 +141,14 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
             : "flex flex-col gap-4"
         }`}
       >
-        {sortedEvents.length > 0 ? (
+        {eventsLoading ? (
+          <div className="col-span-full py-24 flex flex-col items-center justify-center gap-3">
+            <Loader2 size={36} className="text-[#6365f1] animate-spin" />
+            <p className="text-neutral-500 font-medium text-sm animate-pulse">
+              Discovering upcoming events...
+            </p>
+          </div>
+        ) : sortedEvents.length > 0 ? (
           paginatedEvents.map((event) => (
             <EventCard key={event.id} layout={layout} event={event} />
           ))

@@ -35,7 +35,10 @@ const StepInfo = ({ formData, handleChange }) => {
             <option value="music">Music</option>
             <option value="sports">Sports</option>
             <option value="theater">Theater</option>
+            <option value="Comedy">Comedy</option>
             <option value="conference">Conference</option>
+            <option value="Festival">Festival</option>
+            <option value="Art">Art</option>
           </select>
         </div>
 
