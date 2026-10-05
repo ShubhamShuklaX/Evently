@@ -62,29 +62,32 @@ export const createEvent = async (req, res) => {
         .json({ error: "Price must be a valid positive number" });
     }
 
-    const newEvent = await prisma.$transaction(async (tx) => {
-      const event = await tx.event.create({
-        data: {
-          title,
-          location,
-          price: Number(parsedPrice),
-          img: finalImageUrl,
-          category,
-          date,
-          time,
-          status: status || "Live",
-          description,
-          createdBy: req.user.id,
-          capacity: eventCapacity,
-        },
-      });
+    const newEvent = await prisma.$transaction(
+      async (tx) => {
+        const event = await tx.event.create({
+          data: {
+            title,
+            location,
+            price: Number(parsedPrice),
+            img: finalImageUrl,
+            category,
+            date,
+            time,
+            status: status || "Live",
+            description,
+            createdBy: req.user.id,
+            capacity: eventCapacity,
+          },
+        });
 
-      await createSeats(event, tx);
-      return event;
-    }, {
-      maxWait: 10000,
-      timeout: 15000,
-    });
+        await createSeats(event, tx);
+        return event;
+      },
+      {
+        maxWait: 10000,
+        timeout: 15000,
+      },
+    );
 
     res
       .status(201)
@@ -285,17 +288,20 @@ export const deleteEvent = async (req, res) => {
       await deleteFromCloudinary(existingEvent.img);
     }
 
-    await prisma.$transaction(async (tx) => {
-      await tx.seat.deleteMany({
-        where: { eventId },
-      });
-      await tx.event.delete({
-        where: { id: eventId },
-      });
-    }, {
-      maxWait: 10000,
-      timeout: 15000,
-    });
+    await prisma.$transaction(
+      async (tx) => {
+        await tx.seat.deleteMany({
+          where: { eventId },
+        });
+        await tx.event.delete({
+          where: { id: eventId },
+        });
+      },
+      {
+        maxWait: 10000,
+        timeout: 15000,
+      },
+    );
 
     res.status(200).json({ message: "Event deleted successfully" });
   } catch (error) {
@@ -371,4 +377,3 @@ export const getOrganizerAttendees = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch attendees" });
   }
 };
-

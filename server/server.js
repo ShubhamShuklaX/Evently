@@ -25,6 +25,27 @@ app.use(
 app.use(express.json());
 
 app.use("/api", apiLimiter);
+
+app.get("/api/health", async (req, res) => {
+  try {
+    const startTime = Date.now();
+    await prisma.event.findFirst({ select: { id: true } });
+    const latency = Date.now() - startTime;
+    res.json({
+      status: "ok",
+      database: "connected",
+      latencyMs: latency,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: "error",
+      database: "disconnected",
+      message: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
 app.use("/api/events", eventRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/seats", seatRoutes);

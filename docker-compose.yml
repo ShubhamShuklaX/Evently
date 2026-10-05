@@ -1,0 +1,26 @@
+services:
+  server:
+    build:
+      context: ./server
+    container_name: evently_server
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_OPTIONS: --dns-result-order=ipv4first
+    extra_hosts:
+      - "ep-spring-night-b50z366o.c-7.us-east-2.aws.neon.tech:3.18.239.121"
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+    container_name: evently_client
+    env_file:
+      - ./client/.env
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+    restart: unless-stopped
