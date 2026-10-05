@@ -3,36 +3,7 @@ import { useBooking } from "../../context/BookingContext";
 import SeatRow from "./SeatRow";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
-// const sections = [
-//   {
-//     name: "Premium Pit",
-//     rows: [
-//       { label: "A", left: "aabhaa", right: "abaaaa" },
-//       { label: "B", left: "aaaabb", right: "abaaab" },
-//       { label: "C", left: "abaaaa", right: "aabaaa" },
-//     ],
-//   },
-//   {
-//     name: "Front Orchestra",
-//     rows: [
-//       { label: "D", left: "aaaaaaaa", right: "haaaaaaa" },
-//       { label: "E", left: "baabbaaa", right: "babbaaaa" },
-//       { label: "F", left: "aaaaaaab", right: "abaaaaba" },
-//       { label: "G", left: "baaabaaa", right: "aaaabaaa" },
-//     ],
-//   },
-//   {
-//     name: "Back Orchestra",
-//     rows: [
-//       { label: "H", left: "aaahaaaab", right: "aaaaabaaa" },
-//       { label: "I", left: "aaaaaaaaa", right: "aaahaaaaa" },
-//       { label: "J", left: "aahaaaaaa", right: "babbaabab" },
-//       { label: "K", left: "aaaabaaaa", right: "baaaaahaa" },
-//       { label: "L", left: "baaaababb", right: "abbaaaabb" },
-//     ],
-//   },
-// ];
+import { API_BASE } from "../../utils/api";
 
 const legend = [
   {
@@ -65,20 +36,20 @@ const SeatMap = () => {
   useEffect(() => {
     const fetchSeats = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/seats/${id}`);
+        const response = await fetch(`${API_BASE}/api/seats/${id}`);
         const data = await response.json();
         setDbSeats(data);
         setSelectedSeats((prevSeats) => {
           return prevSeats.filter((cartSeat) => {
             const dbSeat = data.find((d) => d.id === cartSeat.id);
-            if (dbSeat && dbSeat.status === "available") return true;
+            if (dbSeat?.status === "available") return true;
           });
         });
       } catch (error) {
         console.error(error);
       }
     };
-    if (id) fetchSeats();
+    if (id) void fetchSeats();
   }, [id]);
 
   const seatLookup = {};
@@ -94,7 +65,9 @@ const SeatMap = () => {
   });
 
   // Step 2: Sort row labels (A, B, C...) and sort seats inside each row by column
-  const sortedRowLabels = Object.keys(groupedRows).sort();
+  const sortedRowLabels = Object.keys(groupedRows).sort((a, b) =>
+    a.localeCompare(b),
+  );
   sortedRowLabels.forEach((label) => {
     groupedRows[label].sort((a, b) => a.col - b.col);
   });

@@ -23,8 +23,10 @@ const FeaturedEvents = () => {
         </Link>
       </div>
       <div className="flex no-scrollbar scroll-smooth gap-6 mt-10 overflow-x-auto pt-2 pb-6">
-        {events.map((event) => (
-          <EventCard key={event.id} event={event} />
+        {events.slice(0, 8).map((event) => (
+          <div key={event.id} className="w-80 shrink-0">
+            <EventCard event={event} />
+          </div>
         ))}
       </div>
     </div>

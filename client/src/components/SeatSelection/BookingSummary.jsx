@@ -1,6 +1,7 @@
 import { Armchair, ChevronRight, ShieldCheck, Ticket } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useBooking } from "../../context/BookingContext";
+import { API_BASE } from "../../utils/api";
 
 const BookingSummary = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const BookingSummary = () => {
       return;
     }
 
-    const response = await fetch("http://localhost:5000/api/seats/hold", {
+    const response = await fetch(`${API_BASE}/api/seats/hold`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -78,7 +79,7 @@ const BookingSummary = () => {
                     </div>
                   </div>
                   <span className="font-mono font-medium text-[#1D1F23]">
-                    ${currentEvent?.price?.toFixed(2)}
+                    ₹{currentEvent?.price?.toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -92,7 +93,7 @@ const BookingSummary = () => {
               Total Payable
             </span>
             <span className="text-2xl font-mono font-bold text-[#6365f1]">
-              ${(currentEvent?.price * selectedSeats.length || 0).toFixed(2)}
+              ₹{(currentEvent?.price * selectedSeats.length || 0).toFixed(2)}
             </span>
           </div>
 

@@ -14,6 +14,7 @@ export const createEvent = async (req, res) => {
       description,
       img,
       capacity,
+      status,
     } = req.body;
 
     let finalImageUrl = img;
@@ -29,16 +30,45 @@ export const createEvent = async (req, res) => {
         error: "Capacity must be a positive integer",
       });
     }
+
+    // Validate required fields
+    if (
+      !title?.trim() ||
+      !location?.trim() ||
+      !category?.trim() ||
+      !date ||
+      !time ||
+      !description?.trim() ||
+      price === undefined ||
+      price === ""
+    ) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (!finalImageUrl) {
+      return res
+        .status(400)
+        .json({ error: "Event banner image or image URL is required" });
+    }
+
+    const parsedPrice = Number(price);
+    if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
+      return res
+        .status(400)
+        .json({ error: "Price must be a valid positive number" });
+    }
+
     const newEvent = await prisma.$transaction(async (tx) => {
       const event = await tx.event.create({
         data: {
           title,
           location,
-          price: Number(price),
+          price: Number(parsedPrice),
           img: finalImageUrl,
           category,
           date,
           time,
+          status: status || "Live",
           description,
           createdBy: req.user.id,
           capacity: eventCapacity,
@@ -60,7 +90,12 @@ export const createEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await prisma.event.findMany();
+    const events = await prisma.event.findMany({
+      where: {
+        status: "Live",
+      },
+      orderBy: { createdAt: "desc" },
+    });
     res.json({ events });
   } catch (error) {
     console.error(error);
@@ -71,7 +106,19 @@ export const getAllEvents = async (req, res) => {
 export const getEventById = async (req, res) => {
   try {
     const eventID = req.params.id;
-    const event = await prisma.event.findUnique({ where: { id: eventID } });
+    const event = await prisma.event.findUnique({
+      where: { id: eventID },
+      include: {
+        organizer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
 
     if (!event) {
       return res.status(404).json({ error: "Event not found" });

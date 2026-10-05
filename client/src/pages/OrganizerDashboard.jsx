@@ -65,7 +65,7 @@ const OrganizerDashboard = () => {
                   Verified Payouts
                 </h4>
                 <p className="text-sm text-neutral-500">
-                  Successfully processed $15,400 today.
+                  Successfully processed ₹15,400 today.
                 </p>
               </div>
             </div>

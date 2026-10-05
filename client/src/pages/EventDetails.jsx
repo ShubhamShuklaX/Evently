@@ -6,13 +6,13 @@ import AboutEvent from "../components/EventDetail/AboutEvent";
 import OrganizerCard from "../components/EventDetail/OrganizerCard";
 import GettingThere from "../components/EventDetail/GettingThere";
 import BookingCard from "../components/EventDetail/BookingCard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useBooking } from "../context/BookingContext";
-import { useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import NotFound from "./NotFound";
 import RecommendedEvents from "@/components/DiscoverEvent/RecommendedEvents";
+import { API_BASE } from "@/utils/api";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -25,7 +25,7 @@ const EventDetail = () => {
       try {
         setLoading(true);
 
-        const res = await fetch(`http://localhost:5000/api/events/${id}`);
+        const res = await fetch(`${API_BASE}/api/events/${id}`);
         const data = await res.json();
 
         if (data.event) {
@@ -38,7 +38,7 @@ const EventDetail = () => {
         setLoading(false);
       }
     }
-    fetchEvent();
+    void fetchEvent();
   }, [id, setCurrentEvent]);
 
   if (loading) {
@@ -56,7 +56,7 @@ const EventDetail = () => {
         <div className="flex flex-col gap-10">
           <EventInfoBar event={event} />
           <AboutEvent event={event} />
-          <OrganizerCard />
+          <OrganizerCard organizer={event.organizer} />
           <GettingThere event={event} />
         </div>
         <BookingCard event={event} />

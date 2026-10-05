@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -8,9 +8,12 @@ import StepInfo from "../components/CreateEvent/StepInfo";
 import StepMedia from "../components/CreateEvent/StepMedia";
 import StepLocation from "../components/CreateEvent/StepLocation";
 import StepTickets from "../components/CreateEvent/StepTickets";
+import { API_BASE } from "../utils/api";
+import { useBooking } from "@/context/BookingContext";
 
 const CreateEvent = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     title: "",
@@ -22,15 +25,52 @@ const CreateEvent = () => {
     img: "",
     description: "",
   });
+  const { fetchEvents } = useBooking();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
+  const handleNext = () => {
+    setError("");
+
+    if (currentStep === 1) {
+      if (
+        !formData.title.trim() ||
+        !formData.category ||
+        !formData.description.trim()
+      ) {
+        setError("Please fill in the title, category, and description.");
+        return;
+      }
+    }
+
+    if (currentStep === 2) {
+      if (!formData.img) {
+        setError("Please upload an image banner or provide an image URL.");
+        return;
+      }
+    }
+
+    if (currentStep === 3) {
+      if (!formData.location.trim() || !formData.date || !formData.time) {
+        setError("Please specify the venue location, date, and time.");
+        return;
+      }
+    }
+
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const handleSubmit = async (status = "Live") => {
     try {
       const token = localStorage.getItem("evently_token");
+
+      if (!formData.price || Number(formData.price) <= 0) {
+        setError("Please enter a valid ticket price.");
+        return;
+      }
 
       const submitData = new FormData();
       submitData.append("title", formData.title);
@@ -39,18 +79,24 @@ const CreateEvent = () => {
       submitData.append("date", formData.date);
       submitData.append("time", formData.time);
       submitData.append("category", formData.category);
+      submitData.append("status", status);
       submitData.append("description", formData.description);
       submitData.append("img", formData.img);
 
-      const res = await fetch("http://localhost:5000/api/events", {
+      const res = await fetch(`${API_BASE}/api/events`, {
         method: "POST",
         headers: {
           authorization: `Bearer ${token}`,
         },
         body: submitData,
       });
-      if (res.ok) {
-        navigate("/organizer/my-events");
+      const result = await res.json();
+      if (!res.ok) {
+        setError(result.error || "Failed to create event");
+        return;
+      } else {
+        await fetchEvents();
+        void navigate("/organizer/my-events");
       }
     } catch (error) {
       console.error(error);
@@ -96,6 +142,12 @@ const CreateEvent = () => {
             <StepTickets formData={formData} handleChange={handleChange} />
           )}
 
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-semibold">
+              {error}
+            </div>
+          )}
+
           {/* Footer Actions */}
           <div className="mt-8 pt-6 border-t border-neutral-200 flex items-center justify-between">
             {currentStep > 1 ? (
@@ -111,25 +163,33 @@ const CreateEvent = () => {
             )}
 
             <div className="flex items-center gap-4">
-              <button className="px-6 py-3 rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors">
-                Save Draft
-              </button>
-
               {currentStep < 4 ? (
                 <button
-                  onClick={() => setCurrentStep((prev) => prev + 1)}
-                  className="px-6 py-3 rounded-xl font-bold bg-[#6365f1] text-white hover:bg-[#4f51e9] transition-colors flex items-center gap-2"
+                  type="button"
+                  onClick={handleNext}
+                  className="px-6 py-3 rounded-xl font-bold bg-[#6365f1] text-white hover:bg-[#4f51e9] transition-colors flex items-center gap-2 cursor-pointer"
                 >
                   Next Step
                   <ArrowRight size={18} />
                 </button>
               ) : (
-                <button
-                  onClick={handleSubmit}
-                  className="px-6 py-3 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2"
-                >
-                  Publish Event
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => void handleSubmit("Draft")}
+                    className="px-6 py-3 cursor-pointer rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors"
+                  >
+                    Save Draft
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void handleSubmit("Live")}
+                    className="px-6 py-3 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2"
+                  >
+                    Publish Event
+                  </button>
+                </>
               )}
             </div>
           </div>

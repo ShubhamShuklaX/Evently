@@ -82,7 +82,7 @@ const PaymentStatus = ({ status = "initiating", onAction }) => {
 
       <div className="flex items-center gap-2 bg-white border border-neutral-200 rounded-full px-4 py-2 text-xs text-neutral-600 mt-8">
         <ShieldCheck size={14} className="text-emerald-600" />
-        Secure 256-bit Encrypted Transaction
+        Secure Demo Transaction
       </div>
     </div>
   );

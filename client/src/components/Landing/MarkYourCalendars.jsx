@@ -1,5 +1,6 @@
 import { CalendarDays, MapPin, ArrowRight } from "lucide-react";
 import { useBooking } from "../../context/BookingContext";
+import { Link } from "react-router-dom";
 
 const MarkYourCalendars = ({ events: propEvents }) => {
   const { events: contextEvents } = useBooking();
@@ -17,18 +18,19 @@ const MarkYourCalendars = ({ events: propEvents }) => {
             Be the first to get tickets for these highly anticipated events.
           </p>
         </div>
-        <button
-          onClick={() => void navigate("/events")}
+        <Link
+          to="/events"
           className="flex items-center gap-1 px-2 text-[15px] py-2 cursor-pointer bg-transparent text-indigo-600 hover:bg-[#4f51e9] hover:text-[#DFE1E4FF] border-2 rounded-full transition ease-in-out"
         >
           View Calendar
           <ArrowRight size={16} />
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-8">
         {upcomingEvents.map((event) => (
-          <div
+          <Link
+            to={`/events/${event.id}/seats`}
             key={event.id || event.title}
             className="group flex bg-white rounded-2xl border border-neutral-200 overflow-hidden h-75 transition-transform duration-300 hover:scale-[1.03] hover:shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)] cursor-pointer"
           >
@@ -59,18 +61,15 @@ const MarkYourCalendars = ({ events: propEvents }) => {
                 <p className="text-[#6365f1] font-bold text-lg">
                   ₹{event.price}
                 </p>
-                <button
-                  onClick={() =>
-                    void navigate(event.id ? `/events/${event.id}` : "/events")
-                  }
-                  aria-label="View event"
-                  className="text-[#6365f1] hover:translate-x-1 transition-transform"
+                <span
+                  aria-hidden="true"
+                  className="text-[#6365f1] group-hover:translate-x-1 transition-transform"
                 >
                   <ArrowRight size={20} />
-                </button>
+                </span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

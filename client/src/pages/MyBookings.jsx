@@ -6,6 +6,7 @@ import BookingStats from "../components/MyBookings/BookingStats";
 import BookingToolbar from "../components/MyBookings/BookingToolbar";
 import QuickLinks from "../components/MyBookings/QuickLinks";
 import PromoBanner from "../components/MyBookings/PromoBanner";
+import { API_BASE } from "../utils/api";
 
 const MyBookings = () => {
   const [activeTab, setActiveTab] = useState("Upcoming");
@@ -16,7 +17,7 @@ const MyBookings = () => {
       try {
         const token = localStorage.getItem("evently_token");
 
-        const response = await fetch("http://localhost:5000/api/orders/", {
+        const response = await fetch(`${API_BASE}/api/orders`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

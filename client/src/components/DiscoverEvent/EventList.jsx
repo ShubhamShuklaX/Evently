@@ -1,18 +1,15 @@
-import { ArrowUpDown, ChevronDown, LayoutGrid, List, X } from "lucide-react";
+import { ArrowUpDown, LayoutGrid, List } from "lucide-react";
 import EventCard from "./../EventCard";
 import { useState } from "react";
 import { useBooking } from "../../context/BookingContext";
+import Pagination from "../Pagination";
 
-const quickFilters = [
-  "Recently Viewed",
-  "Outdoor Venues",
-  "Last Minute Tickets",
-  "VIP Experiences",
-  "Student Discounts",
-];
+const ITEMS_PER_PAGE = 12;
 
 const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
   const [layout, setLayout] = useState("grid");
+  const [sortBy, setSortBy] = useState("relevance");
+  const [currentPage, setCurrentPage] = useState(1);
   const { events } = useBooking();
 
   const filteredEvents = events.filter((event) => {
@@ -42,6 +39,31 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
     return true;
   });
 
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    if (sortBy === "price-low") return (a.price || 0) - (b.price || 0);
+    if (sortBy === "price-high") return (b.price || 0) - (a.price || 0);
+    if (sortBy === "date") return new Date(a.date) - new Date(b.date);
+
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  // Reset to page 1 whenever filters or sorting changes (React recommended render-phase adjustment)
+  const filterKey = `${activeCategory}|${locationQuery}|${searchQuery}|${sortBy}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setCurrentPage(1);
+  }
+
+  // Pagination calculations: exactly 12 items per page
+  const totalPages = Math.ceil(sortedEvents.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedEvents = sortedEvents.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
   return (
     <div className="flex-1 p-6 md:p-10">
       {/* Header and Controls */}
@@ -55,21 +77,30 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
             <p className="text-neutral-600 text-[17px] mt-1">
               Showing{" "}
               <span className="text-neutral-900 font-semibold">
-                {filteredEvents.length} events
+                {sortedEvents.length} events
               </span>
             </p>
           </div>
 
           {/* Sort & Layout Buttons */}
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="flex items-center gap-1.5 border border-neutral-200 shadow-sm rounded-xl px-3 py-2 cursor-pointer text-neutral-700 hover:bg-neutral-50 transition-all active:scale-95 focus:outline-none"
-            >
-              <ArrowUpDown size={16} className="text-neutral-500" />
-              <span className="text-[15px] font-medium">Sort: Relevance</span>
-              <ChevronDown size={16} className="text-neutral-500" />
-            </button>
+            <div className="flex items-center border border-neutral-200 shadow-sm rounded-xl px-3 py-2 bg-white hover:bg-neutral-50 transition-colors">
+              <ArrowUpDown
+                size={16}
+                className="text-neutral-500 mr-2 pointer-events-none"
+              />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort events"
+                className="text-[15px] font-medium text-neutral-700 bg-transparent outline-none cursor-pointer pr-1"
+              >
+                <option value="relevance">Sort: Relevance</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="date">Date: Upcoming</option>
+              </select>
+            </div>
 
             <div className="flex items-center gap-1 border border-neutral-200 p-1 shadow-sm rounded-xl bg-white">
               <button
@@ -100,27 +131,6 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
             </div>
           </div>
         </div>
-
-        {/* Quick Filter Tags */}
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 bg-neutral-900 text-white text-sm font-medium px-3.5 py-1.5 rounded-full hover:bg-neutral-800 transition-colors cursor-pointer active:scale-95 shrink-0"
-          >
-            Recently Viewed
-            <X size={15} />
-          </button>
-
-          {quickFilters.slice(1).map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              className="bg-neutral-100 text-neutral-600 text-sm font-medium px-3.5 py-1.5 rounded-full hover:bg-neutral-200 transition-colors cursor-pointer active:scale-95 shrink-0"
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Events Grid/List Container */}
@@ -131,8 +141,8 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
             : "flex flex-col gap-4"
         }`}
       >
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => (
+        {sortedEvents.length > 0 ? (
+          paginatedEvents.map((event) => (
             <EventCard key={event.id} layout={layout} event={event} />
           ))
         ) : (
@@ -141,32 +151,33 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
           </div>
         )}
       </div>
+
       <div className="flex flex-col items-center gap-3 mt-12 mb-8">
         {/* Count Indicator */}
         <p className="text-sm text-neutral-500 font-medium">
           Showing{" "}
           <span className="font-semibold text-neutral-900">
-            {filteredEvents.length}
+            {sortedEvents.length > 0 ? startIndex + 1 : 0} –{" "}
+            {Math.min(startIndex + ITEMS_PER_PAGE, sortedEvents.length)}
           </span>{" "}
           of{" "}
           <span className="font-semibold text-neutral-900">
-            {events.length}
+            {sortedEvents.length}
           </span>{" "}
           events
         </p>
 
-        {/* Progress Bar */}
-        <div className="w-48 h-1.5 bg-neutral-200 rounded-full overflow-hidden my-1">
-          <div className="bg-neutral-900 h-full w-[1%]" />
-        </div>
-
-        {/* Load More Button */}
-        <button
-          type="button"
-          className="border border-neutral-300 rounded-full px-6 py-2.5 text-sm font-semibold text-neutral-900 hover:bg-neutral-100 transition-all cursor-pointer active:scale-95 focus:outline-none focus:ring-2 focus:ring-neutral-400"
-        >
-          Load More Events
-        </button>
+        {/* Numbered Pagination with sliding window */}
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              window.scrollTo({ top: 120, behavior: "smooth" });
+            }}
+          />
+        )}
       </div>
     </div>
   );

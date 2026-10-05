@@ -17,7 +17,7 @@ const stats = [
   },
   {
     label: "Total Revenue",
-    value: "$84,920",
+    value: "₹84,920",
     icon: DollarSign,
     style: "bg-amber-50 text-amber-600",
   },

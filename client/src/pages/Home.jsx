@@ -10,13 +10,6 @@ import Reveal from "../components/Reveal";
 import { useMemo } from "react";
 import { useBooking } from "../context/BookingContext";
 
-// A cryptographically secure random float between 0 and 1
-const secureRandom = () => {
-  const array = new Uint32Array(1);
-  window.crypto.getRandomValues(array);
-  return array[0] / (0xffffffff + 1);
-};
-
 const Home = () => {
   const { events } = useBooking();
 
@@ -34,16 +27,20 @@ const Home = () => {
       return !Number.isNaN(d.getTime()) ? d >= today : false;
     });
 
-    // Pick 2 random for upcoming
-    const shuffledFuture = [...future].sort(() => 0.5 - secureRandom());
-    const upcoming = shuffledFuture.slice(0, 2);
+    // Upcoming: Next 2 events happening chronologically closest to today
+    const sortedUpcoming = [...future].sort(
+      (a, b) => new Date(a.date) - new Date(b.date),
+    );
+    const upcoming = sortedUpcoming.slice(0, 2);
     const upcomingIds = new Set(upcoming.map((e) => e.id));
 
-    // Pick 2 random for trending (excluding upcoming to avoid duplicates)
+    // Trending: Top 2 premium experiences (excluding upcoming to avoid duplicates)
     const remaining = events.filter((e) => !upcomingIds.has(e.id));
     const pool = remaining.length >= 2 ? remaining : events;
-    const shuffledTrending = [...pool].sort(() => 0.5 - secureRandom());
-    const trending = shuffledTrending.slice(0, 2);
+    const sortedTrending = [...pool].sort(
+      (a, b) => (b.price || 0) - (a.price || 0),
+    );
+    const trending = sortedTrending.slice(0, 2);
 
     return { upcomingEvents: upcoming, trendingEvents: trending };
   }, [events]);

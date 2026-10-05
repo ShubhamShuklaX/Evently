@@ -6,11 +6,11 @@ const Stepper = ({ currentStep, steps }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white border-b border-neutral-200 py-4 px-6 sticky top-[68px] z-40">
+    <div className="bg-white border-b border-neutral-200 py-4 px-6 sticky top-17 z-40">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
         <button
           onClick={() => navigate("/organizer")}
-          className="flex items-center gap-2 text-neutral-500 hover:text-neutral-900 transition-colors font-medium text-sm"
+          className="flex items-center cursor-pointer gap-2 text-neutral-500 hover:text-neutral-900 transition-colors font-medium text-sm"
         >
           <ArrowLeft size={16} />
           Back to Dashboard
@@ -48,7 +48,7 @@ const Stepper = ({ currentStep, steps }) => {
             </React.Fragment>
           ))}
         </div>
-        <div className="w-[120px]"></div> {/* Spacer for centering */}
+        <div className="w-30"></div> {/* Spacer for centering */}
       </div>
     </div>
   );

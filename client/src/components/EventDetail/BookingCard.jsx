@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Ticket, Timer } from "lucide-react";
+import { Ticket } from "lucide-react";
 
 const BookingCard = ({ event }) => {
   const { id } = useParams();
@@ -29,18 +29,7 @@ const BookingCard = ({ event }) => {
         </button>
 
         <p className="text-xs text-neutral-500 text-center mt-4 leading-relaxed">
-          No tickets? We've got you covered with a 100% money-back guarantee.
-        </p>
-      </div>
-
-      <div className="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-5">
-        <h4 className="flex items-center gap-2 font-semibold text-[#1D1F23]">
-          <Timer size={16} />
-          Limited Availability
-        </h4>
-        <p className="text-sm text-neutral-600 leading-relaxed mt-2">
-          Seats are filling up fast for this performance. Only 12 tickets
-          remaining in the Orchestra section.
+          Secure booking powered by Evently
         </p>
       </div>
     </div>

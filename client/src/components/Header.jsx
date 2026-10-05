@@ -1,21 +1,22 @@
-import {
-  MapPin,
-  Heart,
-  ShoppingBag,
-  CalendarDays,
-  Search,
-  ChevronDown,
-  LogOut,
-} from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Heart, ShoppingBag, CalendarDays, Search, LogOut } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from "../assets/Logo.png";
 import { useState } from "react";
 
 const Header = () => {
-  const [query, setQuery] = useState("");
+  const [searchParams] = useSearchParams();
+  const urlSearch = searchParams.get("search") || "";
+  const [query, setQuery] = useState(urlSearch);
   const navigate = useNavigate();
   const token = localStorage.getItem("evently_token");
+
+  // Sync query when urlSearch changes externally (e.g. Reset All)
+  const [prevUrlSearch, setPrevUrlSearch] = useState(urlSearch);
+  if (urlSearch !== prevUrlSearch) {
+    setPrevUrlSearch(urlSearch);
+    setQuery(urlSearch);
+  }
 
   const handleSignOut = () => {
     localStorage.removeItem("evently_token");
@@ -59,7 +60,7 @@ const Header = () => {
               className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
             />
             <input
-              className="h-10 w-full min-w-90 pl-9 pr-3 bg-[#F6F7F9] text-[14px] leading-5.5 font-normal text-[#1D1F23] placeholder:text-[#696D72] rounded-[10px] border border-[#D4D6DA] outline-none hover:text-[#696D72] hover:border-[#D4D6DA] focus:text-[#696D72] focus:border-[#D4D6DA] disabled:text-[#696D72] disabled:bg-[#F6F7F9] disabled:border-[#D4D6DA]"
+              className="h-10 w-full min-w-150 pl-9 pr-3 bg-[#F6F7F9] text-[14px] leading-5.5 font-normal text-[#1D1F23] placeholder:text-[#696D72] rounded-[10px] border border-[#D4D6DA] outline-none hover:text-[#696D72] hover:border-[#D4D6DA] focus:text-[#696D72] focus:border-[#D4D6DA] disabled:text-[#696D72] disabled:bg-[#F6F7F9] disabled:border-[#D4D6DA]"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               type="search"
@@ -67,45 +68,10 @@ const Header = () => {
               placeholder="Search for concerts, sports, theater..."
             />
           </div>
-
-          <div className="relative flex items-center gap-1.5 hover:bg-neutral-100 py-2 px-2 rounded-lg transition-all duration-200">
-            <MapPin
-              strokeWidth={1.7}
-              size={19}
-              className="text-neutral-800 pointer-events-none shrink-0"
-            />
-            <select className="appearance-none bg-transparent pr-6 text-sm font-medium text-neutral-800 outline-none cursor-pointer">
-              <option value="ny">New York</option>
-              <option value="delhi">Delhi</option>
-              <option value="bangalore">Bangalore</option>
-              <option value="mumbai">Mumbai</option>
-            </select>
-            <ChevronDown
-              size={14}
-              className="absolute left-25 top-1/2 -translate-y-1/2 text-neutral-700 pointer-events-none"
-            />
-          </div>
         </div>
 
         {/* Right side: categories, icons, sign in */}
         <div className="flex items-center gap-5">
-          <div className="relative hover:bg-neutral-100 py-1.5 pl-2 rounded-lg transition-all duration-200">
-            <select
-              className="appearance-none bg-transparent pr-6 text-sm font-medium text-neutral-800 outline-none cursor-pointer"
-              onChange={() => navigate("/events")}
-            >
-              <option value="">Categories</option>
-              <option value="music">Music</option>
-              <option value="Movie">Movie</option>
-              <option value="theater">Theater</option>
-              <option value="concert">Concert</option>
-            </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-700 pointer-events-none"
-            />
-          </div>
-
           <div className="flex items-center gap-7">
             <button
               title="Saved Events"

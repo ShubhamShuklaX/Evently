@@ -1,5 +1,7 @@
 import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useBooking } from "../../context/BookingContext";
+
 const RecommendedEvents = () => {
   const { events } = useBooking();
   const displayEvents = events.slice(0, 4);
@@ -17,15 +19,22 @@ const RecommendedEvents = () => {
               Hand-picked events you might also enjoy.
             </p>
           </div>
-          <button className="hidden sm:flex items-center gap-1 text-[#6365f1] font-semibold hover:text-[#4f51e9] transition cursor-pointer">
+          <Link
+            to="/events"
+            className="hidden sm:flex items-center gap-1 text-[#6365f1] font-semibold hover:text-[#4f51e9] transition cursor-pointer"
+          >
             Explore Everything <ChevronRight size={18} />
-          </button>
+          </Link>
         </div>
 
         {/* 2. RESPONSIVE EVENT GRID (1 col mobile, 2 col tablet, 4 col desktop) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {displayEvents.map((event) => (
-            <div key={event.id} className="group cursor-pointer">
+            <Link
+              to={`/events/${event.id}`}
+              key={event.id}
+              className="group cursor-pointer block"
+            >
               {/* Image Container with hover zoom effect */}
               <div className="w-full h-64 rounded-2xl overflow-hidden mb-4 bg-neutral-100">
                 <img
@@ -34,7 +43,8 @@ const RecommendedEvents = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   // Fallback to an Unsplash image if local image isn't found
                   onError={(e) => {
-                    e.target.src =
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src =
                       "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&q=80&w=400";
                   }}
                 />
@@ -45,9 +55,9 @@ const RecommendedEvents = () => {
                 {event.title}
               </h3>
               <p className="text-sm font-medium text-neutral-500">
-                From ${event.price}
+                From ₹{event.price}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

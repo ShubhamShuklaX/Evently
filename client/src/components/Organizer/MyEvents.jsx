@@ -6,6 +6,7 @@ import MyEventsStats from "../../components/Organizer/MyEvents/MyEventsStats";
 import MyEventsFilters from "../../components/Organizer/MyEvents/MyEventsFilters";
 import EventsTable from "../../components/Organizer/MyEvents/EventsTable";
 import Sidebar from "./Sidebar";
+import { API_BASE } from "../../utils/api";
 
 const EventsManagement = () => {
   const [myEvents, setMyEvents] = useState([]);
@@ -14,19 +15,16 @@ const EventsManagement = () => {
     async function getMyEvents() {
       const token = localStorage.getItem("evently_token");
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/events/my-events",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const response = await fetch(`${API_BASE}/api/events/my-events`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const data = await response.json();
         setMyEvents(data.events);
       } catch (error) {
         console.error(error);
       }
     }
-    getMyEvents();
+    void getMyEvents();
   }, []);
   return (
     <div className="min-h-screen bg-[#F6F7F9] font-sans flex flex-col">

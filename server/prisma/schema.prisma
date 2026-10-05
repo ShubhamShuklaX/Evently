@@ -67,6 +67,7 @@ model Order {
   totalPaid Int
   idempotencyKey String @unique
   createdAt DateTime @default(now())
+status String @default("pending")
 
   seats Seat[] 
   

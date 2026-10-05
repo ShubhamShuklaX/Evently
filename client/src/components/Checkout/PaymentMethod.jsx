@@ -1,4 +1,4 @@
-import { CreditCard, Lock, Smartphone } from "lucide-react";
+import { CreditCard, Lock } from "lucide-react";
 import Field from "./Field";
 import { useFormContext } from "react-hook-form";
 
@@ -23,20 +23,6 @@ const PaymentMethod = () => {
           >
             <CreditCard size={20} className="text-[#6365f1]" />
             Credit Card
-          </button>
-          <button
-            type="button"
-            className="h-24 flex flex-col items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 text-[#1D1F23] text-sm font-semibold hover:bg-neutral-100 transition-colors cursor-pointer"
-          >
-            <Smartphone size={20} className="text-neutral-600" />
-            Apple Pay
-          </button>
-          <button
-            type="button"
-            className="h-24 flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-200 bg-neutral-50 text-[#1D1F23] text-sm font-semibold hover:bg-neutral-100 transition-colors cursor-pointer"
-          >
-            <span className="text-lg font-bold text-neutral-500">GPay</span>
-            Google Pay
           </button>
         </div>
 

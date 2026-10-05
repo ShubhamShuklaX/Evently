@@ -17,10 +17,14 @@ const StepTickets = ({ formData, handleChange }) => {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-[#1D1F23] mb-2 uppercase tracking-wide">
-              Price ($)
+            <label
+              htmlFor="ticket-price"
+              className="block text-xs font-bold text-[#1D1F23] mb-2 uppercase tracking-wide"
+            >
+              Price (₹)
             </label>
             <input
+              id="ticket-price"
               name="price"
               value={formData.price}
               onChange={handleChange}
@@ -30,10 +34,14 @@ const StepTickets = ({ formData, handleChange }) => {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-[#1D1F23] mb-2 uppercase tracking-wide">
+            <label
+              htmlFor="ticket-capacity"
+              className="block text-xs font-bold text-[#1D1F23] mb-2 uppercase tracking-wide"
+            >
               Capacity
             </label>
             <input
+              id="ticket-capacity"
               type="number"
               placeholder="100"
               className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#6365f1] transition-all"

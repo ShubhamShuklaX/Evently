@@ -22,8 +22,7 @@ const SeatingInfo = () => {
         </h3>
         <p className="text-sm text-neutral-500 leading-6 mt-3">
           Our real-time engine ensures no double-bookings. All transactions are
-          encrypted and secured. Official ticketing partner of the Evently
-          Premium network.
+          demo. Official ticketing partner of the Evently Premium network.
         </p>
       </div>
     </div>

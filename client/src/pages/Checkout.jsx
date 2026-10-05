@@ -12,6 +12,7 @@ import OrderSummary from "../components/Checkout/OrderSummary";
 import PaymentStatus from "../components/Checkout/PaymentStatus";
 import TrustCards from "../components/Checkout/TrustCards";
 import StateSwitcher from "../components/Checkout/StateSwitcher";
+import { API_BASE } from "../utils/api";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ const Checkout = () => {
 
       const totalPaid = currentEvent.price * selectedSeats.length + 19;
 
-      const response = await fetch("http://localhost:5000/api/orders", {
+      const response = await fetch(`${API_BASE}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

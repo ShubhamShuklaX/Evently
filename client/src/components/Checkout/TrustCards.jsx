@@ -4,17 +4,17 @@ const cards = [
   {
     icon: Lock,
     title: "Secure Checkout",
-    desc: "Your transaction is protected by 256-bit SSL encryption.",
+    desc: "ALl transactions are demo only",
   },
   {
     icon: ShieldCheck,
     title: "Verified Tickets",
-    desc: "100% money-back guarantee on all authentic ticket sales.",
+    desc: "Secure booking powered by Evently",
   },
   {
     icon: ExternalLink,
-    title: "Need Assistance?",
-    desc: "Our support team is available 24/7 for booking issues.",
+    title: "Have Questions?",
+    desc: "Check out the project details to learn how Evently works.",
   },
 ];
 

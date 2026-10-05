@@ -36,7 +36,7 @@ const EventsTable = ({ myEvents }) => {
 
           <span className="text-sm text-neutral-600">0 / {event.capacity}</span>
 
-          <span className="text-sm font-medium text-[#1D1F23]">$0</span>
+          <span className="text-sm font-medium text-[#1D1F23]">₹0</span>
 
           <span
             className={`w-fit px-2.5 py-1 rounded-full text-xs font-semibold ${statusStyles[event.status]}`}

@@ -81,7 +81,7 @@ const BookingCard = ({ booking }) => {
             {seatSummary}
           </div>
           <div className="flex items-center gap-2 text-sm font-semibold text-[#1D1F23]">
-            ${totalPaid.toFixed(2)}
+            ₹{totalPaid.toFixed(2)}
           </div>
         </div>
 

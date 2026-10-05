@@ -2,9 +2,9 @@ import { Info, Lock, ShieldCheck } from "lucide-react";
 import { useBooking } from "../../context/BookingContext";
 
 const fees = [
-  { label: "Service Fee", value: "$12.50" },
-  { label: "Facility Charge", value: "$4.00" },
-  { label: "Processing Fee", value: "$2.50" },
+  { label: "Service Fee", value: "₹12.50" },
+  { label: "Facility Charge", value: "₹4.00" },
+  { label: "Processing Fee", value: "₹2.50" },
 ];
 
 const cards = ["VISA", "MC", "AMEX"];
@@ -26,7 +26,7 @@ const OrderSummary = () => {
         <div className="flex items-center justify-between bg-neutral-100 px-6 py-5">
           <h2 className="font-semibold text-[#1D1F23]">Order Summary</h2>
           <span className="bg-white border border-neutral-200 rounded-full px-2.5 py-1 font-mono text-[10px] text-neutral-600">
-            #BK-2941
+            DEMO MODE
           </span>
         </div>
 
@@ -42,7 +42,7 @@ const OrderSummary = () => {
               </p>
             </div>
             <span className="font-mono font-semibold text-[#1D1F23]">
-              ${ticketTotal.toFixed(2)}
+              ₹{ticketTotal.toFixed(2)}
             </span>
           </div>
 
@@ -66,7 +66,7 @@ const OrderSummary = () => {
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-[#1D1F23] text-lg">Total</span>
               <span className="font-mono font-bold text-[#6365f1] text-2xl">
-                ${finalTotal.toFixed(2)}
+                ₹{finalTotal.toFixed(2)}
               </span>
             </div>
           </div>
@@ -77,18 +77,11 @@ const OrderSummary = () => {
             className="w-full h-14 mt-5 flex items-center justify-center gap-2 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-bold uppercase tracking-wide rounded-xl transition-colors cursor-pointer active:scale-[0.98]"
           >
             <Lock size={17} />
-            Confirm & Pay ${finalTotal.toFixed(2)}
+            Confirm & Pay ₹{finalTotal.toFixed(2)}
           </button>
 
           <p className="text-center text-[11px] text-neutral-400 mt-4 leading-relaxed">
             By clicking Confirm & Pay, you agree to Evently's{" "}
-            <a href="/terms" className="underline">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="/policy" className="underline">
-              Privacy Policy
-            </a>
           </p>
         </div>
       </div>
@@ -103,7 +96,7 @@ const OrderSummary = () => {
 
       <div className="flex items-center justify-center gap-2 text-neutral-500 text-xs mt-2">
         <ShieldCheck size={14} className="text-emerald-500" />
-        Secure 256-bit encrypted payment
+        Secure Demo Transaction
       </div>
     </div>
   );

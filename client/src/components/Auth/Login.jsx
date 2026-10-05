@@ -7,12 +7,12 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { FaGithub, FaGoogle } from "react-icons/fa";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/Logo.png";
 import authHeroImg from "../../assets/AuthHeroImg.png";
+import { API_BASE } from "../../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const Login = () => {
     setError("");
     const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
     try {
-      const res = await fetch(`http://localhost:5000${endpoint}`, {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(
@@ -69,7 +69,7 @@ const Login = () => {
   return (
     <div className="h-screen flex overflow-hidden">
       {/* Left Form Div */}
-      <div className="flex-1 lg:w-1/2 px-25 py-14 flex flex-col gap-5 overflow-y-auto">
+      <div className="flex-1 lg:w-1/2 px-25 py-20 flex flex-col gap-5 overflow-y-auto">
         {/* Logo and Title */}
         <div className="flex items-center justify-center gap-2">
           <img src={logo} alt="logo" className="w-8 h-8" />
@@ -131,7 +131,7 @@ const Login = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.2 }}
-                className="flex flex-col gap-4"
+                className="flex flex-col gap-5"
               >
                 <div>
                   <label
@@ -173,14 +173,6 @@ const Login = () => {
                       className="flex-1 outline-none text-neutral-800 bg-transparent"
                     />
                   </div>
-                  <div className="flex justify-end mt-1.5">
-                    <a
-                      href="/forgot-password"
-                      className="text-sm text-[#6365f1] font-medium hover:underline"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
                 </div>
 
                 <label className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer">
@@ -190,7 +182,7 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors"
+                  className="w-full h-11 mt-3 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 text-white font-semibold rounded-xl transition-colors"
                 >
                   Log In <ArrowRight size={16} />
                 </button>
@@ -277,29 +269,6 @@ const Login = () => {
               </motion.form>
             )}
           </AnimatePresence>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="h-px bg-neutral-400 flex-1" />
-          <span className="text-xs text-neutral-600 tracking-wide shrink-0">
-            OR CONTINUE WITH
-          </span>
-          <div className="h-px bg-neutral-400 flex-1" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 h-11 border-2 border-neutral-300 shadow-md cursor-pointer rounded-xl text-sm font-medium text-neutral-700 hover:bg-neutral-200 transition-colors"
-          >
-            <FaGoogle /> Google
-          </button>
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 h-11 border-2 border-neutral-300 shadow-md cursor-pointer rounded-xl text-sm font-medium text-neutral-700 hover:bg-neutral-200 transition-colors"
-          >
-            <FaGithub /> GitHub
-          </button>
         </div>
 
         <p className="text-center text-sm text-neutral-600">

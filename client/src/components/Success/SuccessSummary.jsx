@@ -41,19 +41,22 @@ const SuccessSummary = () => {
           <div className="flex justify-between text-neutral-600">
             <span>Tickets ({seats.length})</span>
             <span className="font-mono font-medium text-[#1D1F23]">
-              ${ticketTotal.toFixed(2)}
+              ₹{ticketTotal.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between text-neutral-600">
             <span>Processing Fees</span>
-            <span className="font-mono font-medium text-[#1D1F23]">$19.00</span>
+            <span className="font-mono font-medium text-[#1D1F23]">
+              {" "}
+              ₹19.00
+            </span>
           </div>
         </div>
 
         <div className="flex justify-between items-center mb-6">
           <span className="font-bold text-[#1D1F23] text-lg">Total Paid</span>
           <span className="font-bold font-mono text-[#6365f1] text-xl">
-            ${total.toFixed(2)}
+            ₹{total.toFixed(2)}
           </span>
         </div>
 

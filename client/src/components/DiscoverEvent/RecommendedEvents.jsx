@@ -15,8 +15,8 @@ const RecommendedEvents = () => {
           <ArrowRight size={16} />
         </button>
       </div>
-      <div className="flex overflow-x-auto no-scrollbar px-2 py-4 gap-6">
-        {events.map((event) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {events.slice(0, 4).map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
       </div>

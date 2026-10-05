@@ -115,6 +115,7 @@ export const processCheckout = async (req, res) => {
           totalPaid: serverTotalPrice,
           idempotencyKey,
           userId: req.user.id,
+          status: "paid",
         },
       });
     });
