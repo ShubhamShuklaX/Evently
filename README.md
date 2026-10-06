@@ -1,6 +1,6 @@
 # Evently
 
-**Evently is a full-stack event booking platform built to handle concurrent seat reservations safely, preventing double-booking through database transactions, concurrency control, and idempotent booking flows. Built with React, Express, Prisma, PostgreSQL, Stripe, and Docker.**
+**Evently is a full-stack event booking platform built to handle concurrent seat reservations safely, preventing double-booking through database transactions, concurrency control, and idempotent booking flows.**
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
