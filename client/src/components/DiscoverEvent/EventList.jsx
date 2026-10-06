@@ -1,4 +1,4 @@
-import { ArrowUpDown, LayoutGrid, List, Loader2 } from "lucide-react";
+import { ArrowUpDown, LayoutGrid, List, Loader2, AlertCircle, RotateCcw } from "lucide-react";
 import EventCard from "./../EventCard";
 import { useState } from "react";
 import { useBooking } from "../../context/BookingContext";
@@ -10,7 +10,7 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
   const [layout, setLayout] = useState("grid");
   const [sortBy, setSortBy] = useState("relevance");
   const [currentPage, setCurrentPage] = useState(1);
-  const { events, eventsLoading } = useBooking();
+  const { events, eventsLoading, eventsError, fetchEvents } = useBooking();
 
   const filteredEvents = events.filter((event) => {
     if (
@@ -147,6 +147,26 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
             <p className="text-neutral-500 font-medium text-sm animate-pulse">
               Discovering upcoming events...
             </p>
+          </div>
+        ) : eventsError ? (
+          <div className="col-span-full py-20 flex flex-col items-center justify-center text-center px-4">
+            <div className="w-14 h-14 bg-rose-50 border border-rose-100 rounded-2xl flex items-center justify-center mb-4 text-rose-500 shadow-sm">
+              <AlertCircle size={26} />
+            </div>
+            <h3 className="text-lg font-bold text-neutral-800">
+              Unable to load events
+            </h3>
+            <p className="text-sm text-neutral-500 mt-1 max-w-sm mb-6">
+              {eventsError}
+            </p>
+            <button
+              type="button"
+              onClick={fetchEvents}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#6365f1] hover:bg-[#4f51e9] text-white text-sm font-semibold rounded-xl transition-colors shadow-sm cursor-pointer active:scale-95"
+            >
+              <RotateCcw size={16} />
+              Try Again
+            </button>
           </div>
         ) : sortedEvents.length > 0 ? (
           paginatedEvents.map((event) => (

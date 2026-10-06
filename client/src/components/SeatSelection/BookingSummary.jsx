@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Armchair, ChevronRight, Loader2, ShieldCheck, Ticket } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useBooking } from "../../context/BookingContext";
+import { useToast } from "../../context/ToastContext";
 import { API_BASE } from "../../utils/api";
 
 const BookingSummary = () => {
@@ -9,10 +10,12 @@ const BookingSummary = () => {
   const { id } = useParams();
   const { selectedSeats, currentEvent } = useBooking();
   const [isHolding, setIsHolding] = useState(false);
+  const { toast, showModal } = useToast();
 
   async function handleConfirm() {
     const token = localStorage.getItem("evently_token");
     if (!token) {
+      toast.warning("Sign In Required", "Please log in to reserve your seats and complete checkout.");
       void navigate("/login");
       return;
     }
@@ -30,16 +33,29 @@ const BookingSummary = () => {
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        alert(
-          data.error || "One or more selected seats are no longer available.",
-        );
+        showModal({
+          type: "warning",
+          title: "Seats No Longer Available",
+          message:
+            data.error ||
+            "One or more selected seats were reserved by another buyer just now. Please pick alternative seats.",
+          confirmText: "Change Selection",
+          showCancel: false,
+        });
         return;
       }
 
+      toast.success(
+        "Seats Reserved!",
+        `Holding ${selectedSeats.length} seat${selectedSeats.length > 1 ? "s" : ""} for checkout.`
+      );
       void navigate(`/events/${id}/seats/checkout`);
     } catch (err) {
       console.error("Hold seats error:", err);
-      alert("Unable to hold seats. Please check your connection and try again.");
+      toast.error(
+        "Reservation Error",
+        "Unable to hold seats. Please check your connection and try again."
+      );
     } finally {
       setIsHolding(false);
     }

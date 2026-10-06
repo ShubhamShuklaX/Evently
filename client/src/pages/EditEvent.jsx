@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { API_BASE } from "../utils/api";
 import { useBooking } from "../context/BookingContext";
+import { useToast } from "../context/ToastContext";
 
 const categories = [
   { value: "music", label: "Music & Concerts" },
@@ -29,6 +30,7 @@ const EditEvent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { fetchEvents } = useBooking();
+  const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -214,27 +216,22 @@ const EditEvent = () => {
 
       if (res.ok) {
         await fetchEvents?.();
+        toast.success("Event Updated", `"${formData.title}" has been successfully updated.`);
         setSuccessMsg("Event updated successfully!");
         setTimeout(() => {
           navigate("/organizer/my-events");
         }, 1200);
       } else {
-        // If backend route is not created yet (404/501), simulate frontend save so user can test UI
-        if (res.status === 404 || res.status === 405 || res.status === 501) {
-          setSuccessMsg(
-            "Frontend update verified! (Backend PUT endpoint is ready to be hooked up when you return).",
-          );
-          setFormData((prev) => ({ ...prev, status: targetStatus }));
-        } else {
-          const result = await res.json();
-          setError(result.error || "Failed to update event.");
-        }
+        const result = await res.json().catch(() => ({}));
+        const errText = result.error || "Failed to update event.";
+        setError(errText);
+        toast.error("Update Failed", errText);
       }
-    } catch {
-      // Network/Endpoint not implemented yet - graceful frontend feedback
-      setSuccessMsg(
-        "Frontend update validated! Ready for backend controller integration.",
-      );
+    } catch (err) {
+      console.error("Update event error:", err);
+      const errText = "Network error while saving changes. Please try again.";
+      setError(errText);
+      toast.error("Network Error", errText);
     } finally {
       setSubmitting(false);
     }

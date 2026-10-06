@@ -145,12 +145,26 @@ export const getMyEvents = async (req, res) => {
     const userId = req.user.id;
     const myEvents = await prisma.event.findMany({
       where: { createdBy: userId },
+      include: {
+        _count: {
+          select: {
+            seats: {
+              where: { status: "booked" },
+            },
+          },
+        },
+      },
     });
 
-    res.json({ events: myEvents });
+    const formattedEvent = myEvents.map((event) => ({
+      ...event,
+      soldCount: event._count.seats,
+    }));
+
+    res.json({ events: formattedEvent });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetach myEvents" });
+    res.status(500).json({ error: "Failed to fetch myEvents" });
   }
 };
 

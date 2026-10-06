@@ -10,6 +10,7 @@ import StepLocation from "../components/CreateEvent/StepLocation";
 import StepTickets from "../components/CreateEvent/StepTickets";
 import { API_BASE } from "../utils/api";
 import { useBooking } from "@/context/BookingContext";
+import { useToast } from "../context/ToastContext";
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const CreateEvent = () => {
     description: "",
   });
   const { fetchEvents } = useBooking();
+  const { toast, showModal } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,21 +45,27 @@ const CreateEvent = () => {
         !formData.category ||
         !formData.description.trim()
       ) {
-        setError("Please fill in the title, category, and description.");
+        const msg = "Please fill in the title, category, and description.";
+        setError(msg);
+        toast.warning("Incomplete Information", msg);
         return;
       }
     }
 
     if (currentStep === 2) {
       if (!formData.img) {
-        setError("Please upload an image banner or provide an image URL.");
+        const msg = "Please upload an image banner or provide an image URL.";
+        setError(msg);
+        toast.warning("Image Required", msg);
         return;
       }
     }
 
     if (currentStep === 3) {
       if (!formData.location.trim() || !formData.date || !formData.time) {
-        setError("Please specify the venue location, date, and time.");
+        const msg = "Please specify the venue location, date, and time.";
+        setError(msg);
+        toast.warning("Details Required", msg);
         return;
       }
     }
@@ -98,15 +106,33 @@ const CreateEvent = () => {
       });
       const result = await res.json();
       if (!res.ok) {
-        setError(result.error || "Failed to create event");
+        const errorMsg = result.error || "Failed to create event";
+        setError(errorMsg);
+        toast.error("Creation Failed", errorMsg);
         return;
       } else {
         await fetchEvents();
-        void navigate("/organizer/my-events");
+        if (status === "Live") {
+          showModal({
+            type: "celebration",
+            title: "Event Published Successfully! 🎉",
+            message: `"${formData.title}" is now officially published! Attendees can browse and book seats immediately.`,
+            confirmText: "Go to My Events",
+            showCancel: false,
+            onConfirm: () => {
+              void navigate("/organizer/my-events");
+            },
+          });
+        } else {
+          toast.success("Draft Saved", `"${formData.title}" was saved as a draft.`);
+          void navigate("/organizer/my-events");
+        }
       }
     } catch (error) {
       console.error(error);
-      setError("An unexpected error occurred while creating the event.");
+      const errText = "An unexpected error occurred while creating the event.";
+      setError(errText);
+      toast.error("Network Error", errText);
     } finally {
       setSubmitting(false);
       setSubmitAction("");

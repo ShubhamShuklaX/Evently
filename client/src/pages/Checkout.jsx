@@ -16,6 +16,7 @@ import { API_BASE } from "../utils/api";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements } from "@stripe/react-stripe-js";
 import { AlertCircle } from "lucide-react";
+import { useToast } from "../context/ToastContext";
 
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
@@ -27,6 +28,10 @@ const CheckoutFormContent = ({
   handlePaymentSubmit,
   isProcessing,
   paymentError,
+  appliedCoupon,
+  setAppliedCoupon,
+  discountAmount,
+  updatingDiscount,
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -58,7 +63,13 @@ const CheckoutFormContent = ({
         </div>
 
         <div className="lg:col-span-5 xl:col-span-4 relative">
-          <OrderSummary isProcessing={isProcessing} />
+          <OrderSummary
+            isProcessing={isProcessing}
+            appliedCoupon={appliedCoupon}
+            setAppliedCoupon={setAppliedCoupon}
+            discountAmount={discountAmount}
+            updatingDiscount={updatingDiscount}
+          />
         </div>
       </form>
     </FormProvider>
@@ -76,15 +87,20 @@ const Checkout = () => {
     setCompletedOrder,
     setSelectedSeats,
   } = useBooking();
+  const { toast } = useToast();
 
   const [clientSecret, setClientSecret] = useState("");
+  const [paymentIntentId, setPaymentIntentId] = useState("");
   const [loadingIntent, setLoadingIntent] = useState(true);
+  const [updatingDiscount, setUpdatingDiscount] = useState(false);
   const [intentError, setIntentError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showFulfillment, setShowFulfillment] = useState(false);
   const [paymentError, setPaymentError] = useState("");
   const [status, setStatus] = useState("initiating");
   const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   // Restore currentEvent from URL if we reloaded or went back
   useEffect(() => {
@@ -105,14 +121,19 @@ const Checkout = () => {
     showFulfillment,
   ]);
 
-  // Request Stripe PaymentIntent on mount
+  // Request Stripe PaymentIntent on mount or when appliedCoupon changes
   useEffect(() => {
     if (selectedSeats.length === 0) return;
     let isMounted = true;
 
     async function initPayment() {
       try {
-        setLoadingIntent(true);
+        const isInitialLoad = !clientSecret;
+        if (isInitialLoad) {
+          setLoadingIntent(true);
+        } else {
+          setUpdatingDiscount(true);
+        }
         setIntentError("");
         const token = localStorage.getItem("evently_token");
 
@@ -122,7 +143,11 @@ const Checkout = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ seatIds: selectedSeats.map((s) => s.id) }),
+          body: JSON.stringify({
+            seatIds: selectedSeats.map((s) => s.id),
+            couponCode: appliedCoupon?.code,
+            paymentIntentId: paymentIntentId || undefined,
+          }),
         });
 
         const data = await res.json();
@@ -130,8 +155,14 @@ const Checkout = () => {
           throw new Error(data.error || "Failed to initialize payment session");
         }
 
-        if (isMounted && data.clientSecret) {
-          setClientSecret(data.clientSecret);
+        if (isMounted) {
+          if (data.clientSecret && !clientSecret) {
+            setClientSecret(data.clientSecret);
+          }
+          if (data.paymentIntentId) {
+            setPaymentIntentId(data.paymentIntentId);
+          }
+          setDiscountAmount(data.discount || 0);
         }
       } catch (err) {
         console.error("Payment init error:", err);
@@ -141,6 +172,7 @@ const Checkout = () => {
       } finally {
         if (isMounted) {
           setLoadingIntent(false);
+          setUpdatingDiscount(false);
         }
       }
     }
@@ -150,7 +182,7 @@ const Checkout = () => {
     return () => {
       isMounted = false;
     };
-  }, [selectedSeats]);
+  }, [selectedSeats, appliedCoupon]);
 
   const storedUser = JSON.parse(localStorage.getItem("evently_user") || "{}");
   const nameParts = (storedUser.name || "Alexander Hamilton").trim().split(" ");
@@ -243,7 +275,10 @@ const Checkout = () => {
 
       const token = localStorage.getItem("evently_token");
       const seatIds = selectedSeats.map((s) => s.id);
-      const totalPaid = currentEvent.price * selectedSeats.length + 19;
+      const totalPaid = Math.max(
+        0,
+        currentEvent.price * selectedSeats.length - discountAmount + 19,
+      );
 
       const response = await fetch(`${API_BASE}/api/orders`, {
         method: "POST",
@@ -256,6 +291,7 @@ const Checkout = () => {
           idempotencyKey,
           totalPaid,
           paymentIntentId: paymentIntent.id,
+          couponCode: appliedCoupon?.code,
         }),
       });
 
@@ -273,17 +309,25 @@ const Checkout = () => {
         setCompletedOrder(finalOrder);
         setSelectedSeats([]);
         setStatus("success");
+        toast.success(
+          "Payment Confirmed! 🎉",
+          `Order #${result.order.id.slice(0, 8).toUpperCase()} processed successfully.`
+        );
         setTimeout(() => {
           void navigate("../success", { relative: "path" });
         }, 1500);
       } else {
-        setPaymentError(result.error || "Order booking failed");
+        const errorMsg = result.error || "Order booking failed";
+        setPaymentError(errorMsg);
         setStatus("failed");
+        toast.error("Payment Failed", errorMsg);
       }
     } catch (err) {
       console.error("Checkout submission error:", err);
-      setPaymentError(err.message || "An unexpected error occurred during payment.");
+      const errorMsg = err.message || "An unexpected error occurred during payment.";
+      setPaymentError(errorMsg);
       setStatus("failed");
+      toast.error("Transaction Error", errorMsg);
     } finally {
       setIsProcessing(false);
     }
@@ -375,6 +419,10 @@ const Checkout = () => {
             handlePaymentSubmit={handlePaymentSubmit}
             isProcessing={isProcessing}
             paymentError={paymentError}
+            appliedCoupon={appliedCoupon}
+            setAppliedCoupon={setAppliedCoupon}
+            discountAmount={discountAmount}
+            updatingDiscount={updatingDiscount}
           />
         </Elements>
       ) : (

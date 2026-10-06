@@ -17,7 +17,7 @@ const statusStyles = {
   Past: "bg-neutral-100 text-neutral-500 border border-neutral-200",
 };
 
-const EventsTable = ({ myEvents = [], onDeleteEvent }) => {
+const EventsTable = ({ myEvents = [], onDeleteEvent, statusFilter }) => {
   const navigate = useNavigate();
   const [eventToDelete, setEventToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -38,13 +38,14 @@ const EventsTable = ({ myEvents = [], onDeleteEvent }) => {
     <>
       <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
         {/* Column headers */}
-        <div className="grid grid-cols-[2.5fr_1.2fr_1fr_1fr_1fr_120px] gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+        <div className="grid grid-cols-[minmax(0,2.5fr)_minmax(0,1.3fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_110px] items-center gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
           <span>Event & Category</span>
           <span>Date & Time</span>
           <span>Tickets / Capacity</span>
           <span>Pricing</span>
+          <span>Revenue</span>
           <span>Status</span>
-          <span className="text-right">Actions</span>
+          <span className="text-center">Actions</span>
         </div>
 
         {/* Empty state */}
@@ -54,7 +55,7 @@ const EventsTable = ({ myEvents = [], onDeleteEvent }) => {
               <CalendarDays size={28} />
             </div>
             <h3 className="text-lg font-bold text-neutral-800">
-              No events found
+              No {statusFilter} events found
             </h3>
             <p className="text-sm text-neutral-500 mt-1 max-w-sm mx-auto mb-6">
               You haven't listed any events matching your criteria yet.
@@ -73,15 +74,13 @@ const EventsTable = ({ myEvents = [], onDeleteEvent }) => {
             {myEvents.map((event) => {
               const capacity = Number(event.capacity) || 100;
               const sold =
-                typeof event.soldCount === "number"
-                  ? event.soldCount
-                  : Math.round(capacity * 0.4);
+                typeof event.soldCount === "number" ? event.soldCount : 0;
               const price = Number(event.price) || 0;
 
               return (
                 <div
                   key={event.id}
-                  className="grid grid-cols-[2.5fr_1.2fr_1fr_1fr_1fr_120px] gap-4 px-6 py-4 items-center hover:bg-neutral-50/80 transition-colors group"
+                  className="grid grid-cols-[minmax(0,2.5fr)_minmax(0,1.3fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_110px] gap-4 px-6 py-5 items-center hover:bg-neutral-50/80 transition-colors group"
                 >
                   {/* Event Title & Thumbnail */}
                   <div className="flex items-center gap-3 min-w-0">
@@ -95,7 +94,7 @@ const EventsTable = ({ myEvents = [], onDeleteEvent }) => {
                     />
                     <div className="min-w-0">
                       <Link
-                        to={`/organizer/events/edit/${event.id}`}
+                        to={`/events/${event.id}`}
                         className="font-bold text-[#1D1F23] hover:text-[#6365f1] transition-colors line-clamp-1 text-sm block"
                         title={event.title}
                       >
@@ -157,6 +156,13 @@ const EventsTable = ({ myEvents = [], onDeleteEvent }) => {
                     </span>
                   </div>
 
+                  {/* Revenue */}
+                  <div>
+                    <span className="text-sm font-bold text-[#1D1F23]">
+                      ₹{(sold * price).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+
                   {/* Status Badge */}
                   <div>
                     <span
@@ -169,7 +175,7 @@ const EventsTable = ({ myEvents = [], onDeleteEvent }) => {
                   </div>
 
                   {/* Interactive Action Buttons */}
-                  <div className="flex items-center justify-end gap-1">
+                  <div className="flex items-center justify-center gap-1">
                     <button
                       type="button"
                       title="Edit Event"

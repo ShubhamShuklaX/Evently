@@ -13,12 +13,12 @@ const MetricsCards = ({ myEvents = [] }) => {
 
   // Compute tickets sold & estimated gross revenue based on organizer events
   const ticketsSoldCount = myEvents.reduce((acc, e) => {
-    const sold = typeof e.soldCount === "number" ? e.soldCount : Math.round((e.capacity || 100) * 0.35);
+    const sold = typeof e.soldCount === "number" ? e.soldCount : 0;
     return acc + sold;
   }, 0);
 
   const totalRevenue = myEvents.reduce((acc, e) => {
-    const sold = typeof e.soldCount === "number" ? e.soldCount : Math.round((e.capacity || 100) * 0.35);
+    const sold = typeof e.soldCount === "number" ? e.soldCount : 0;
     return acc + (Number(e.price) || 0) * sold;
   }, 0);
 

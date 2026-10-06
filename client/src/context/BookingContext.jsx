@@ -1,4 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { API_BASE } from "../utils/api";
 
 const BookingContext = createContext();
@@ -6,15 +13,71 @@ const BookingContext = createContext();
 export const BookingProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState(null);
+  const [currentEvent, setCurrentEvent] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("evently_current_event");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [orderData, setOrderData] = useState(() => {
+    const saved = sessionStorage.getItem("evently_completed_order");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [selectedSeats, setSelectedSeats] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("evently_selected_seats");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (selectedSeats && selectedSeats.length > 0) {
+        sessionStorage.setItem(
+          "evently_selected_seats",
+          JSON.stringify(selectedSeats)
+        );
+      } else {
+        sessionStorage.removeItem("evently_selected_seats");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [selectedSeats]);
+
+  useEffect(() => {
+    try {
+      if (currentEvent && currentEvent.id) {
+        sessionStorage.setItem(
+          "evently_current_event",
+          JSON.stringify(currentEvent)
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [currentEvent]);
 
   const fetchEvents = useCallback(async () => {
     try {
       setEventsLoading(true);
       const response = await fetch(`${API_BASE}/api/events`);
       const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to fetch events");
+      }
       setEvents(result.events || []);
+      setEventsError(null);
     } catch (error) {
       console.error(error);
+      setEventsError(error.message || "Failed to load events");
     } finally {
       setEventsLoading(false);
     }
@@ -27,11 +90,18 @@ export const BookingProvider = ({ children }) => {
         setEventsLoading(true);
         const response = await fetch(`${API_BASE}/api/events`);
         const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result?.message || "Failed to fetch events");
+        }
         if (isMounted) {
           setEvents(result.events || []);
+          setEventsError(null);
         }
       } catch (error) {
         console.error(error);
+        if (isMounted) {
+          setEventsError(error.message || "Failed to load events");
+        }
       } finally {
         if (isMounted) {
           setEventsLoading(false);
@@ -43,12 +113,6 @@ export const BookingProvider = ({ children }) => {
       isMounted = false;
     };
   }, []);
-
-  // 2. THE GLOBAL STATE
-  const [currentEvent, setCurrentEvent] = useState([]);
-
-  // Start with empty cart!
-  const [selectedSeats, setSelectedSeats] = useState([]);
 
   // Helper function to add/remove a seat
   const toggleSeat = async (seatObj) => {
@@ -62,11 +126,6 @@ export const BookingProvider = ({ children }) => {
     });
   };
 
-  const [orderData, setOrderData] = useState(() => {
-    const saved = sessionStorage.getItem("evently_completed_order");
-    return saved ? JSON.parse(saved) : null;
-  });
-
   const setCompletedOrder = (order) => {
     setOrderData(order);
     if (order) {
@@ -76,7 +135,10 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
-  const getEventById = useCallback((id) => events.find((e) => e.id === id), [events]);
+  const getEventById = useCallback(
+    (id) => events.find((e) => e.id === id),
+    [events],
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -91,8 +153,18 @@ export const BookingProvider = ({ children }) => {
       setCompletedOrder,
       getEventById,
       fetchEvents,
+      eventsError,
     }),
-    [events, eventsLoading, currentEvent, selectedSeats, orderData, getEventById, fetchEvents],
+    [
+      events,
+      eventsLoading,
+      currentEvent,
+      selectedSeats,
+      orderData,
+      getEventById,
+      fetchEvents,
+      eventsError,
+    ],
   );
 
   return (

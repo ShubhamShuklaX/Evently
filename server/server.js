@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import seatRoutes from "./routes/seatRoutes.js";
 import { prisma } from "./config/prisma.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
 import { apiLimiter, authLimiter } from "./middleware/rateLimiter.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
@@ -50,6 +51,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/seats", seatRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/coupons", couponRoutes);
 
 const cleanupTimer = setInterval(async () => {
   try {

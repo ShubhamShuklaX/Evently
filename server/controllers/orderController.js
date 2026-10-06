@@ -61,8 +61,17 @@ const validateCheckoutInputs = (idempotencyKey, seatIds) => {
   return null;
 };
 
+const calculateCouponDiscount = (coupon, subtotal) => {
+  if (!coupon || !coupon.active) return 0;
+  if (coupon.maxUses && coupon.used >= coupon.maxUses) return 0;
+  if (coupon.type === "percentage") {
+    return Math.round((subtotal * coupon.discount) / 100);
+  }
+  return Math.min(subtotal, coupon.discount);
+};
+
 export const processCheckout = async (req, res) => {
-  const { seatIds, idempotencyKey, paymentIntentId } = req.body;
+  const { seatIds, idempotencyKey, paymentIntentId, couponCode } = req.body;
   const uniqueSeatIds = [...new Set(seatIds || [])];
 
   try {
@@ -103,7 +112,25 @@ export const processCheckout = async (req, res) => {
     }
 
     const ticketPrice = holdSeats[0].event.price;
-    const serverTotalPrice = ticketPrice * holdSeats.length + 19;
+    const subtotal = ticketPrice * holdSeats.length;
+
+    let discountAmount = 0;
+    let appliedCoupon = null;
+    if (couponCode && typeof couponCode === "string") {
+      const coupon = await prisma.coupon.findUnique({
+        where: { code: couponCode.trim().toUpperCase() },
+      });
+      if (
+        coupon &&
+        coupon.active &&
+        (!coupon.maxUses || coupon.used < coupon.maxUses)
+      ) {
+        appliedCoupon = coupon;
+        discountAmount = calculateCouponDiscount(coupon, subtotal);
+      }
+    }
+
+    const serverTotalPrice = Math.max(0, subtotal - discountAmount + 19);
 
     const orderId = crypto.randomUUID();
 
@@ -139,6 +166,14 @@ export const processCheckout = async (req, res) => {
           throw new Error(
             "One or more seat holds expired before completing checkout",
           );
+        }
+
+        // 3. Increment coupon usage count if applied
+        if (appliedCoupon) {
+          await tx.coupon.update({
+            where: { id: appliedCoupon.id },
+            data: { used: { increment: 1 } },
+          });
         }
 
         return newOrder;
@@ -204,7 +239,7 @@ export const getMyOrders = async (req, res) => {
 
 export const createPaymentIntent = async (req, res) => {
   try {
-    const { seatIds } = req.body;
+    const { seatIds, couponCode, paymentIntentId: existingIntentId } = req.body;
     if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0) {
       return res.status(400).json({ error: "Seat IDs are required" });
     }
@@ -227,7 +262,25 @@ export const createPaymentIntent = async (req, res) => {
     }
 
     const ticketPrice = holdSeats[0].event.price;
-    const totalAmount = ticketPrice * holdSeats.length + 19;
+    const subtotal = ticketPrice * holdSeats.length;
+
+    let discountAmount = 0;
+    let appliedCoupon = null;
+    if (couponCode && typeof couponCode === "string") {
+      const coupon = await prisma.coupon.findUnique({
+        where: { code: couponCode.trim().toUpperCase() },
+      });
+      if (
+        coupon &&
+        coupon.active &&
+        (!coupon.maxUses || coupon.used < coupon.maxUses)
+      ) {
+        appliedCoupon = coupon;
+        discountAmount = calculateCouponDiscount(coupon, subtotal);
+      }
+    }
+
+    const totalAmount = Math.max(0, subtotal - discountAmount + 19);
 
     if (!stripe) {
       return res.status(500).json({
@@ -236,23 +289,45 @@ export const createPaymentIntent = async (req, res) => {
       });
     }
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(totalAmount * 100),
-      currency: "inr",
-      metadata: {
-        userId: req.user.id,
-        eventId: holdSeats[0].eventId,
-        seatIds: uniqueSeatIds.join(","),
-      },
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
+    let paymentIntent;
+    if (existingIntentId && typeof existingIntentId === "string") {
+      paymentIntent = await stripe.paymentIntents.update(existingIntentId, {
+        amount: Math.round(totalAmount * 100),
+        metadata: {
+          userId: req.user.id,
+          eventId: holdSeats[0].eventId,
+          seatIds: uniqueSeatIds.join(","),
+          couponCode: appliedCoupon?.code || "",
+        },
+      });
+    } else {
+      paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(totalAmount * 100),
+        currency: "inr",
+        metadata: {
+          userId: req.user.id,
+          eventId: holdSeats[0].eventId,
+          seatIds: uniqueSeatIds.join(","),
+          couponCode: appliedCoupon?.code || "",
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+    }
 
     return res.status(200).json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       amount: totalAmount,
+      discount: discountAmount,
+      coupon: appliedCoupon
+        ? {
+            code: appliedCoupon.code,
+            discount: appliedCoupon.discount,
+            type: appliedCoupon.type,
+          }
+        : null,
     });
   } catch (error) {
     console.error("Create payment intent error:", error);

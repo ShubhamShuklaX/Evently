@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/Logo.png";
 import authHeroImg from "../../assets/AuthHeroImg.png";
 import { API_BASE } from "../../utils/api";
+import { useToast } from "../../context/ToastContext";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { toast } = useToast();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,12 +54,21 @@ const Login = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Authentication failed");
+        const errorMsg = data.error || "Authentication failed";
+        setError(errorMsg);
+        toast.error(tab === "login" ? "Sign In Failed" : "Registration Failed", errorMsg);
         return;
       }
 
       localStorage.setItem("evently_token", data.token);
       localStorage.setItem("evently_user", JSON.stringify(data.user));
+
+      if (tab === "login") {
+        toast.success("Welcome Back!", `Signed in as ${data.user.name || data.user.email}`);
+      } else {
+        toast.success("Account Created!", "Welcome to Evently. Your journey begins now!");
+      }
+
       if (data.user.role === "organizer" || data.user.role === "admin") {
         void navigate("/organizer");
       } else {
@@ -65,7 +76,9 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Auth error:", error);
-      setError("Something went wrong. Please try again.");
+      const errText = "Something went wrong. Please check your connection.";
+      setError(errText);
+      toast.error("Network Error", errText);
     } finally {
       setLoading(false);
     }

@@ -67,8 +67,12 @@ const EventsManagement = () => {
       const matchesSearch =
         searchQuery.trim() === "" ||
         (event.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (event.location || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (event.category || "").toLowerCase().includes(searchQuery.toLowerCase());
+        (event.location || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        (event.category || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
 
       const matchesStatus =
         statusFilter === "All" ||
@@ -121,6 +125,7 @@ const EventsManagement = () => {
             <EventsTable
               myEvents={filteredEvents}
               onDeleteEvent={handleDeleteEvent}
+              statusFilter={statusFilter}
             />
           )}
         </main>

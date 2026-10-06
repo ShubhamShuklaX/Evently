@@ -19,14 +19,14 @@ const MyEventsFilters = ({
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
+          onChange={(e) => setSearchQuery?.(e.target.value)}
           placeholder="Search your events by title or venue..."
           className="w-full h-10.5 pl-10 pr-9 text-sm rounded-xl border border-neutral-200 bg-white outline-none focus:border-[#6365f1] focus:ring-1 focus:ring-[#6365f1] text-neutral-800 placeholder:text-neutral-400 shadow-2xs transition-all"
         />
         {searchQuery && (
           <button
             type="button"
-            onClick={() => setSearchQuery && setSearchQuery("")}
+            onClick={() => setSearchQuery?.("")}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
           >
             <X size={14} />
@@ -40,7 +40,7 @@ const MyEventsFilters = ({
           <button
             key={status}
             type="button"
-            onClick={() => setStatusFilter && setStatusFilter(status)}
+            onClick={() => setStatusFilter?.(status)}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               statusFilter === status
                 ? "bg-[#1D1F23] text-white shadow-xs"

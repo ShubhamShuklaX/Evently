@@ -40,13 +40,16 @@ const OrganizerAnalytics = () => {
     (acc, e) => acc + (Number(e.capacity) || 100),
     0,
   );
+  const totalSold = events.reduce(
+    (acc, e) => acc + (Number(e.soldCount) || 0),
+    0,
+  );
   const totalRevenue = events.reduce((acc, e) => {
-    const sold =
-      typeof e.soldCount === "number"
-        ? e.soldCount
-        : Math.round((e.capacity || 100) * 0.38);
+    const sold = Number(e.soldCount) || 0;
     return acc + (Number(e.price) || 0) * sold;
   }, 0);
+  const sellThroughRate =
+    totalCapacity > 0 ? ((totalSold / totalCapacity) * 100).toFixed(1) : "0";
   const avgTicketPrice =
     events.length > 0
       ? Math.round(
@@ -145,10 +148,10 @@ const OrganizerAnalytics = () => {
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-[#1D1F23]">
-                    {events.length > 0 ? "76.4%" : "0%"}
+                    {sellThroughRate}%
                   </p>
                   <p className="text-xs text-purple-600 font-medium mt-1">
-                    Top quartile industry benchmark
+                    {totalSold} / {totalCapacity} seats booked
                   </p>
                 </div>
               </div>
@@ -170,10 +173,7 @@ const OrganizerAnalytics = () => {
                   <div className="divide-y divide-neutral-100">
                     {events.map((e) => {
                       const capacity = Number(e.capacity) || 100;
-                      const sold =
-                        typeof e.soldCount === "number"
-                          ? e.soldCount
-                          : Math.round(capacity * 0.42);
+                      const sold = Number(e.soldCount) || 0;
                       const revenue = sold * (Number(e.price) || 0);
 
                       return (

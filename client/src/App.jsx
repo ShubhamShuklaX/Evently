@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { BookingProvider } from "./context/BookingContext";
+import { ToastProvider } from "./context/ToastContext";
 import EventDetails from "./pages/EventDetails";
 import Home from "./pages/Home";
 import Login from "./components/Auth/Login";
@@ -37,7 +38,8 @@ const App = () => {
   return (
     <div>
       <BookingProvider>
-        <ScrollToTop />
+        <ToastProvider>
+          <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -140,6 +142,7 @@ const App = () => {
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </ToastProvider>
       </BookingProvider>
     </div>
   );

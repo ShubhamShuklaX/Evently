@@ -4,8 +4,10 @@ import {
   Trash2,
   Image as ImageIcon,
 } from "lucide-react";
+import { useToast } from "../../context/ToastContext";
 
 const StepMedia = ({ formData, handleChange }) => {
+  const { toast } = useToast();
   const isFile = formData.img instanceof File;
   const isUrl = typeof formData.img === "string" && formData.img.trim() !== "";
 
@@ -32,14 +34,14 @@ const StepMedia = ({ formData, handleChange }) => {
 
     // Check size on frontend: Max 2MB
     if (file.size > 2 * 1024 * 1024) {
-      alert("File size exceeds 2MB limit. Please upload an image under 2MB.");
+      toast.error("File Too Large", "File size exceeds 2MB limit. Please upload an image under 2MB.");
       return;
     }
 
     // Check allowed format
     const validTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
     if (!validTypes.includes(file.type)) {
-      alert("Invalid format! Only JPG, PNG, and WEBP image files are allowed.");
+      toast.error("Invalid Format", "Only JPG, PNG, and WEBP image files are allowed.");
       return;
     }
 
@@ -50,17 +52,20 @@ const StepMedia = ({ formData, handleChange }) => {
     imgObj.onload = () => {
       URL.revokeObjectURL(objectUrl);
       if (imgObj.naturalWidth < imgObj.naturalHeight) {
-        alert(
-          "Invalid orientation! Please upload a landscape image (recommended 16:9 ratio, width must be greater than height). Portrait images distort event flyer banners.",
+        toast.warning(
+          "Invalid Orientation",
+          "Please upload a landscape image (recommended 16:9 ratio, width must be greater than height)."
         );
         return;
       }
       handleChange({ target: { name: "img", value: file } });
+      toast.success("Image Uploaded", `${file.name} ready for event flyer.`);
     };
     imgObj.onerror = () => {
       URL.revokeObjectURL(objectUrl);
-      alert(
-        "Unable to read image dimensions. Please select a valid image file.",
+      toast.error(
+        "Invalid Image File",
+        "Unable to read image dimensions. Please select a valid image file."
       );
     };
   };

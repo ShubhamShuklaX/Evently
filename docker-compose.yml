@@ -12,6 +12,9 @@ services:
     ports:
       - "5000:5000"
     restart: unless-stopped
+    volumes:
+      - ./server:/app
+      - /app/node_modules
 
   client:
     build:
@@ -24,3 +27,6 @@ services:
     depends_on:
       - server
     restart: unless-stopped
+    volumes:
+      - ./client:/app
+      - /app/node_modules

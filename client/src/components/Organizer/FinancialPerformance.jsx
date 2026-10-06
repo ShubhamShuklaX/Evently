@@ -117,9 +117,7 @@ const FinancialPerformance = ({ myEvents = [] }) => {
               {displayEvents.map((event) => {
                 const capacity = Number(event.capacity) || 100;
                 const sold =
-                  typeof event.soldCount === "number"
-                    ? event.soldCount
-                    : Math.round(capacity * 0.45);
+                  typeof event.soldCount === "number" ? event.soldCount : 0;
                 const percent = Math.min(
                   100,
                   Math.round((sold / capacity) * 100),

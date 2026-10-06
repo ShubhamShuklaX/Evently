@@ -5,6 +5,7 @@ import Sidebar from "../components/Organizer/Sidebar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Search, Download, UserCheck, Clock, Ticket } from "lucide-react";
 import { API_BASE } from "../utils/api";
+import { useToast } from "../context/ToastContext";
 
 const sampleAttendees = [
   { id: "ATT-101", name: "Aarav Sharma", email: "aarav.sharma@example.com", event: "Midnight Sun Music Festival", seat: "Row A - Seat 4", status: "Checked In", time: "18:42" },
@@ -19,6 +20,7 @@ const OrganizerAttendees = () => {
   const [search, setSearch] = useState("");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function loadData() {
@@ -56,16 +58,68 @@ const OrganizerAttendees = () => {
 
   const toggleCheckIn = (id) => {
     setAttendees((prev) =>
-      prev.map((att) =>
-        att.id === id
-          ? {
-              ...att,
-              status: att.status === "Checked In" ? "Pending" : "Checked In",
-              time: att.status === "Checked In" ? "-" : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            }
-          : att
-      )
+      prev.map((att) => {
+        if (att.id === id) {
+          const willBeCheckedIn = att.status !== "Checked In";
+          if (willBeCheckedIn) {
+            toast.success("Checked In", `${att.name} (${att.seat}) validated.`);
+          } else {
+            toast.info("Status Reset", `${att.name} marked as Pending.`);
+          }
+          return {
+            ...att,
+            status: willBeCheckedIn ? "Checked In" : "Pending",
+            time: willBeCheckedIn
+              ? new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "-",
+          };
+        }
+        return att;
+      })
     );
+  };
+
+  const exportManifest = () => {
+    if (attendees.length === 0) {
+      toast.warning("Export Notice", "No attendee entries to export.");
+      return;
+    }
+
+    const headers = [
+      "Ticket ID",
+      "Name",
+      "Email",
+      "Event",
+      "Seat",
+      "Status",
+      "Arrival Time",
+    ];
+    const rows = attendees.map((a) => [
+      `"${a.id || ""}"`,
+      `"${(a.name || "").replaceAll(/"/g, '""')}"`,
+      `"${(a.email || "").replaceAll(/"/g, '""')}"`,
+      `"${(a.event || "").replaceAll(/"/g, '""')}"`,
+      `"${a.seat || ""}"`,
+      `"${a.status || ""}"`,
+      `"${a.time || ""}"`,
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const link = document.createElement("a");
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute(
+      "download",
+      `evently_manifest_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Manifest Exported", "Attendee roster downloaded as CSV.");
   };
 
   const filteredAttendees = attendees.filter(
@@ -96,8 +150,8 @@ const OrganizerAttendees = () => {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => alert("Attendee manifest downloaded successfully!")}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200 bg-white text-sm font-semibold text-neutral-700 hover:bg-neutral-50 shadow-2xs cursor-pointer"
+                onClick={exportManifest}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200 bg-white text-sm font-semibold text-neutral-700 hover:bg-neutral-50 shadow-2xs cursor-pointer active:scale-95 transition-all"
               >
                 <Download size={16} />
                 Export Manifest

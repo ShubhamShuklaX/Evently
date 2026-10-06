@@ -1,10 +1,13 @@
 import { Plus, Download } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useToast } from "../../../context/ToastContext";
 
 const MyEventsHeader = ({ myEvents = [] }) => {
+  const { toast } = useToast();
+
   const exportToCSV = () => {
     if (!myEvents || myEvents.length === 0) {
-      alert("No events available to export.");
+      toast.warning("Export Notice", "No events available to export.");
       return;
     }
 
@@ -28,6 +31,7 @@ const MyEventsHeader = ({ myEvents = [] }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success("Export Complete", "My Events roster exported to CSV.");
   };
 
   return (

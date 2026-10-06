@@ -8,10 +8,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useBooking } from "../../context/BookingContext";
+import { useToast } from "../../context/ToastContext";
 
 const BookingCard = ({ booking }) => {
   const navigate = useNavigate();
   const { setCompletedOrder } = useBooking();
+  const { toast, showModal } = useToast();
 
   const { event, seats, totalPaid, status, orderId } = booking;
   const isUpcoming = status === "upcoming";
@@ -67,7 +69,15 @@ const BookingCard = ({ booking }) => {
               {orderId}
             </span>
           </div>
-          <button className="text-neutral-400 hover:text-[#1D1F23] transition-colors cursor-pointer p-1">
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(orderId);
+              toast.success("Order ID Copied", `ID ${orderId} copied to clipboard.`);
+            }}
+            title="Copy Order ID"
+            className="text-neutral-400 hover:text-[#1D1F23] transition-colors cursor-pointer p-1"
+          >
             <MoreVertical size={18} />
           </button>
         </div>
@@ -98,10 +108,32 @@ const BookingCard = ({ booking }) => {
         <div className="mt-auto flex flex-col sm:flex-row gap-3">
           {isPending ? (
             <>
-              <button className="flex-1 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  toast.info("Resuming Booking", "Returning to seat selection to finalize your order.");
+                  void navigate(event.id ? `/events/${event.id}/seats` : "/events");
+                }}
+                className="flex-1 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm active:scale-95"
+              >
                 Retry Payment <ArrowRight size={16} />
               </button>
-              <button className="flex-1 bg-white border border-neutral-200 hover:bg-neutral-50 text-[#1D1F23] font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  showModal({
+                    type: "danger",
+                    title: "Discard Pending Order?",
+                    message: "Are you sure you want to discard this reservation? Any held seats will be released.",
+                    confirmText: "Discard",
+                    cancelText: "Keep Order",
+                    onConfirm: () => {
+                      toast.info("Order Discarded", "The pending reservation has been cleared.");
+                    },
+                  });
+                }}
+                className="flex-1 bg-white border border-neutral-200 hover:bg-neutral-50 text-[#1D1F23] font-semibold py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm active:scale-95"
+              >
                 Discard Order
               </button>
             </>

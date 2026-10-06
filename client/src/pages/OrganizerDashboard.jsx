@@ -6,13 +6,15 @@ import Sidebar from "../components/Organizer/Sidebar";
 import MetricsCards from "../components/Organizer/MetricsCards";
 import FinancialPerformance from "../components/Organizer/FinancialPerformance";
 import EventsTable from "../components/Organizer/MyEvents/EventsTable";
-import { Download, Plus, CheckCircle2, AlertCircle, Bell, Loader2 } from "lucide-react";
+import { Download, Plus, Loader2 } from "lucide-react";
 import { API_BASE } from "../utils/api";
+import { useToast } from "../context/ToastContext";
 
 const OrganizerDashboard = () => {
   const [activeTab, setActiveTab] = useState("financial");
   const [myEvents, setMyEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const user = JSON.parse(localStorage.getItem("evently_user") || "null");
   const organizerName = user?.name || "Organizer";
@@ -54,48 +56,54 @@ const OrganizerDashboard = () => {
       });
       const data = await res.json();
       if (!res.ok) {
-        alert(data.error || "Failed to delete event.");
+        toast.error("Deletion Failed", data.error || "Failed to delete event.");
         return;
       }
       setMyEvents((prev) => prev.filter((e) => e.id !== eventId));
+      toast.success("Event Deleted", "The event has been successfully deleted.");
     } catch (err) {
       console.error("Error deleting event:", err);
-      alert("Network error while deleting event. Please try again.");
+      toast.error("Network Error", "Network error while deleting event. Please try again.");
     }
   };
 
   const exportData = () => {
     if (myEvents.length === 0) {
-      alert("No events to export.");
+      toast.warning("Export Notice", "No events available to export.");
       return;
     }
-    const headers = ["Title", "Category", "Location", "Date", "Price", "Capacity", "Status"];
+    const headers = [
+      "Title",
+      "Category",
+      "Location",
+      "Date",
+      "Price",
+      "Capacity",
+      "Status",
+    ];
     const rows = myEvents.map((e) => [
-      `"${(e.title || "").replace(/"/g, '""')}"`,
+      `"${(e.title || "").replaceAll(/"/g, '""')}"`,
       `"${e.category || ""}"`,
-      `"${(e.location || "").replace(/"/g, '""')}"`,
+      `"${(e.location || "").replaceAll(/"/g, '""')}"`,
       `"${e.date || ""}"`,
       e.price || 0,
       e.capacity || 100,
       `"${e.status || "Live"}"`,
     ]);
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
     const link = document.createElement("a");
     link.setAttribute("href", encodeURI(csvContent));
-    link.setAttribute("download", `organizer_dashboard_events_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute(
+      "download",
+      `organizer_dashboard_events_${new Date().toISOString().slice(0, 10)}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success("Export Complete", "Events exported to CSV successfully.");
   };
-
-  // Metrics for bottom notification cards
-  const totalRevenue = myEvents.reduce((acc, e) => {
-    const sold = typeof e.soldCount === "number" ? e.soldCount : Math.round((e.capacity || 100) * 0.35);
-    return acc + (Number(e.price) || 0) * sold;
-  }, 0);
-
-  const liveEventsCount = myEvents.filter((e) => e.status === "Live").length;
-  const draftEventsCount = myEvents.filter((e) => e.status === "Draft").length;
 
   return (
     <div className="min-h-screen bg-[#F6F7F9] font-sans flex flex-col">
@@ -112,7 +120,8 @@ const OrganizerDashboard = () => {
                 Organizer Hub
               </h1>
               <p className="text-neutral-500 mt-1">
-                Welcome back, {organizerName}. Here's how your events are performing.
+                Welcome back, {organizerName}. Here's how your events are
+                performing.
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -182,53 +191,6 @@ const OrganizerDashboard = () => {
               />
             </div>
           )}
-
-          {/* Bottom Dynamic Status Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-10">
-            <div className="bg-[#F8FFF9] border border-[#E1F0E5] rounded-2xl p-5 flex items-start gap-4 shadow-2xs">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                <CheckCircle2 size={20} />
-              </div>
-              <div>
-                <h4 className="font-bold text-[#1D1F23] text-sm mb-0.5">
-                  Verified Payouts
-                </h4>
-                <p className="text-sm text-neutral-500">
-                  ₹{Math.round(totalRevenue * 0.95).toLocaleString("en-IN")} available for transfer.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#FFFDF5] border border-[#F4EDD3] rounded-2xl p-5 flex items-start gap-4 shadow-2xs">
-              <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                <AlertCircle size={20} />
-              </div>
-              <div>
-                <h4 className="font-bold text-[#1D1F23] text-sm mb-0.5">
-                  Listing Readiness
-                </h4>
-                <p className="text-sm text-neutral-500">
-                  {draftEventsCount > 0
-                    ? `${draftEventsCount} draft event${draftEventsCount > 1 ? "s" : ""} pending final review.`
-                    : `${liveEventsCount} live event${liveEventsCount !== 1 ? "s" : ""} active and ready.`}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-5 flex items-start gap-4 shadow-2xs">
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                <Bell size={20} />
-              </div>
-              <div>
-                <h4 className="font-bold text-[#1D1F23] text-sm mb-0.5">
-                  Live Notifications
-                </h4>
-                <p className="text-sm text-neutral-500">
-                  Real-time seat mapping active across all venues.
-                </p>
-              </div>
-            </div>
-          </div>
         </main>
       </div>
 
