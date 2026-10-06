@@ -11,6 +11,18 @@ const FinancialPerformance = ({ myEvents = [] }) => {
   // Pick top active event for Selling Fast alert
   const topLiveEvent = myEvents.find((e) => e.status === "Live") || myEvents[0];
 
+  const totalRev = myEvents.reduce((acc, e) => {
+    const sold = typeof e.soldCount === "number" ? e.soldCount : 0;
+    return acc + (Number(e.price) || 0) * sold;
+  }, 0);
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const currentMonth = new Date().getMonth();
+  const past6Months = Array.from({ length: 6 }, (_, i) => {
+    const idx = (currentMonth - 5 + i + 12) % 12;
+    return monthNames[idx];
+  });
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 mb-6">
       {/* Revenue Trends Chart */}
@@ -43,10 +55,10 @@ const FinancialPerformance = ({ myEvents = [] }) => {
         <div className="relative h-64 w-full mt-4">
           {/* Y Axis Labels */}
           <div className="absolute left-0 top-0 bottom-6 w-14 flex flex-col justify-between text-xs text-neutral-400 font-medium">
-            <span>₹50,000</span>
-            <span>₹35,000</span>
-            <span>₹20,000</span>
-            <span>₹10,000</span>
+            <span>{totalRev > 0 ? `₹${Math.round(totalRev * 1.2).toLocaleString("en-IN")}` : "₹10,000"}</span>
+            <span>{totalRev > 0 ? `₹${Math.round(totalRev * 0.9).toLocaleString("en-IN")}` : "₹7,500"}</span>
+            <span>{totalRev > 0 ? `₹${Math.round(totalRev * 0.6).toLocaleString("en-IN")}` : "₹5,000"}</span>
+            <span>{totalRev > 0 ? `₹${Math.round(totalRev * 0.3).toLocaleString("en-IN")}` : "₹2,500"}</span>
             <span>₹0</span>
           </div>
 
@@ -59,47 +71,53 @@ const FinancialPerformance = ({ myEvents = [] }) => {
             <div className="border-b border-neutral-100 w-full h-px"></div>
           </div>
 
-          {/* SVG Area Chart */}
-          <div className="absolute left-16 right-0 top-2 bottom-6 overflow-hidden">
-            <svg
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              className="w-full h-full"
-            >
-              <defs>
-                <linearGradient
-                  id="financialGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="0%" stopColor="#6365f1" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#6365f1" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 0,65 C 15,55 25,60 40,45 C 55,30 65,40 75,25 C 85,15 95,20 100,10 L 100,100 L 0,100 Z"
-                fill="url(#financialGradient)"
-              />
-              <path
-                d="M 0,65 C 15,55 25,60 40,45 C 55,30 65,40 75,25 C 85,15 95,20 100,10"
-                fill="none"
-                stroke="#6365f1"
-                strokeWidth="2.5"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-          </div>
+          {/* SVG Area Chart / Zero State */}
+          {totalRev === 0 ? (
+            <div className="absolute left-16 right-0 top-2 bottom-6 flex flex-col items-center justify-center text-center p-4">
+              <p className="text-sm font-semibold text-neutral-600">No revenue data yet</p>
+              <p className="text-xs text-neutral-400 mt-1 max-w-xs">
+                Ticket sales will generate monthly revenue trend curves here.
+              </p>
+            </div>
+          ) : (
+            <div className="absolute left-16 right-0 top-2 bottom-6 overflow-hidden">
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                className="w-full h-full"
+              >
+                <defs>
+                  <linearGradient
+                    id="financialGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#6365f1" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#6365f1" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M 0,80 C 20,70 40,55 60,40 C 75,30 90,20 100,10 L 100,100 L 0,100 Z"
+                  fill="url(#financialGradient)"
+                />
+                <path
+                  d="M 0,80 C 20,70 40,55 60,40 C 75,30 90,20 100,10"
+                  fill="none"
+                  stroke="#6365f1"
+                  strokeWidth="2.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+            </div>
+          )}
 
           {/* X Axis Labels */}
           <div className="absolute left-16 right-0 bottom-0 flex justify-between text-xs text-neutral-400 font-medium px-4">
-            <span>May</span>
-            <span>Jun</span>
-            <span>Jul</span>
-            <span>Aug</span>
-            <span>Sep</span>
-            <span>Oct</span>
+            {past6Months.map((m, idx) => (
+              <span key={idx}>{m}</span>
+            ))}
           </div>
         </div>
       </div>

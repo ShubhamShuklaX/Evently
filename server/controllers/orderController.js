@@ -43,10 +43,15 @@ const validateHoldSeats = (holdSeats, expectedCount) => {
   return null;
 };
 
-const verifyPayment = async (paymentIntentId) => {
-  if (!paymentIntentId || !stripe) return true;
-  const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
-  return intent.status === "succeeded";
+const verifyPayment = async (intentId, userId, seatIds, totalRupees) => {
+  if (!stripe || !intentId) return false;
+  const intent = await stripe.paymentIntents.retrieve(intentId);
+  return (
+    intent.status === "succeeded" &&
+    intent.amount === Math.round(totalRupees * 100) &&
+    intent.metadata?.userId === userId &&
+    intent.metadata?.seatIds === seatIds.slice().join(",")
+  );
 };
 
 const validateCheckoutInputs = (idempotencyKey, seatIds) => {
@@ -78,11 +83,6 @@ export const processCheckout = async (req, res) => {
     const inputError = validateCheckoutInputs(idempotencyKey, seatIds);
     if (inputError) {
       return res.status(400).json({ error: inputError });
-    }
-
-    const isPaid = await verifyPayment(paymentIntentId);
-    if (!isPaid) {
-      return res.status(400).json({ error: "Payment verification failed" });
     }
 
     const exist = await prisma.order.findUnique({
@@ -131,6 +131,16 @@ export const processCheckout = async (req, res) => {
     }
 
     const serverTotalPrice = Math.max(0, subtotal - discountAmount + 19);
+
+    const isPaid = await verifyPayment(
+      paymentIntentId,
+      req.user.id,
+      uniqueSeatIds,
+      serverTotalPrice,
+    );
+    if (!isPaid) {
+      return res.status(400).json({ error: "Payment verification failed" });
+    }
 
     const orderId = crypto.randomUUID();
 

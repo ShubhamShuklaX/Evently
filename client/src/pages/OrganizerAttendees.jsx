@@ -3,20 +3,12 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Organizer/Sidebar";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { Search, Download, UserCheck, Clock, Ticket } from "lucide-react";
+import { Search, Download, UserCheck, Clock, Ticket, Users } from "lucide-react";
 import { API_BASE } from "../utils/api";
 import { useToast } from "../context/ToastContext";
 
-const sampleAttendees = [
-  { id: "ATT-101", name: "Aarav Sharma", email: "aarav.sharma@example.com", event: "Midnight Sun Music Festival", seat: "Row A - Seat 4", status: "Checked In", time: "18:42" },
-  { id: "ATT-102", name: "Priya Patel", email: "priya.patel@example.com", event: "Sunburn Arena EDM Night", seat: "Row B - Seat 12", status: "Checked In", time: "19:10" },
-  { id: "ATT-103", name: "Rohan Varma", email: "rohan.v@example.com", event: "Standup Comedy Tour", seat: "Row C - Seat 8", status: "Pending", time: "-" },
-  { id: "ATT-104", name: "Ananya Iyer", email: "ananya.iyer@example.com", event: "World Tech Summit 2026", seat: "Row A - Seat 15", status: "Checked In", time: "09:15" },
-  { id: "ATT-105", name: "Vikram Malhotra", email: "vikram.m@example.com", event: "Championship Finals", seat: "Row D - Seat 22", status: "Pending", time: "-" },
-];
-
 const OrganizerAttendees = () => {
-  const [attendees, setAttendees] = useState(sampleAttendees);
+  const [attendees, setAttendees] = useState([]);
   const [search, setSearch] = useState("");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,14 +33,32 @@ const OrganizerAttendees = () => {
 
         setEvents(Array.isArray(eventsData.events) ? eventsData.events : []);
 
-        if (Array.isArray(attendeesData.attendees) && attendeesData.attendees.length > 0) {
-          setAttendees(attendeesData.attendees);
+        if (Array.isArray(attendeesData.attendees)) {
+          // Restore any persisted check-in status from localStorage
+          let savedCheckIns = {};
+          try {
+            savedCheckIns = JSON.parse(
+              localStorage.getItem("evently_checked_ins") || "{}"
+            );
+          } catch {
+            savedCheckIns = {};
+          }
+
+          const resolvedAttendees = attendeesData.attendees.map((att) => {
+            const saved = savedCheckIns[att.id];
+            if (saved) {
+              return { ...att, status: saved.status, time: saved.time };
+            }
+            return att;
+          });
+
+          setAttendees(resolvedAttendees);
         } else {
-          setAttendees(sampleAttendees);
+          setAttendees([]);
         }
       } catch (err) {
         console.error("Error loading attendee data:", err);
-        setAttendees(sampleAttendees);
+        setAttendees([]);
       } finally {
         setLoading(false);
       }
@@ -57,29 +67,54 @@ const OrganizerAttendees = () => {
   }, []);
 
   const toggleCheckIn = (id) => {
-    setAttendees((prev) =>
-      prev.map((att) => {
+    setAttendees((prev) => {
+      let savedCheckIns = {};
+      try {
+        savedCheckIns = JSON.parse(
+          localStorage.getItem("evently_checked_ins") || "{}"
+        );
+      } catch {
+        savedCheckIns = {};
+      }
+
+      const next = prev.map((att) => {
         if (att.id === id) {
           const willBeCheckedIn = att.status !== "Checked In";
+          const newTime = willBeCheckedIn
+            ? new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "-";
+
           if (willBeCheckedIn) {
             toast.success("Checked In", `${att.name} (${att.seat}) validated.`);
+            savedCheckIns[id] = { status: "Checked In", time: newTime };
           } else {
             toast.info("Status Reset", `${att.name} marked as Pending.`);
+            delete savedCheckIns[id];
           }
+
           return {
             ...att,
             status: willBeCheckedIn ? "Checked In" : "Pending",
-            time: willBeCheckedIn
-              ? new Date().toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "-",
+            time: newTime,
           };
         }
         return att;
-      })
-    );
+      });
+
+      try {
+        localStorage.setItem(
+          "evently_checked_ins",
+          JSON.stringify(savedCheckIns)
+        );
+      } catch (err) {
+        console.error("Failed to persist check-in state:", err);
+      }
+
+      return next;
+    });
   };
 
   const exportManifest = () => {
@@ -219,54 +254,66 @@ const OrganizerAttendees = () => {
                 <span className="text-right">Action</span>
               </div>
 
-              <div className="divide-y divide-neutral-100">
-                {filteredAttendees.map((att) => (
-                  <div
-                    key={att.id}
-                    className="grid grid-cols-[1fr_2fr_1.5fr_1fr_120px] gap-4 px-6 py-4 items-center hover:bg-neutral-50/80 transition-colors text-sm"
-                  >
-                    <span className="font-mono text-xs font-semibold text-neutral-600">
-                      {att.id}
-                    </span>
-
-                    <div>
-                      <p className="font-bold text-[#1D1F23]">{att.name}</p>
-                      <p className="text-xs text-neutral-400">{att.email}</p>
-                    </div>
-
-                    <div>
-                      <p className="font-medium text-[#1D1F23]">{att.seat}</p>
-                      <p className="text-xs text-neutral-400 truncate">{att.event}</p>
-                    </div>
-
-                    <div>
-                      <span
-                        className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
-                          att.status === "Checked In"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : "bg-neutral-100 text-neutral-600"
-                        }`}
-                      >
-                        {att.status} {att.time !== "-" ? `(${att.time})` : ""}
+              {filteredAttendees.length === 0 ? (
+                <div className="py-16 text-center text-neutral-500">
+                  <Users className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
+                  <p className="font-semibold text-neutral-700">No attendees found</p>
+                  <p className="text-xs text-neutral-400 mt-1">
+                    {search
+                      ? "No attendees match your search query."
+                      : "Booked tickets for your events will appear here."}
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-neutral-100">
+                  {filteredAttendees.map((att) => (
+                    <div
+                      key={att.id}
+                      className="grid grid-cols-[1fr_2fr_1.5fr_1fr_120px] gap-4 px-6 py-4 items-center hover:bg-neutral-50/80 transition-colors text-sm"
+                    >
+                      <span className="font-mono text-xs font-semibold text-neutral-600">
+                        {att.id}
                       </span>
-                    </div>
 
-                    <div className="text-right">
-                      <button
-                        type="button"
-                        onClick={() => toggleCheckIn(att.id)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                          att.status === "Checked In"
-                            ? "bg-neutral-100 hover:bg-rose-50 text-neutral-600 hover:text-rose-600"
-                            : "bg-[#6365f1] hover:bg-[#4f51e9] text-white"
-                        }`}
-                      >
-                        {att.status === "Checked In" ? "Undo" : "Check In"}
-                      </button>
+                      <div>
+                        <p className="font-bold text-[#1D1F23]">{att.name}</p>
+                        <p className="text-xs text-neutral-400">{att.email}</p>
+                      </div>
+
+                      <div>
+                        <p className="font-medium text-[#1D1F23]">{att.seat}</p>
+                        <p className="text-xs text-neutral-400 truncate">{att.event}</p>
+                      </div>
+
+                      <div>
+                        <span
+                          className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
+                            att.status === "Checked In"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-neutral-100 text-neutral-600"
+                          }`}
+                        >
+                          {att.status} {att.time !== "-" ? `(${att.time})` : ""}
+                        </span>
+                      </div>
+
+                      <div className="text-right">
+                        <button
+                          type="button"
+                          onClick={() => toggleCheckIn(att.id)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                            att.status === "Checked In"
+                              ? "bg-neutral-100 hover:bg-rose-50 text-neutral-600 hover:text-rose-600"
+                              : "bg-[#6365f1] hover:bg-[#4f51e9] text-white"
+                          }`}
+                        >
+                          {att.status === "Checked In" ? "Undo" : "Check In"}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </main>

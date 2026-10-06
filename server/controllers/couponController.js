@@ -58,12 +58,17 @@ export const getMyCoupons = async (req, res) => {
 
 export const updateCoupons = async (req, res) => {
   try {
-    const { id, code, discount, maxUses } = req.body;
+    const id = req.params.id || req.body.id;
+    const { code, discount, maxUses, type, active } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: "Coupon ID is required" });
+    }
 
     if (!code || !discount) {
       return res
         .status(400)
-        .json({ error: "All fields  of coupon are required" });
+        .json({ error: "All fields of coupon are required" });
     }
 
     const promocode = code.trim().toUpperCase();
@@ -73,20 +78,30 @@ export const updateCoupons = async (req, res) => {
     });
 
     if (!couponCheck) {
-      return res.status(400).json({ error: "Coupon doesn't exist" });
+      return res.status(404).json({ error: "Coupon doesn't exist" });
     }
+
+    if (couponCheck.createdBy !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized: You do not own this coupon" });
+    }
+
+    const updateData = {
+      code: promocode,
+      discount: Number(discount),
+      maxUses: Number(maxUses) || couponCheck.maxUses,
+    };
+    if (type) updateData.type = type;
+    if (typeof active === "boolean") updateData.active = active;
 
     const updateCoupon = await prisma.coupon.update({
       where: { id },
-      data: {
-        code: promocode,
-        discount: Number(discount),
-        maxUses: Number(maxUses) || 50,
-      },
+      data: updateData,
     });
 
     res
-      .status(201)
+      .status(200)
       .json({ message: "Successfully updated coupon", coupon: updateCoupon });
   } catch (error) {
     console.error(error);

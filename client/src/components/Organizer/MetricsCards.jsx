@@ -26,14 +26,14 @@ const MetricsCards = ({ myEvents = [] }) => {
     {
       title: "TOTAL REVENUE",
       value: `₹${totalRevenue.toLocaleString("en-IN")}`,
-      change: myEvents.length > 0 ? "+14.8%" : "0%",
+      change: totalRevenue > 0 ? `${ticketsSoldCount} booked` : "₹0 sales",
       icon: TrendingUp,
       subtitle: "Gross sales across all published events",
     },
     {
       title: "TICKETS ISSUED",
       value: ticketsSoldCount.toLocaleString("en-IN"),
-      change: myEvents.length > 0 ? "+8.5%" : "0%",
+      change: ticketsSoldCount > 0 ? "Confirmed" : "0 booked",
       icon: Ticket,
       subtitle: "Confirmed attendee seats booked",
     },

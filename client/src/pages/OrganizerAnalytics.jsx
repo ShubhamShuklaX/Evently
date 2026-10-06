@@ -100,7 +100,10 @@ const OrganizerAnalytics = () => {
                     ₹{totalRevenue.toLocaleString("en-IN")}
                   </p>
                   <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                    <ArrowUpRight size={14} /> +18.4% this month
+                    <ArrowUpRight size={14} />{" "}
+                    {totalSold > 0
+                      ? `${totalSold} tickets booked`
+                      : "No ticket sales yet"}
                   </p>
                 </div>
 
