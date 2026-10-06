@@ -3,7 +3,7 @@ services:
     name: evently-api
     runtime: node
     rootDir: server
-    buildCommand: npm install && npx prisma generate
+    buildCommand: npm ci && npx prisma generate
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -18,4 +18,8 @@ services:
       - key: CLOUDINARY_URL
         sync: false
       - key: CLIENT_URL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ORGANIZER_PASSWORD
         sync: false
