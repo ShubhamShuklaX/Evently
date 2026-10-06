@@ -1,6 +1,6 @@
 # Evently
 
-**A full-stack event discovery and seat-reservation platform engineered around one hard problem: never selling the same seat twice.**
+**Evently is a full-stack event booking platform built to handle concurrent seat reservations safely, preventing double-booking through database transactions, concurrency control, and idempotent booking flows. Built with React, Express, Prisma, PostgreSQL, Stripe, and Docker.**
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
@@ -90,7 +90,7 @@ const result = await tx.seat.updateMany({
         status: "held",
         OR: [
           { expiresAt: { lt: new Date() } }, // Reclaim expired hold
-          { userId: req.user.id },            // Refresh caller's own hold
+          { userId: req.user.id }, // Refresh caller's own hold
         ],
       },
     ],
@@ -169,13 +169,13 @@ Seats enforce a composite unique index on `(eventId, row, col)`. Grids are auto-
 
 ## Tech Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 19, Vite 8, React Router, Tailwind CSS, Framer Motion, Stripe Elements, Lucide Icons |
-| **Backend** | Node.js (ES Modules), Express 5, Prisma 7 with `@prisma/adapter-pg` driver adapter |
-| **Database** | PostgreSQL (Neon serverless pooler) |
-| **Integrations** | Stripe (Payments), Cloudinary (Image upload & transforms), QRServer (Digital tickets) |
-| **DevOps** | Docker, Docker Compose |
+| Layer            | Technologies                                                                               |
+| :--------------- | :----------------------------------------------------------------------------------------- |
+| **Frontend**     | React 19, Vite 8, React Router, Tailwind CSS, Framer Motion, Stripe Elements, Lucide Icons |
+| **Backend**      | Node.js (ES Modules), Express 5, Prisma 7 with `@prisma/adapter-pg` driver adapter         |
+| **Database**     | PostgreSQL (Neon serverless pooler)                                                        |
+| **Integrations** | Stripe (Payments), Cloudinary (Image upload & transforms), QRServer (Digital tickets)      |
+| **DevOps**       | Docker, Docker Compose                                                                     |
 
 ---
 
@@ -206,15 +206,15 @@ docker compose exec server npx prisma db push
 docker compose exec server npx prisma db seed # Seeds demo events and admin/organizer accounts
 ```
 
-* Frontend: `http://localhost:5173`
-* Backend API: `http://localhost:5000`
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:5000`
 
-*(Alternatively, run locally with `npm install` and `npm run dev` in both `/server` and `/client` directories).*
+_(Alternatively, run locally with `npm install` and `npm run dev` in both `/server` and `/client` directories)._
 
 ### 3. Demo Accounts & Payments
 
-* **Organizer / Admin:** `organizer@evently.com` / `admin@evently.com` (passwords configured in `server/.env`).
-* **Test Payments:** Use Stripe test card `4242 4242 4242 4242` with any future date and 3-digit CVC.
+- **Organizer / Admin:** `organizer@evently.com` / `admin@evently.com` (passwords configured in `server/.env`).
+- **Test Payments:** Use Stripe test card `4242 4242 4242 4242` with any future date and 3-digit CVC.
 
 ---
 
@@ -243,21 +243,21 @@ npm test
 
 ### Server (`server/.env`)
 
-| Variable | Description |
-| :--- | :--- |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` | Secret key used for signing JWTs |
-| `STRIPE_SECRET_KEY` | Stripe secret key (`sk_test_...`) |
-| `CLOUDINARY_URL` | Cloudinary credentials (`cloudinary://key:secret@cloud_name`) |
-| `CLIENT_URL` | Allowed CORS origin (default `http://localhost:5173`) |
-| `PORT` | HTTP port (default `5000`) |
+| Variable            | Description                                                   |
+| :------------------ | :------------------------------------------------------------ |
+| `DATABASE_URL`      | PostgreSQL connection string                                  |
+| `JWT_SECRET`        | Secret key used for signing JWTs                              |
+| `STRIPE_SECRET_KEY` | Stripe secret key (`sk_test_...`)                             |
+| `CLOUDINARY_URL`    | Cloudinary credentials (`cloudinary://key:secret@cloud_name`) |
+| `CLIENT_URL`        | Allowed CORS origin (default `http://localhost:5173`)         |
+| `PORT`              | HTTP port (default `5000`)                                    |
 
 ### Client (`client/.env`)
 
-| Variable | Description |
-| :--- | :--- |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (`pk_test_...`) |
-| `VITE_API_URL` | Backend URL (default `http://localhost:5000`) |
+| Variable                      | Description                                   |
+| :---------------------------- | :-------------------------------------------- |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (`pk_test_...`)        |
+| `VITE_API_URL`                | Backend URL (default `http://localhost:5000`) |
 
 ---
 
