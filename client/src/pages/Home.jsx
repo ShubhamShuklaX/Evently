@@ -46,7 +46,7 @@ const Home = () => {
   }, [events]);
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-[#F6F7F9]">
       <Header />
       <HeroSection />
       <Reveal>

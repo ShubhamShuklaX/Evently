@@ -62,22 +62,22 @@ const OrganizerAnalytics = () => {
     <div className="min-h-screen bg-[#F6F7F9] font-sans flex flex-col">
       <Header />
 
-      <div className="flex-1 w-full px-6 lg:px-15 py-8 flex gap-8">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 lg:gap-8">
         <Sidebar />
 
-        <main className="flex-1 min-w-0 flex flex-col gap-8">
+        <main className="flex-1 min-w-0 flex flex-col gap-6 sm:gap-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#1D1F23]">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1D1F23]">
               Sales Analytics
             </h1>
-            <p className="text-neutral-500 text-sm mt-1">
+            <p className="text-neutral-500 text-xs sm:text-sm mt-1">
               Deep dive into ticket velocity, attendance, and revenue
               performance.
             </p>
           </div>
 
           {loading ? (
-            <div className="bg-white rounded-2xl border border-neutral-200 p-16 flex flex-col items-center justify-center gap-3">
+            <div className="bg-white rounded-2xl border border-neutral-200 p-10 sm:p-16 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-8 h-8 text-[#6365f1] animate-spin" />
               <p className="text-sm text-neutral-500 font-medium">
                 Computing analytics...
@@ -86,7 +86,7 @@ const OrganizerAnalytics = () => {
           ) : (
             <>
               {/* Stat Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                 <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
@@ -160,11 +160,11 @@ const OrganizerAnalytics = () => {
               </div>
 
               {/* Event Performance Breakdown */}
-              <div className="bg-white border border-neutral-200 rounded-2xl p-8 shadow-sm">
-                <h3 className="text-xl font-bold text-[#1D1F23] mb-1">
+              <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-8 shadow-sm">
+                <h3 className="text-lg sm:text-xl font-bold text-[#1D1F23] mb-1">
                   Performance by Event
                 </h3>
-                <p className="text-sm text-neutral-500 mb-6">
+                <p className="text-xs sm:text-sm text-neutral-500 mb-6">
                   Revenue and attendance breakdown per listed production.
                 </p>
 
@@ -182,7 +182,7 @@ const OrganizerAnalytics = () => {
                       return (
                         <div
                           key={e.id}
-                          className="py-4 flex items-center justify-between gap-4"
+                          className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4"
                         >
                           <div className="min-w-0">
                             <h4 className="font-bold text-[#1D1F23] text-sm truncate">
@@ -198,8 +198,8 @@ const OrganizerAnalytics = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-8 shrink-0">
-                            <div className="text-right">
+                          <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 shrink-0">
+                            <div className="text-left sm:text-right">
                               <span className="text-xs font-bold text-neutral-400 uppercase">
                                 Bookings
                               </span>
@@ -207,7 +207,7 @@ const OrganizerAnalytics = () => {
                                 {sold} / {capacity}
                               </p>
                             </div>
-                            <div className="text-right min-w-25">
+                            <div className="text-right sm:min-w-25">
                               <span className="text-xs font-bold text-neutral-400 uppercase">
                                 Gross Revenue
                               </span>

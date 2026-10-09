@@ -12,20 +12,20 @@ const PromoBanner = () => {
         className="absolute inset-0 w-full h-full object-cover opacity-30 object-right"
       />
 
-      <div className="relative z-20 p-10 md:p-14 flex flex-col md:flex-row items-center gap-10">
+      <div className="relative z-20 p-6 sm:p-10 md:p-14 flex flex-col md:flex-row items-center gap-8 md:gap-10">
         <div className="flex-1">
-          <span className="bg-[#6365f1] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-6 inline-block">
+          <span className="bg-[#6365f1] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-4 sm:mb-6 inline-block">
             Evently Gold
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight leading-tight">
             Unlock Early Access <br /> to Global Tours
           </h2>
-          <p className="text-neutral-300 text-lg mb-8 max-w-md leading-relaxed">
+          <p className="text-neutral-300 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-md leading-relaxed">
             Join Evently Gold and get 48-hour pre-sale access to world-class
             concerts, zero service fees on your first 3 bookings, and VIP
             lounge entry at select venues.
           </p>
-          <button className="bg-white hover:bg-neutral-100 text-[#1D1F23] font-bold py-3.5 px-8 rounded-xl transition-colors cursor-pointer">
+          <button className="bg-white hover:bg-neutral-100 text-[#1D1F23] font-bold py-3 px-6 sm:py-3.5 sm:px-8 text-sm sm:text-base rounded-xl transition-colors cursor-pointer w-fit">
             Join Gold Membership
           </button>
         </div>

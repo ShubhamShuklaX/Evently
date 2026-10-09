@@ -35,13 +35,13 @@ const MyEventsFilters = ({
       </div>
 
       {/* Status Chips */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
         {statusFilters.map((status) => (
           <button
             key={status}
             type="button"
             onClick={() => setStatusFilter?.(status)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               statusFilter === status
                 ? "bg-[#1D1F23] text-white shadow-xs"
                 : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"

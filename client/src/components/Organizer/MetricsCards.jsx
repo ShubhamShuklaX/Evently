@@ -54,14 +54,14 @@ const MetricsCards = ({ myEvents = [] }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10">
       {metrics.map((metric, i) => (
         <div
           key={i}
-          className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between h-44 hover:shadow-md transition-shadow"
+          className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between min-h-[10.5rem] sm:h-44 hover:shadow-md transition-shadow"
         >
           <div className="flex items-start justify-between">
-            <div className="w-10 h-10 rounded-xl bg-[#F0F2FF] text-[#6365f1] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#F0F2FF] text-[#6365f1] flex items-center justify-center shrink-0">
               <metric.icon size={20} />
             </div>
             <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5 bg-emerald-50 px-2 py-0.5 rounded-full">
@@ -70,11 +70,11 @@ const MetricsCards = ({ myEvents = [] }) => {
             </span>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-3 sm:mt-4">
             <h3 className="text-neutral-400 text-[10px] font-bold uppercase tracking-widest mb-1">
               {metric.title}
             </h3>
-            <p className="text-3xl font-bold text-[#1D1F23] tracking-tight">
+            <p className="text-2xl sm:text-3xl font-bold text-[#1D1F23] tracking-tight">
               {metric.value}
             </p>
           </div>

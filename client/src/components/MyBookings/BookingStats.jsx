@@ -7,17 +7,17 @@ const BookingStats = ({ liveBookings }) => {
           <span>›</span>
           <span className="font-semibold text-[#1D1F23]">My Bookings</span>
         </div>
-        <h1 className="text-4xl font-extrabold text-[#1D1F23] mb-3 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1D1F23] mb-2 sm:mb-3 tracking-tight">
           My Bookings
         </h1>
-        <p className="text-neutral-500 max-w-xl">
+        <p className="text-neutral-500 text-sm sm:text-base max-w-xl">
           Manage your upcoming tickets, review past experiences, and access
           entry QR codes for your booked events.
         </p>
       </div>
 
       {/* Stats Widgets */}
-      <div className="flex bg-white border border-neutral-200 rounded-xl p-1 shadow-sm shrink-0">
+      <div className="flex bg-white border border-neutral-200 rounded-xl p-1 shadow-sm shrink-0 w-fit">
         <div className="px-6 py-3 text-center border-r border-neutral-100">
           <p className="text-2xl font-bold text-[#6365f1]">
             {liveBookings.filter((b) => b.status === "upcoming").length}

@@ -14,7 +14,7 @@ const SuccessSummary = () => {
 
   return (
     <>
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 shadow-sm">
         <h3 className="font-bold text-lg text-[#1D1F23] mb-1">Order Summary</h3>
         <p className="text-xs text-neutral-500 mb-6 font-mono">
           Transaction ID: EVT-
@@ -75,7 +75,7 @@ const SuccessSummary = () => {
         </div>
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 shadow-sm">
         <h3 className="font-bold text-lg text-[#1D1F23] mb-5">
           Event Guidelines
         </h3>

@@ -28,10 +28,10 @@ const DiscoverEvents = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-[#F6F7F9]">
       <Header />
 
-      <div className="flex">
+      <div className="flex-1 w-full flex flex-col md:flex-row">
         {/* Step 2: Pass down the state SETTERS to the Sidebar so it can change the state */}
         <SideBar
           activeCategory={activeCategory}

@@ -102,12 +102,20 @@ const SeatMap = () => {
     .filter((section) => section.rows.length > 0); // Remove empty sections
 
   return (
-    <div className="bg-white border border-neutral-200 rounded-2xl p-10">
-      <div className="overflow-x-auto">
-        <div className="min-w-210">
+    <div className="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-xs">
+      {/* Mobile scroll hint */}
+      <div className="flex items-center justify-between gap-2 mb-4 text-xs text-neutral-500 lg:hidden">
+        <span className="flex items-center gap-1.5">
+          <MousePointer2 size={13} className="text-indigo-600" />
+          Swipe horizontally to explore seating
+        </span>
+      </div>
+
+      <div className="overflow-x-auto w-full max-w-full pb-3">
+        <div className="min-w-[620px] px-1">
           {/* Stage */}
           <div className="flex flex-col items-center">
-            <div className="w-165 max-w-full bg-[#25272C] border-t-4 border-[#6365f1] rounded-2xl py-3.5 text-center text-white text-sm font-bold tracking-[0.5em] shadow-[0_20px_60px_-15px_rgba(99,101,241,0.35)]">
+            <div className="w-full max-w-lg bg-[#25272C] border-t-4 border-[#6365f1] rounded-2xl py-3 sm:py-3.5 text-center text-white text-xs sm:text-sm font-bold tracking-[0.5em] shadow-[0_20px_60px_-15px_rgba(99,101,241,0.35)]">
               STAGE
             </div>
             <div className="flex items-center gap-3 mt-3 text-[10px] font-semibold tracking-[0.2em] uppercase text-neutral-400">
@@ -118,18 +126,18 @@ const SeatMap = () => {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-center gap-3 mt-10">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-10">
             {legend.map(({ label, icon: Icon, style }) => (
               <div
                 key={label}
-                className="flex items-center gap-2 bg-white border border-neutral-200 rounded-full px-3 py-1.5"
+                className="flex items-center gap-2 bg-white border border-neutral-200 rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5"
               >
                 <span
                   className={`w-5 h-5 rounded-full border flex items-center justify-center ${style}`}
                 >
                   <Icon size={11} />
                 </span>
-                <span className="text-xs font-semibold uppercase tracking-wide text-neutral-600">
+                <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-neutral-600">
                   {label}
                 </span>
               </div>

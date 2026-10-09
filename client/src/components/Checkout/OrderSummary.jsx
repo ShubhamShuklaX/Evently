@@ -97,14 +97,14 @@ const OrderSummary = ({
     <div className="sticky top-24 flex flex-col gap-4">
       {/* Summary card */}
       <div className="bg-white border border-neutral-200 rounded-2xl shadow-lg shadow-black/5 overflow-hidden">
-        <div className="flex items-center justify-between bg-neutral-100 px-6 py-5">
+        <div className="flex items-center justify-between bg-neutral-100 px-4 sm:px-6 py-4 sm:py-5">
           <h2 className="font-semibold text-[#1D1F23]">Order Summary</h2>
           <span className="bg-white border border-neutral-200 rounded-full px-2.5 py-1 font-mono text-[10px] text-neutral-600">
             STRIPE SECURE
           </span>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Dynamic Ticket line */}
           <div className="flex items-start justify-between">
             <div>

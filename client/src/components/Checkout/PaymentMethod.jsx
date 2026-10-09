@@ -11,8 +11,8 @@ const PaymentMethod = () => {
         <h2 className="text-xl font-bold text-[#1D1F23]">Payment Method</h2>
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 flex flex-col gap-6">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-6 flex flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-4">
           <div className="flex items-center gap-2">
             <CreditCard size={18} className="text-[#6365f1]" />
             <span className="font-semibold text-sm text-[#1D1F23]">

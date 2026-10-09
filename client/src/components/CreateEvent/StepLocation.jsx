@@ -21,7 +21,7 @@ const StepLocation = ({ formData, handleChange }) => {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-bold text-[#1D1F23] mb-2">
               Date

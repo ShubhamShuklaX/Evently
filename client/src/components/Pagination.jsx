@@ -20,16 +20,16 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = getPageNumbers(currentPage, totalPages);
 
   return (
-    <div className="flex items-center justify-center gap-1.5 py-6 select-none">
+    <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5 py-6 select-none">
       {/* Previous Page Button */}
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="Previous page"
-        className="w-9 h-9 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
       >
-        <ChevronLeft size={18} />
+        <ChevronLeft size={16} />
       </button>
 
       {/* Page Numbers & Ellipses */}
@@ -38,7 +38,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           return (
             <span
               key={page}
-              className="w-8 text-center text-sm font-bold text-neutral-400 select-none"
+              className="w-6 sm:w-8 text-center text-xs sm:text-sm font-bold text-neutral-400 select-none"
             >
               ...
             </span>
@@ -53,7 +53,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             type="button"
             onClick={() => onPageChange(page)}
             aria-current={isActive ? "page" : undefined}
-            className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all cursor-pointer active:scale-95 ${
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all cursor-pointer active:scale-95 ${
               isActive
                 ? "bg-[#1D1F23] text-white shadow-sm"
                 : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
@@ -70,9 +70,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="Next page"
-        className="w-9 h-9 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
       >
-        <ChevronRight size={18} />
+        <ChevronRight size={16} />
       </button>
     </div>
   );

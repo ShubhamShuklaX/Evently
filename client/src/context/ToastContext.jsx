@@ -69,7 +69,7 @@ export const ToastProvider = ({ children }) => {
       {/* Floating Toast Container */}
       <div
         aria-live="polite"
-        className="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none"
+        className="fixed top-4 sm:top-5 left-4 right-4 sm:left-auto sm:right-5 z-[9999] flex flex-col gap-2.5 w-auto sm:w-full sm:max-w-sm pointer-events-none"
       >
         <AnimatePresence>
           {toasts.map((t) => {
@@ -157,7 +157,7 @@ export const ToastProvider = ({ children }) => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative bg-white rounded-3xl max-w-md w-full p-7 shadow-2xl border border-neutral-100 overflow-hidden z-10"
+              className="relative bg-white rounded-3xl max-w-md w-full p-5 sm:p-7 shadow-2xl border border-neutral-100 overflow-hidden z-10"
             >
               {/* Type Accent Icon */}
               {modalState.type === "celebration" ||

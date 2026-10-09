@@ -10,7 +10,7 @@ const features = [
 const AboutEvent = ({ event }) => {
   return (
     <div>
-      <h2 className="border-l-4 border-[#6365f1] pl-3 text-3xl font-bold text-[#1D1F23]">
+      <h2 className="border-l-4 border-[#6365f1] pl-3 text-2xl sm:text-3xl font-bold text-[#1D1F23]">
         About This Event
       </h2>
 

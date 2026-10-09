@@ -3,7 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 
-const connectionString = process.env.DATABASE_URL;
+let connectionString = process.env.DATABASE_URL;
 
 const pool = new Pool({
   connectionString,
@@ -41,7 +41,9 @@ export const withDatabaseRetry = async (operation, attempts = 3) => {
       const message = String(error?.message || "");
       const isTransient =
         transientDatabaseCodes.has(error?.code) ||
-        /timed out|can't reach database|connection reset|temporary failure/i.test(message);
+        /timed out|can't reach database|connection reset|temporary failure/i.test(
+          message,
+        );
 
       if (!isTransient || attempt === attempts) throw error;
       await new Promise((resolve) => setTimeout(resolve, attempt * 500));

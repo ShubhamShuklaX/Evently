@@ -91,7 +91,7 @@ const MyBookings = () => {
     <div className="min-h-screen bg-[#F9FAFB] flex flex-col font-sans">
       <Header />
 
-      <main className="grow max-w-7xl w-full mx-auto px-6 py-12">
+      <main className="grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <BookingStats liveBookings={formattedBookings} />
 
         <BookingToolbar

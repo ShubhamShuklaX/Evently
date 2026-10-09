@@ -65,16 +65,16 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
   );
 
   return (
-    <div className="flex-1 p-6 md:p-10">
+    <div className="flex-1 p-4 sm:p-6 md:p-8 min-w-0">
       {/* Header and Controls */}
       <div className="flex flex-col gap-6">
         {/* Title & View Switcher Row */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-neutral-900">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900">
               Discover Events
             </h1>
-            <p className="text-neutral-600 text-[17px] mt-1">
+            <p className="text-neutral-600 text-sm sm:text-base mt-1">
               Showing{" "}
               <span className="text-neutral-900 font-semibold">
                 {eventsLoading ? "..." : `${sortedEvents.length} events`}
@@ -137,7 +137,7 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
       <div
         className={`mt-8 ${
           layout === "grid"
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
             : "flex flex-col gap-4"
         }`}
       >

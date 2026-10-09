@@ -15,8 +15,8 @@ const ContactInfo = () => {
         </h2>
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 flex flex-col gap-5">
-        <div className="grid grid-cols-2 gap-5">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-6 flex flex-col gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {/* We attach {...register("fieldName")} to connect it to the state */}
           <Field label="First Name" type="text" {...register("firstName")} />
           <Field label="Last Name" type="text" {...register("lastName")} />

@@ -4,7 +4,7 @@ const options = ["initiating", "processing", "success", "failed", "timeout"];
 // Remove this component once real payment logic drives the status.
 const StateSwitcher = ({ status, onChange }) => {
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 bg-white border border-neutral-200 rounded-full p-2 shadow-xl shadow-black/10">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 bg-white border border-neutral-200 rounded-full p-1.5 sm:p-2 shadow-xl shadow-black/10 max-w-[94vw] overflow-x-auto no-scrollbar">
       {options.map((option) => (
         <button
           key={option}

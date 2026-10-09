@@ -3,12 +3,12 @@ import { Search, Filter } from 'lucide-react';
 const BookingToolbar = ({ tabs, activeTab, setActiveTab }) => {
   return (
     <div className="flex flex-col lg:flex-row justify-between items-center gap-4 mb-8">
-      <div className="flex p-1 bg-neutral-100 rounded-xl w-full lg:w-auto overflow-x-auto scrollbar-none">
+      <div className="flex p-1 bg-neutral-100 rounded-xl w-full lg:w-auto overflow-x-auto no-scrollbar">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
+            className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
               activeTab === tab
                 ? "bg-white text-[#1D1F23] shadow-sm"
                 : "text-neutral-500 hover:text-[#1D1F23]"

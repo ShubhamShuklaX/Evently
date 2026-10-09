@@ -109,33 +109,33 @@ const OrganizerDashboard = () => {
     <div className="min-h-screen bg-[#F6F7F9] font-sans flex flex-col">
       <Header />
 
-      <div className="flex-1 w-full px-6 lg:px-15 py-8 flex gap-8">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 lg:gap-8">
         <Sidebar />
 
         <main className="flex-1 min-w-0">
           {/* Top Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-[#1D1F23]">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1D1F23]">
                 Organizer Hub
               </h1>
-              <p className="text-neutral-500 mt-1">
+              <p className="text-sm sm:text-base text-neutral-500 mt-1">
                 Welcome back, {organizerName}. Here's how your events are
                 performing.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={exportData}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200 bg-white text-sm font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors shadow-2xs cursor-pointer active:scale-95"
+                className="flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-neutral-200 bg-white text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors shadow-2xs cursor-pointer active:scale-95"
               >
                 <Download size={16} />
                 Export Data
               </button>
               <Link
                 to="/organizer/create"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#6365f1] text-white text-sm font-semibold hover:bg-[#4f51e9] transition-colors shadow-sm shadow-[#6365f1]/25 active:scale-95"
+                className="flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-[#6365f1] text-white text-xs sm:text-sm font-semibold hover:bg-[#4f51e9] transition-colors shadow-sm shadow-[#6365f1]/25 active:scale-95"
               >
                 <Plus size={16} />
                 Create New Event
@@ -144,7 +144,7 @@ const OrganizerDashboard = () => {
           </div>
 
           {loading ? (
-            <div className="bg-white border border-neutral-200 rounded-2xl p-16 flex flex-col items-center justify-center gap-3 mb-10">
+            <div className="bg-white border border-neutral-200 rounded-2xl p-10 sm:p-16 flex flex-col items-center justify-center gap-3 mb-10">
               <Loader2 className="w-8 h-8 text-[#6365f1] animate-spin" />
               <p className="text-sm font-medium text-neutral-500">
                 Fetching performance metrics...
@@ -155,11 +155,11 @@ const OrganizerDashboard = () => {
           )}
 
           {/* Interactive Tabs */}
-          <div className="flex items-center gap-8 border-b border-neutral-200 mb-6">
+          <div className="flex items-center gap-4 sm:gap-8 border-b border-neutral-200 mb-6 overflow-x-auto no-scrollbar">
             <button
               type="button"
               onClick={() => setActiveTab("financial")}
-              className={`pb-3 text-sm font-bold transition-all cursor-pointer ${
+              className={`pb-3 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "financial"
                   ? "text-[#1D1F23] border-b-2 border-[#6365f1]"
                   : "text-neutral-500 hover:text-[#1D1F23]"

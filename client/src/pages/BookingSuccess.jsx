@@ -49,16 +49,16 @@ const BookingSuccess = () => {
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
             <DigitalTicket />
 
-            <div className="grid grid-cols-2 gap-4 mt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-2">
               <button
                 onClick={() => navigate("/bookings")}
-                className="h-14 bg-neutral-200 hover:bg-neutral-300 text-[#1D1F23] font-bold rounded-xl transition-colors cursor-pointer"
+                className="h-12 sm:h-14 bg-neutral-200 hover:bg-neutral-300 text-[#1D1F23] font-bold text-sm sm:text-base rounded-xl transition-colors cursor-pointer"
               >
                 Manage My Bookings
               </button>
               <button
                 onClick={() => void navigate("/events")}
-                className="h-14 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="h-12 sm:h-14 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-bold text-sm sm:text-base rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
                 Browse More Events &rarr;
               </button>

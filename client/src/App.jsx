@@ -36,7 +36,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 const App = () => {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-[#F6F7F9] text-neutral-900 selection:bg-indigo-500 selection:text-white">
       <BookingProvider>
         <ToastProvider>
           <ScrollToTop />

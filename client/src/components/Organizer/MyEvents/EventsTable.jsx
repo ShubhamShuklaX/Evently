@@ -37,17 +37,6 @@ const EventsTable = ({ myEvents = [], onDeleteEvent, statusFilter }) => {
   return (
     <>
       <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
-        {/* Column headers */}
-        <div className="grid grid-cols-[minmax(0,2.5fr)_minmax(0,1.3fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_110px] items-center gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-          <span>Event & Category</span>
-          <span>Date & Time</span>
-          <span>Tickets / Capacity</span>
-          <span>Pricing</span>
-          <span>Revenue</span>
-          <span>Status</span>
-          <span className="text-center">Actions</span>
-        </div>
-
         {/* Empty state */}
         {myEvents.length === 0 ? (
           <div className="text-center py-16 px-6">
@@ -69,8 +58,21 @@ const EventsTable = ({ myEvents = [], onDeleteEvent, statusFilter }) => {
             </Link>
           </div>
         ) : (
-          /* Rows */
-          <div className="divide-y divide-neutral-100">
+          <div className="overflow-x-auto">
+            <div className="min-w-[760px]">
+              {/* Column headers */}
+              <div className="grid grid-cols-[minmax(0,2.5fr)_minmax(0,1.3fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_110px] items-center gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                <span>Event & Category</span>
+                <span>Date & Time</span>
+                <span>Tickets / Capacity</span>
+                <span>Pricing</span>
+                <span>Revenue</span>
+                <span>Status</span>
+                <span className="text-center">Actions</span>
+              </div>
+
+              {/* Rows */}
+              <div className="divide-y divide-neutral-100">
             {myEvents.map((event) => {
               const capacity = Number(event.capacity) || 100;
               const sold =
@@ -209,6 +211,8 @@ const EventsTable = ({ myEvents = [], onDeleteEvent, statusFilter }) => {
                 </div>
               );
             })}
+              </div>
+            </div>
           </div>
         )}
       </div>

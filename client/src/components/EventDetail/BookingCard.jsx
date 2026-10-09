@@ -5,8 +5,8 @@ const BookingCard = ({ event }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   return (
-    <div className="sticky top-24 flex flex-col gap-5">
-      <div className="bg-white border border-neutral-200 rounded-2xl shadow-lg shadow-black/5 p-6">
+    <div className="lg:sticky lg:top-24 flex flex-col gap-5">
+      <div className="bg-white border border-neutral-200 rounded-2xl shadow-lg shadow-black/5 p-5 sm:p-6">
         <p className="text-xs font-medium uppercase tracking-widest text-neutral-500">
           Standard Entry
         </p>

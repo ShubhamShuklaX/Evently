@@ -44,9 +44,9 @@ const CheckoutFormContent = ({
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10"
       >
-        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-10">
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 sm:gap-10">
           <CheckoutEventCard />
           <ContactInfo />
           <PaymentMethod />
@@ -339,7 +339,7 @@ const Checkout = () => {
       <div className="min-h-screen flex flex-col bg-white">
         <Header />
         <CheckoutStepBar timeLeft={formattedTime} />
-        <div className="px-30 py-20 flex flex-col items-center gap-16 grow">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-16 flex flex-col items-center gap-10 sm:gap-16 grow">
           <PaymentStatus
             status={status}
             onAction={() => {

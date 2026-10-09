@@ -83,7 +83,7 @@ const StepMedia = ({ formData, handleChange }) => {
 
       {/* Show Live Preview when Image is selected */}
       {previewUrl ? (
-        <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-6 mb-6">
+        <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-wider">
               <CheckCircle2 size={16} />
@@ -99,7 +99,7 @@ const StepMedia = ({ formData, handleChange }) => {
             </button>
           </div>
 
-          <div className="relative h-60 w-full rounded-xl overflow-hidden border border-neutral-200 bg-black/5 mb-4">
+          <div className="relative h-44 sm:h-60 w-full rounded-xl overflow-hidden border border-neutral-200 bg-black/5 mb-4">
             <img
               src={previewUrl}
               alt="Uploaded Banner Preview"
@@ -120,7 +120,7 @@ const StepMedia = ({ formData, handleChange }) => {
         </div>
       ) : (
         /* Empty Upload Dropzone */
-        <label className="border-2 border-dashed border-neutral-300 rounded-2xl bg-neutral-50 p-10 flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-100 transition-colors">
+        <label className="border-2 border-dashed border-neutral-300 rounded-2xl bg-neutral-50 p-6 sm:p-10 flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-100 transition-colors">
           <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-[#6365f1]">
             <UploadCloud size={24} />
           </div>

@@ -8,7 +8,7 @@ const EventInfoBar = ({ event }) => {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-6 bg-white border border-neutral-200 rounded-2xl p-6">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 bg-white border border-neutral-200 rounded-2xl p-4 sm:p-6">
       {info.map(({ icon: Icon, label, value }) => (
         <div key={label} className="flex items-start gap-3">
           <div className="w-11 h-11 rounded-full bg-[#EEF0FF] text-[#6365f1] flex items-center justify-center shrink-0">

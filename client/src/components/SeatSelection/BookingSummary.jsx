@@ -62,13 +62,13 @@ const BookingSummary = () => {
   }
 
   return (
-    <div className="sticky top-24 flex flex-col gap-4">
+    <div className="lg:sticky lg:top-24 flex flex-col gap-4">
       <div className="bg-white border border-neutral-200 rounded-2xl shadow-lg shadow-black/5 overflow-hidden">
         <div className="h-1.5 bg-[#6365f1]" />
 
-        <div className="p-6">
-          <h2 className="text-xl font-bold text-[#1D1F23]">Booking Summary</h2>
-          <p className="text-sm text-neutral-500 mt-1">
+        <div className="p-5 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold text-[#1D1F23]">Booking Summary</h2>
+          <p className="text-xs sm:text-sm text-neutral-500 mt-1">
             Review your selection before proceeding
           </p>
 

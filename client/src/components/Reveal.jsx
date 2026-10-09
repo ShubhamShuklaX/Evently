@@ -1,8 +1,9 @@
 // components/Reveal.jsx
 import { motion } from "framer-motion";
 
-const Reveal = ({ children }) => (
+const Reveal = ({ children, className = "" }) => (
   <motion.div
+    className={`w-full ${className}`}
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, amount: 0.2 }}

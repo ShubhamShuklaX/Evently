@@ -256,12 +256,12 @@ const EditEvent = () => {
     <div className="min-h-screen bg-[#F6F7F9] font-sans flex flex-col">
       <Header />
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-10">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10">
         {/* Navigation / Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link
             to="/organizer/my-events"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-500 hover:text-neutral-900 transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-500 hover:text-neutral-900 transition-colors mb-3 sm:mb-4"
           >
             <ArrowLeft size={16} />
             Back to My Events
@@ -269,8 +269,8 @@ const EditEvent = () => {
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-extrabold text-[#1D1F23] tracking-tight">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1D1F23] tracking-tight">
                   Edit Event
                 </h1>
                 <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-neutral-200 text-neutral-600">

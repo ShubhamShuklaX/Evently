@@ -59,14 +59,14 @@ const PaymentStatus = ({ status = "initiating", onAction }) => {
         </div>
       </div>
 
-      <h1 className="text-4xl font-bold text-[#1D1F23] mt-10">{state.title}</h1>
-      <p className="text-lg text-neutral-500 leading-8 max-w-md mt-4">
+      <h1 className="text-2xl sm:text-4xl font-bold text-[#1D1F23] mt-6 sm:mt-10">{state.title}</h1>
+      <p className="text-sm sm:text-base text-neutral-500 leading-relaxed sm:leading-8 max-w-md mt-2 sm:mt-4">
         {state.desc}
       </p>
 
       {/* Progress track (loading) or action button (error) */}
       {isLoading && (
-        <div className="w-80 h-1 bg-neutral-200 rounded-full overflow-hidden mt-8">
+        <div className="w-full max-w-80 h-1 bg-neutral-200 rounded-full overflow-hidden mt-6 sm:mt-8">
           <div className="w-1/3 h-full bg-[#6365f1] rounded-full animate-pulse" />
         </div>
       )}

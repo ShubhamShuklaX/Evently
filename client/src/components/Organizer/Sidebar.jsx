@@ -26,13 +26,13 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 shrink-0 flex flex-col gap-6">
+    <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-4 lg:gap-6">
       {/* Profile Card */}
-      <div className="bg-white rounded-2xl p-4 border border-neutral-200 shadow-sm flex items-center gap-4">
+      <div className="bg-white rounded-2xl p-3 sm:p-4 border border-neutral-200 shadow-xs flex items-center gap-3 sm:gap-4">
         <img
           src={avatarUrl}
           alt={displayName}
-          className="w-12 h-12 rounded-full object-cover ring-2 ring-[#6365f1]/20"
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-[#6365f1]/20 shrink-0"
         />
         <div className="min-w-0 flex-1">
           <h3 className="text-[#1D1F23] font-bold text-sm truncate">
@@ -47,22 +47,22 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex flex-col gap-1">
+      {/* Navigation - Horizontal scrollable tabs on mobile/tablet, vertical stack on desktop */}
+      <nav className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto no-scrollbar py-1 lg:py-0 -mx-1 px-1 lg:mx-0 lg:px-0">
         {navItems.map((item) => (
           <NavLink
             key={item.name}
             to={item.path}
             end={item.path === "/organizer"}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
+              `flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-2.5 lg:py-3 rounded-xl transition-all font-medium text-xs sm:text-sm shrink-0 whitespace-nowrap ${
                 isActive
-                  ? "bg-[#6365f1] text-white shadow-sm shadow-[#6365f1]/30 font-semibold"
-                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+                  ? "bg-[#6365f1] text-white shadow-xs font-semibold"
+                  : "text-neutral-600 bg-white lg:bg-transparent border border-neutral-200 lg:border-transparent hover:bg-neutral-100 hover:text-neutral-900"
               }`
             }
           >
-            <item.icon size={18} />
+            <item.icon size={16} className="shrink-0" />
             <span>{item.name}</span>
           </NavLink>
         ))}

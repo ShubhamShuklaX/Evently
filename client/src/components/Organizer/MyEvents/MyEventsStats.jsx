@@ -42,11 +42,11 @@ const MyEventsStats = ({ myEvents = [] }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
       {stats.map(({ label, value, icon: Icon, style }) => (
         <div
           key={label}
-          className="bg-white border border-neutral-200 rounded-2xl p-5 flex items-center gap-4 shadow-sm"
+          className="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-sm"
         >
           <span
             className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${style}`}

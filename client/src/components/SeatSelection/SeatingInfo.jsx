@@ -2,8 +2,8 @@ import { Info, ShieldCheck } from "lucide-react";
 
 const SeatingInfo = () => {
   return (
-    <div className="grid grid-cols-2 gap-6">
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6">
         <h3 className="flex items-center gap-2 font-semibold text-sm text-[#1D1F23]">
           <Info size={16} className="text-[#6365f1]" />
           Seating Policy

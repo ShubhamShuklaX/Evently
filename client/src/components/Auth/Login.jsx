@@ -85,23 +85,23 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="min-h-screen lg:h-screen flex flex-col lg:flex-row overflow-hidden bg-white">
       {/* Left Form Div */}
-      <div className="flex-1 lg:w-1/2 px-25 py-20 flex flex-col gap-5 overflow-y-auto">
+      <div className="w-full lg:w-1/2 xl:w-[45%] px-5 sm:px-12 md:px-16 lg:px-10 xl:px-18 py-8 sm:py-12 flex flex-col justify-center gap-5 overflow-y-auto">
         {/* Logo and Title */}
         <div className="flex items-center justify-center gap-2">
           <img src={logo} alt="logo" className="w-8 h-8" />
-          <h1 className="text-[30px] pt-0.5 font-mono font-extrabold">
+          <h1 className="text-2xl sm:text-[30px] pt-0.5 font-mono font-extrabold">
             Evently
           </h1>
         </div>
 
         <div>
-          <h2 className="text-3xl font-mono font-bold text-[#1D1F23]">
+          <h2 className="text-2xl sm:text-3xl font-mono font-bold text-[#1D1F23]">
             {tab === "login" ? "Welcome Back" : "Create Account"}
           </h2>
           {error && <p className="text-rose-500 font-bold mb-4">{error}</p>}
-          <p className="text-neutral-500 text-sm mt-1.5">
+          <p className="text-neutral-500 text-xs sm:text-sm mt-1.5">
             {tab === "login"
               ? "Access your tickets and personalized events."
               : "Join Evently and start booking in seconds."}
@@ -337,7 +337,7 @@ const Login = () => {
       </div>
 
       {/* Right Hero Div */}
-      <div className="relative w-[60%] h-screen top-0 overflow-hidden">
+      <div className="hidden lg:block relative lg:w-1/2 xl:w-[55%] h-full overflow-hidden">
         <img
           src={authHeroImg}
           alt="heroImg"
@@ -345,11 +345,11 @@ const Login = () => {
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent" />
 
-        <div className="absolute right-20 top-15 p-4 rounded-2xl border-2 border-neutral-800 bg-neutral-900 flex items-center gap-3 hover:scale-[1.03] transition-transform duration-300">
-          <div className="bg-indigo-600 text-white rounded-full flex items-center justify-center h-9 w-9 shrink-0">
-            <Spotlight size={18} />
+        <div className="absolute right-6 xl:right-12 top-8 xl:top-12 p-3.5 xl:p-4 rounded-2xl border-2 border-neutral-800 bg-neutral-900 flex items-center gap-3 hover:scale-[1.03] transition-transform duration-300">
+          <div className="bg-indigo-600 text-white rounded-full flex items-center justify-center h-8 w-8 xl:h-9 xl:w-9 shrink-0">
+            <Spotlight size={16} />
           </div>
-          <h3 className="text-white text-[13px] font-bold">
+          <h3 className="text-white text-xs xl:text-[13px] font-bold">
             NEW DROP <br />
             <span className="text-neutral-400 font-normal">
               Global Tour: 2k26
@@ -357,16 +357,16 @@ const Login = () => {
           </h3>
         </div>
 
-        <div className="absolute bottom-20 left-20 w-[55%] flex flex-col gap-8">
+        <div className="absolute bottom-10 xl:bottom-16 left-6 xl:left-12 right-6 xl:right-12 flex flex-col gap-6">
           <div>
-            <h1 className="text-white text-[55px]/[1.1] font-extrabold pb-1">
+            <h1 className="text-white text-3xl xl:text-5xl font-extrabold pb-1">
               Experience the
             </h1>
-            <h1 className="italic text-indigo-600 text-[55px]/[1.1] font-extrabold pb-1">
+            <h1 className="italic text-indigo-500 text-3xl xl:text-5xl font-extrabold pb-1">
               Best of Live
               <span className="not-italic text-white"> Events</span>
             </h1>
-            <p className="text-neutral-400 w-full mt-4">
+            <p className="text-neutral-400 text-xs xl:text-sm max-w-lg mt-3 leading-relaxed">
               Join a community of enthusiasts and get exclusive access to the
               most anticipated concerts, sports matches, and theatre
               performances worldwide.

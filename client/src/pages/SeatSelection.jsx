@@ -68,21 +68,23 @@ const SeatSelection = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-[#F6F7F9]">
       <Header />
       <SeatSelectionBar />
-      <div className="px-30 py-8 flex flex-col gap-8">
-        <div className="grid grid-cols-[1fr_380px] gap-8 items-start">
-          <div className="flex flex-col gap-8">
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_380px] gap-8 items-start">
+          <div className="flex flex-col gap-6 sm:gap-8 min-w-0">
             <SeatEventInfo />
             <SeatMap />
             <SeatingInfo />
           </div>
-          <BookingSummary />
+          <div className="w-full">
+            <BookingSummary />
+          </div>
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

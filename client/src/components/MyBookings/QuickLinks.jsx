@@ -2,9 +2,9 @@ import { Download, HelpCircle, Settings, ChevronRight } from 'lucide-react';
 
 const QuickLinks = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-16">
       {/* History */}
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 hover:shadow-md transition-shadow flex flex-col">
         <h3 className="flex items-center gap-2 font-bold text-[#1D1F23] mb-3">
           <Download size={18} className="text-[#6365f1]" /> Booking History
         </h3>
@@ -17,7 +17,7 @@ const QuickLinks = () => {
         </button>
       </div>
       {/* Support */}
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 hover:shadow-md transition-shadow flex flex-col">
         <h3 className="flex items-center gap-2 font-bold text-[#1D1F23] mb-3">
           <HelpCircle size={18} className="text-[#6365f1]" /> Help & Support
         </h3>
@@ -30,7 +30,7 @@ const QuickLinks = () => {
         </button>
       </div>
       {/* Settings */}
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 hover:shadow-md transition-shadow flex flex-col">
         <h3 className="flex items-center gap-2 font-bold text-[#1D1F23] mb-3">
           <Settings size={18} className="text-[#6365f1]" /> Manage
           Preferences

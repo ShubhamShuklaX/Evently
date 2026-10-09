@@ -6,10 +6,10 @@ const SeatEventInfo = () => {
 
   return (
     <div>
-      <h1 className="text-4xl font-extrabold text-[#1D1F23]">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1D1F23]">
         {currentEvent?.title || "Event Title"}
       </h1>
-      <div className="flex items-center gap-4 mt-3 text-sm text-neutral-600">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-2.5 sm:mt-3 text-xs sm:text-sm text-neutral-600">
         <span className="flex items-center gap-1.5">
           <CalendarDays size={15} />
           {currentEvent?.date || "TBA"}

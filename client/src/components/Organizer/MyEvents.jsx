@@ -86,7 +86,7 @@ const EventsManagement = () => {
     <div className="min-h-screen bg-[#F6F7F9] font-sans flex flex-col">
       <Header />
 
-      <div className="flex-1 w-full px-6 lg:px-15 py-8 flex gap-8">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 lg:gap-8">
         <Sidebar />
 
         <main className="flex-1 min-w-0 flex flex-col gap-6">

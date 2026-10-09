@@ -12,6 +12,9 @@ export default defineConfig({
   server: {
     watch: {
       usePolling: true,
+      interval: 100,
+      binaryInterval: 300,
+      ignored: ["**/node_modules/**", "**/dist/**", "**/.git/**"],
     },
     host: true, // Also ensures the dev server listens on all IPs
   },

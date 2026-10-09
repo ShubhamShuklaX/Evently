@@ -9,19 +9,19 @@ const DigitalTicket = () => {
 
   return (
     <div className="bg-white rounded-2xl shadow-xl shadow-black/5 overflow-hidden flex flex-col">
-      <div className="bg-[#6365f1] text-white p-8 relative">
+      <div className="bg-[#6365f1] text-white p-5 sm:p-8 relative">
         <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#F6F7F9] rounded-full"></div>
         <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#F6F7F9] rounded-full"></div>
 
-        <span className="bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-[0.15em] px-3 py-1.5 rounded-full mb-4 inline-block">
+        <span className="bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-[0.15em] px-3 py-1.5 rounded-full mb-3 sm:mb-4 inline-block">
           Official Ticket
         </span>
 
-        <h2 className="text-3xl font-extrabold mb-3 tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-extrabold mb-2.5 sm:mb-3 tracking-tight">
           {event.title}
         </h2>
 
-        <div className="flex items-center gap-5 text-indigo-100 text-sm font-medium">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-indigo-100 text-xs sm:text-sm font-medium">
           <span className="flex items-center gap-1.5">
             <CalendarDays size={16} /> {event.date}
           </span>
@@ -31,7 +31,7 @@ const DigitalTicket = () => {
         </div>
       </div>
 
-      <div className="p-8 flex justify-center items-stretch border-b border-neutral-200 border-dashed overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-thin">
+      <div className="p-4 sm:p-8 flex justify-start sm:justify-center items-stretch border-b border-neutral-200 border-dashed overflow-x-auto no-scrollbar snap-x snap-mandatory">
         {seats.map((seat, index) => (
           <React.Fragment key={index}>
             {index > 0 && (

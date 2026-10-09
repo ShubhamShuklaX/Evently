@@ -154,17 +154,17 @@ const CreateEvent = () => {
       <Stepper currentStep={currentStep} steps={steps} />
 
       {/* Main Content */}
-      <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-12">
-        <div className="mb-10 text-center">
-          <h1 className="text-4xl font-extrabold text-[#1D1F23] tracking-tight">
+      <div className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12">
+        <div className="mb-8 sm:mb-10 text-center">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1D1F23] tracking-tight">
             Create New Event
           </h1>
-          <p className="text-neutral-500 mt-2 text-lg">
+          <p className="text-neutral-500 mt-2 text-sm sm:text-base lg:text-lg">
             List your premium experience and start selling tickets.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-10">
+        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-5 sm:p-8 md:p-10">
           {currentStep === 1 && (
             <StepInfo formData={formData} handleChange={handleChange} />
           )}
@@ -185,13 +185,13 @@ const CreateEvent = () => {
           )}
 
           {/* Footer Actions */}
-          <div className="mt-8 pt-6 border-t border-neutral-200 flex items-center justify-between">
+          <div className="mt-8 pt-6 border-t border-neutral-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
             {currentStep > 1 ? (
               <button
                 type="button"
                 disabled={submitting}
                 onClick={() => setCurrentStep((prev) => prev - 1)}
-                className="px-6 py-3 rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm"
               >
                 <ArrowLeft size={18} />
                 Back
@@ -200,12 +200,12 @@ const CreateEvent = () => {
               <div></div> /* Spacer */
             )}
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 justify-end">
               {currentStep < 4 ? (
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="px-6 py-3 rounded-xl font-bold bg-[#6365f1] text-white hover:bg-[#4f51e9] transition-colors flex items-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-[#6365f1] text-white hover:bg-[#4f51e9] transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm"
                 >
                   Next Step
                   <ArrowRight size={18} />
@@ -216,7 +216,7 @@ const CreateEvent = () => {
                     type="button"
                     disabled={submitting}
                     onClick={() => void handleSubmit("Draft")}
-                    className="px-6 py-3 cursor-pointer rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="flex-1 sm:flex-initial px-5 py-3 cursor-pointer rounded-xl font-bold text-neutral-600 hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                   >
                     {submitting && submitAction === "Draft" ? (
                       <>
@@ -232,7 +232,7 @@ const CreateEvent = () => {
                     type="button"
                     disabled={submitting}
                     onClick={() => void handleSubmit("Live")}
-                    className="px-6 py-3 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex-1 sm:flex-initial px-5 sm:px-6 py-3 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm"
                   >
                     {submitting && submitAction === "Live" ? (
                       <>

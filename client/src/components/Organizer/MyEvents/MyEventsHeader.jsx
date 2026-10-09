@@ -37,17 +37,17 @@ const MyEventsHeader = ({ myEvents = [] }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold text-[#1D1F23]">Events Management</h1>
-        <p className="text-neutral-500 text-sm mt-1">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#1D1F23]">Events Management</h1>
+        <p className="text-neutral-500 text-xs sm:text-sm mt-1">
           Create, edit, and track all your event listings in real time.
         </p>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={exportToCSV}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200 bg-white text-sm font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors shadow-2xs cursor-pointer active:scale-95"
+          className="flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-neutral-200 bg-white text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors shadow-2xs cursor-pointer active:scale-95"
         >
           <Download size={16} />
           Export CSV
@@ -55,7 +55,7 @@ const MyEventsHeader = ({ myEvents = [] }) => {
 
         <Link
           to="/organizer/create"
-          className="flex items-center gap-2 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold text-sm px-5 h-10.5 rounded-xl transition-colors cursor-pointer active:scale-95 shadow-sm shadow-[#6365f1]/25"
+          className="flex items-center gap-2 bg-[#6365f1] hover:bg-[#4f51e9] text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 h-10 sm:h-10.5 rounded-xl transition-colors cursor-pointer active:scale-95 shadow-sm shadow-[#6365f1]/25"
         >
           <Plus size={18} />
           Create Event

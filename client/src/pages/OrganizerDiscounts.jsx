@@ -136,16 +136,16 @@ const OrganizerDiscounts = () => {
     <div className="min-h-screen bg-[#F6F7F9] font-sans flex flex-col">
       <Header />
 
-      <div className="flex-1 w-full px-6 lg:px-15 py-8 flex gap-8">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 lg:gap-8">
         <Sidebar />
 
         <main className="flex-1 min-w-0 flex flex-col gap-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-[#1D1F23]">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1D1F23]">
                 Discount Codes
               </h1>
-              <p className="text-neutral-500 text-sm mt-1">
+              <p className="text-neutral-500 text-xs sm:text-sm mt-1">
                 Create promotional promo vouchers and tracking codes for marketing campaigns.
               </p>
             </div>
@@ -156,7 +156,7 @@ const OrganizerDiscounts = () => {
                 setError("");
                 setShowModal(true);
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#6365f1] hover:bg-[#4f51e9] text-white text-sm font-semibold transition-colors shadow-sm cursor-pointer active:scale-95"
+              className="flex items-center self-start sm:self-auto gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-[#6365f1] hover:bg-[#4f51e9] text-white text-xs sm:text-sm font-semibold transition-colors shadow-sm cursor-pointer active:scale-95"
             >
               <Plus size={16} />
               Create Promo Code
@@ -164,14 +164,16 @@ const OrganizerDiscounts = () => {
           </div>
 
           <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr_80px] gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-              <span>Code</span>
-              <span>Discount</span>
-              <span>Usage / Limit</span>
-              <span>Total Saved</span>
-              <span>Status</span>
-              <span className="text-right">Action</span>
-            </div>
+            <div className="overflow-x-auto">
+              <div className="min-w-[680px]">
+                <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr_80px] gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                  <span>Code</span>
+                  <span>Discount</span>
+                  <span>Usage / Limit</span>
+                  <span>Total Saved</span>
+                  <span>Status</span>
+                  <span className="text-right">Action</span>
+                </div>
 
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center gap-3">
@@ -270,6 +272,8 @@ const OrganizerDiscounts = () => {
                 ))}
               </div>
             )}
+              </div>
+            </div>
           </div>
 
           {/* Modal */}

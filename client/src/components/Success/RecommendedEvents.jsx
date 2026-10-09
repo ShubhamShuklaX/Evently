@@ -7,23 +7,24 @@ const RecommendedEvents = () => {
   const displayEvents = events.slice(0, 4);
 
   return (
-    <section className="w-full bg-white border-t border-neutral-200 py-20 mt-10">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="w-full bg-white border-t border-neutral-200 py-12 sm:py-16 md:py-20 mt-8 sm:mt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 1. HEADER ROW */}
-        <div className="flex justify-between items-end mb-10">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8 sm:mb-10">
           <div>
-            <h2 className="text-3xl font-extrabold text-[#1D1F23] mb-2 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1D1F23] mb-1.5 sm:mb-2 tracking-tight">
               Don't stop the rhythm
             </h2>
-            <p className="text-neutral-500">
+            <p className="text-sm sm:text-base text-neutral-500">
               Hand-picked events you might also enjoy.
             </p>
           </div>
           <Link
             to="/events"
-            className="hidden sm:flex items-center gap-1 text-[#6365f1] font-semibold hover:text-[#4f51e9] transition cursor-pointer"
+            className="flex items-center gap-1 text-[#6365f1] font-semibold text-sm hover:text-[#4f51e9] transition cursor-pointer w-fit"
           >
-            Explore Everything <ChevronRight size={18} />
+            <span>Explore Everything</span>
+            <ChevronRight size={18} />
           </Link>
         </div>
 

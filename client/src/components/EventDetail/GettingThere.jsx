@@ -5,7 +5,7 @@ const GettingThere = ({ event }) => {
     <div>
       <h3 className="text-xl font-bold text-[#1D1F23]">Getting There</h3>
 
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 mt-4">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 mt-4">
         <div className="flex items-start gap-3">
           <Info size={18} className="text-[#6365f1] mt-1 shrink-0" />
           <div>

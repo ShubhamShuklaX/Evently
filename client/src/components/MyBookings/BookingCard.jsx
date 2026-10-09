@@ -28,7 +28,7 @@ const BookingCard = ({ booking }) => {
   return (
     <div className="flex flex-col md:flex-row bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Left: Image */}
-      <div className="relative w-full md:w-48 h-48 md:h-auto shrink-0 bg-neutral-100">
+      <div className="relative w-full md:w-52 lg:w-60 h-48 md:h-auto shrink-0 bg-neutral-100">
         <img
           src={event.image}
           alt={event.title}
@@ -41,7 +41,7 @@ const BookingCard = ({ booking }) => {
       </div>
 
       {/* Right: Content */}
-      <div className="p-6 flex-1 flex flex-col">
+      <div className="p-4 sm:p-6 flex-1 flex flex-col min-w-0">
         {/* Header Row */}
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center gap-3 mb-2">

@@ -49,21 +49,23 @@ const EventDetail = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-[#F6F7F9]">
       <Header />
       <EventHero event={event} />
-      <div className="grid grid-cols-[1fr_360px] gap-8 px-30 py-12 items-start">
-        <div className="flex flex-col gap-10">
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="flex flex-col gap-8 sm:gap-10 min-w-0">
           <EventInfoBar event={event} />
           <AboutEvent event={event} />
           <OrganizerCard organizer={event.organizer} />
           <GettingThere event={event} />
         </div>
-        <BookingCard event={event} />
+        <div className="w-full">
+          <BookingCard event={event} />
+        </div>
       </div>
       <RecommendedEvents />
       <Footer />
-    </>
+    </div>
   );
 };
 

@@ -26,21 +26,21 @@ const FinancialPerformance = ({ myEvents = [] }) => {
   return (
     <div className="flex flex-col lg:flex-row gap-6 mb-6">
       {/* Revenue Trends Chart */}
-      <div className="bg-white border border-neutral-200 rounded-2xl shadow-sm flex-1 p-8">
-        <div className="flex justify-between items-start mb-8">
+      <div className="bg-white border border-neutral-200 rounded-2xl shadow-sm flex-1 p-5 sm:p-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h3 className="text-xl font-bold text-[#1D1F23]">Revenue Trends</h3>
-            <p className="text-neutral-500 text-sm mt-1">
+            <h3 className="text-lg sm:text-xl font-bold text-[#1D1F23]">Revenue Trends</h3>
+            <p className="text-neutral-500 text-xs sm:text-sm mt-1">
               Monthly breakdown of ticketing performance
             </p>
           </div>
-          <div className="flex gap-1 bg-neutral-100 p-1 rounded-xl">
+          <div className="flex flex-wrap gap-1 bg-neutral-100 p-1 rounded-xl">
             {["Last 30 Days", "Last 6 Months", "All Time"].map((range) => (
               <button
                 key={range}
                 type="button"
                 onClick={() => setTimeRange(range)}
-                className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                className={`text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
                   timeRange === range
                     ? "bg-white text-[#6365f1] shadow-xs"
                     : "text-neutral-500 hover:text-neutral-800"
@@ -124,7 +124,7 @@ const FinancialPerformance = ({ myEvents = [] }) => {
 
       {/* Ticket Breakdown */}
       <div className="w-full lg:w-96 shrink-0 flex flex-col gap-6">
-        <div className="bg-white border border-neutral-200 rounded-2xl shadow-sm p-7">
+        <div className="bg-white border border-neutral-200 rounded-2xl shadow-sm p-5 sm:p-7">
           <h3 className="text-xl font-bold text-[#1D1F23]">Event Capacity</h3>
           <p className="text-neutral-500 text-sm mt-1 mb-6">
             Occupancy rate of your listings
