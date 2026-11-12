@@ -55,7 +55,7 @@ const Header = () => {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100 shadow-xs"
     >
-      <div className="w-full px-4 sm:px-8 lg:px-12 py-3 flex items-center justify-between gap-3">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0">
           <img
