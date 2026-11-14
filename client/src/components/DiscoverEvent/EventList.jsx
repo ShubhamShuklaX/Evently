@@ -97,67 +97,67 @@ const EventList = ({
           </div>
 
           {/* Controls: Mobile Filter Button + Sort + Layout Switcher */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Mobile Filter Button (placed below title on small screens, hidden on md: and above) */}
             <button
               type="button"
               onClick={onOpenMobileFilter}
-              className="flex md:hidden items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-200 bg-white text-sm font-semibold text-neutral-800 hover:bg-neutral-50 transition-colors shadow-2xs cursor-pointer active:scale-95"
+              className="flex md:hidden items-center gap-1.5 h-8 px-2.5 rounded-lg border border-neutral-200/90 bg-white text-xs font-semibold text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors shadow-2xs cursor-pointer active:scale-95 shrink-0"
             >
-              <Filter size={15} className="text-[#6365f1]" />
+              <Filter size={13} className="text-[#6365f1]" />
               <span>Filters</span>
               {activeFilterCount > 0 && (
-                <span className="bg-[#6365f1] text-white text-[11px] px-1.5 py-0.2 rounded-full font-bold">
+                <span className="bg-[#6365f1] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                   {activeFilterCount}
                 </span>
               )}
             </button>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center border border-neutral-200 shadow-2xs rounded-xl px-3 py-2 bg-white hover:bg-neutral-50 transition-colors">
+            <div className="flex items-center h-8 border border-neutral-200/90 shadow-2xs rounded-lg px-2 bg-white hover:bg-neutral-50 transition-colors shrink-0">
               <ArrowUpDown
-                size={15}
-                className="text-neutral-500 mr-1.5 pointer-events-none"
+                size={13}
+                className="text-neutral-400 mr-1.5 pointer-events-none shrink-0"
               />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 aria-label="Sort events"
-                className="text-[14px] sm:text-[15px] font-medium text-neutral-700 bg-transparent outline-none cursor-pointer pr-1"
+                className="text-xs font-medium text-neutral-700 bg-transparent outline-none cursor-pointer pr-0.5"
               >
-                <option value="relevance">Sort: Relevance</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="date">Date: Upcoming</option>
+                <option value="relevance">Relevance</option>
+                <option value="price-low">Price: Low</option>
+                <option value="price-high">Price: High</option>
+                <option value="date">Upcoming</option>
               </select>
             </div>
 
             {/* Layout Toggle */}
-            <div className="flex items-center gap-1 border border-neutral-200 p-1 shadow-2xs rounded-xl bg-white">
+            <div className="flex items-center gap-0.5 border border-neutral-200/90 p-0.5 shadow-2xs rounded-lg bg-neutral-100/70 h-8 shrink-0">
               <button
                 type="button"
                 onClick={() => setLayout("grid")}
                 aria-label="Grid view"
-                className={`p-1.5 rounded-lg cursor-pointer transition-all ${
+                className={`p-1.5 rounded-md cursor-pointer transition-all ${
                   layout === "grid"
-                    ? "bg-neutral-200 text-neutral-900 border border-neutral-300"
-                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 active:scale-95"
+                    ? "bg-white text-neutral-900 shadow-2xs"
+                    : "text-neutral-500 hover:text-neutral-800 active:scale-95"
                 }`}
               >
-                <LayoutGrid strokeWidth={2.1} size={16} />
+                <LayoutGrid size={13} />
               </button>
 
               <button
                 type="button"
                 onClick={() => setLayout("list")}
                 aria-label="List view"
-                className={`p-1.5 rounded-lg cursor-pointer transition-all ${
+                className={`p-1.5 rounded-md cursor-pointer transition-all ${
                   layout === "list"
-                    ? "bg-neutral-200 text-neutral-900 border border-neutral-300"
-                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 active:scale-95"
+                    ? "bg-white text-neutral-900 shadow-2xs"
+                    : "text-neutral-500 hover:text-neutral-800 active:scale-95"
                 }`}
               >
-                <List strokeWidth={2} size={16} />
+                <List size={13} />
               </button>
             </div>
           </div>
