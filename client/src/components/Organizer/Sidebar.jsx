@@ -26,7 +26,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-4 lg:gap-6">
+    <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-4 lg:gap-6 lg:sticky lg:top-20 z-30 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto no-scrollbar">
       {/* Profile Card */}
       <div className="bg-white rounded-2xl p-3 sm:p-4 border border-neutral-200 shadow-xs flex items-center gap-3 sm:gap-4">
         <img
