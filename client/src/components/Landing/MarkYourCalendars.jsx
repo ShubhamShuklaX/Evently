@@ -37,6 +37,8 @@ const MarkYourCalendars = ({ events: propEvents }) => {
             <img
               src={event.img}
               alt={event.title}
+              loading="lazy"
+              decoding="async"
               className="w-full sm:w-56 md:w-64 lg:w-70 h-48 sm:h-full object-cover shrink-0"
             />
             <div className="flex flex-col justify-between p-5 sm:p-6 flex-1 min-w-0">
@@ -49,7 +51,9 @@ const MarkYourCalendars = ({ events: propEvents }) => {
                 </h3>
                 <div className="flex items-center gap-2 text-neutral-500 text-xs sm:text-sm mt-2.5">
                   <CalendarDays size={14} className="shrink-0" />
-                  <span className="truncate">{event.date} · {event.time}</span>
+                  <span className="truncate">
+                    {event.date} · {event.time}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-neutral-500 text-xs sm:text-sm mt-1.5">
                   <MapPin size={14} className="shrink-0" />

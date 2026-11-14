@@ -23,6 +23,8 @@ const EventCard = ({ layout = "grid", event }) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             src={event.img || fallbackImage}
             alt={event.title}
+            loading="lazy"
+            decoding="async"
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = fallbackImage;
@@ -114,6 +116,8 @@ const EventCard = ({ layout = "grid", event }) => {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           src={event.img || fallbackImage}
           alt={event.title}
+          loading="lazy"
+          decoding="async"
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = fallbackImage;

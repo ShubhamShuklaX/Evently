@@ -51,6 +51,8 @@ const CategoryBar = () => {
                 <img
                   src={icon}
                   alt={categoryName}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover scale-[1.07]"
                 />
               </div>

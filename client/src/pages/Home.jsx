@@ -48,22 +48,24 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F7F9]">
       <Header />
-      <HeroSection />
-      <Reveal>
-        <CategoryBar />
-      </Reveal>
-      <Reveal>
-        <FeaturedEvents />
-      </Reveal>
-      <Reveal>
-        <MarkYourCalendars events={upcomingEvents} />
-      </Reveal>
-      <Reveal>
-        <WhatsTrending events={trendingEvents} />
-      </Reveal>
-      <Reveal>
-        <AppPromo />
-      </Reveal>
+      <main>
+        <HeroSection />
+        <Reveal>
+          <CategoryBar />
+        </Reveal>
+        <Reveal>
+          <FeaturedEvents />
+        </Reveal>
+        <Reveal>
+          <MarkYourCalendars events={upcomingEvents} />
+        </Reveal>
+        <Reveal>
+          <WhatsTrending events={trendingEvents} />
+        </Reveal>
+        <Reveal>
+          <AppPromo />
+        </Reveal>
+      </main>
       <Footer />
     </div>
   );

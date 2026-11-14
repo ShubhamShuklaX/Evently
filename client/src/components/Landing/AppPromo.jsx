@@ -14,8 +14,8 @@ const AppPromo = () => {
               on the Evently App
             </h2>
             <p className="text-indigo-100 text-sm sm:text-base lg:text-[17px] leading-relaxed mt-4 max-w-lg">
-              Get exclusive access to pre-sale tickets, real-time venue maps, and
-              digital tickets directly on your phone.
+              Get exclusive access to pre-sale tickets, real-time venue maps,
+              and digital tickets directly on your phone.
             </p>
 
             <div className="flex items-center gap-4 mt-6 sm:mt-8">
@@ -29,6 +29,8 @@ const AppPromo = () => {
           <div className="relative w-56 sm:w-64 md:w-70 h-80 sm:h-96 md:h-100 shrink-0 rounded-[30px] md:rounded-[36px] border-[5px] md:border-[6px] border-[#1D1F23] overflow-hidden shadow-2xl mx-auto lg:mr-4">
             <img
               src={promoImg}
+              loading="lazy"
+              decoding="async"
               alt="Venue"
               className="absolute inset-0 w-full h-full object-cover"
             />

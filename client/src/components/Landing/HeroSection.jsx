@@ -1,5 +1,4 @@
 import SearchBar from "./SearchBar";
-import heroSection1 from "../../assets/heroSection1.webp";
 import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
@@ -9,8 +8,11 @@ const HeroSection = () => {
       <div className="relative w-full min-h-140 sm:min-h-155 lg:h-160 overflow-hidden flex items-center">
         <img
           className="absolute inset-0 object-cover object-[center_75%] w-full h-full"
-          src={heroSection1}
+          src="/heroSection1.webp"
           alt="Live events crowd"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-linear-to-r from-[#1D1F23]/95 via-black/75 to-black/35 lg:to-transparent" />
 
@@ -84,7 +86,10 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <div id="hero-search-container" className="-mt-8 sm:-mt-10 relative z-20 max-w-5xl mx-auto px-4 sm:px-6">
+      <div
+        id="hero-search-container"
+        className="-mt-8 sm:-mt-10 relative z-20 max-w-5xl mx-auto px-4 sm:px-6"
+      >
         <SearchBar />
       </div>
     </div>
