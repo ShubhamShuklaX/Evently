@@ -5,12 +5,35 @@ import { Pool } from "pg";
 
 let connectionString = process.env.DATABASE_URL;
 
+const getSslConfig = () => {
+  if (
+    process.env.DB_SSL === "false" ||
+    connectionString?.includes("localhost") ||
+    connectionString?.includes("127.0.0.1")
+  ) {
+    return false;
+  }
+
+  if (process.env.DB_CA_CERT) {
+    return {
+      rejectUnauthorized: true,
+      ca: process.env.DB_CA_CERT,
+    };
+  }
+
+  if (process.env.DB_SSL_STRICT === "true") {
+    return { rejectUnauthorized: true };
+  }
+
+  return { rejectUnauthorized: false };
+};
+
 const pool = new Pool({
   connectionString,
-  ssl: { rejectUnauthorized: false },
+  ssl: getSslConfig(),
   connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
-  max: 5,
+  max: process.env.DB_POOL_MAX ? parseInt(process.env.DB_POOL_MAX, 10) : 10,
 });
 
 pool.on("error", (err) => {

@@ -49,10 +49,11 @@ app.get("/api/health", async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
+    console.error("Health check database failure:", error.message);
     res.status(503).json({
       status: "error",
       database: "disconnected",
-      message: error.message,
+      message: "Database service is currently unavailable",
       timestamp: new Date().toISOString(),
     });
   }

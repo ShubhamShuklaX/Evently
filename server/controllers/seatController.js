@@ -57,10 +57,66 @@ export const getEventSeats = async (req, res) => {
 
 export const holdSeat = async (req, res) => {
   try {
-    const seatIds =
-      req.body.seatIds || (req.body.seatId ? [req.body.seatId] : []);
-    if (!seatIds || seatIds.length === 0) {
-      return res.status(400).json({ error: "Seat IDs are required" });
+    let rawSeatIds = req.body.seatIds;
+    if (rawSeatIds === undefined && req.body.seatId) {
+      rawSeatIds = [req.body.seatId];
+    }
+
+    if (!rawSeatIds || !Array.isArray(rawSeatIds) || rawSeatIds.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "A valid array of seat IDs is required" });
+    }
+
+    // Reject empty, null, or non-string IDs
+    if (rawSeatIds.some((id) => !id || typeof id !== "string" || !id.trim())) {
+      return res.status(400).json({ error: "Invalid seat ID provided" });
+    }
+
+    // Reject duplicate IDs
+    const uniqueSeatIds = [...new Set(rawSeatIds)];
+    if (uniqueSeatIds.length !== rawSeatIds.length) {
+      return res
+        .status(400)
+        .json({ error: "Duplicate seat IDs are not allowed" });
+    }
+
+    // Enforce max 10 seats limit
+    if (uniqueSeatIds.length > 10) {
+      return res
+        .status(400)
+        .json({ error: "You can only hold up to 10 seats at a time" });
+    }
+
+    // Ensure all seats exist and belong to the same live event
+    const seatsInDb = await prisma.seat.findMany({
+      where: { id: { in: uniqueSeatIds } },
+      select: {
+        id: true,
+        eventId: true,
+        event: {
+          select: { status: true },
+        },
+      },
+    });
+
+    if (seatsInDb.length !== uniqueSeatIds.length) {
+      return res
+        .status(404)
+        .json({ error: "One or more requested seats do not exist" });
+    }
+
+    const targetEventId = seatsInDb[0].eventId;
+    if (!seatsInDb.every((s) => s.eventId === targetEventId)) {
+      return res
+        .status(400)
+        .json({ error: "All seats must belong to the same event" });
+    }
+
+    if (seatsInDb[0].event.status !== "Live") {
+      return res
+        .status(400)
+        .json({ error: "Cannot hold seats for an event that is not live" });
     }
 
     const expireTime = new Date(Date.now() + 10 * 60 * 1000);
@@ -69,7 +125,7 @@ export const holdSeat = async (req, res) => {
       async (tx) => {
         const result = await tx.seat.updateMany({
           where: {
-            id: { in: seatIds },
+            id: { in: uniqueSeatIds },
             event: { status: "Live" },
             OR: [
               { status: "available" },
@@ -85,7 +141,7 @@ export const holdSeat = async (req, res) => {
           data: { expiresAt: expireTime, userId: req.user.id, status: "held" },
         });
 
-        if (result.count !== seatIds.length) {
+        if (result.count !== uniqueSeatIds.length) {
           throw new Error("SEATS_UNAVAILABLE");
         }
 

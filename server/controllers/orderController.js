@@ -48,6 +48,7 @@ const verifyPayment = async (intentId, userId, seatIds, totalRupees) => {
   const intent = await stripe.paymentIntents.retrieve(intentId);
   return (
     intent.status === "succeeded" &&
+    intent.currency === "inr" &&
     intent.amount === Math.round(totalRupees * 100) &&
     intent.metadata?.userId === userId &&
     intent.metadata?.seatIds === seatIds.slice().join(",")
@@ -178,12 +179,29 @@ export const processCheckout = async (req, res) => {
           );
         }
 
-        // 3. Increment coupon usage count if applied
+        // 3. Increment coupon usage count if applied with atomic concurrency protection
         if (appliedCoupon) {
-          await tx.coupon.update({
-            where: { id: appliedCoupon.id },
+          const couponWhere = appliedCoupon.maxUses
+            ? {
+                id: appliedCoupon.id,
+                active: true,
+                used: { lt: appliedCoupon.maxUses },
+              }
+            : {
+                id: appliedCoupon.id,
+                active: true,
+              };
+
+          const couponUpdate = await tx.coupon.updateMany({
+            where: couponWhere,
             data: { used: { increment: 1 } },
           });
+
+          if (couponUpdate.count === 0) {
+            throw new Error(
+              "Coupon is no longer available or maximum usage limit reached",
+            );
+          }
         }
 
         return newOrder;
@@ -198,7 +216,10 @@ export const processCheckout = async (req, res) => {
   } catch (error) {
     console.error("Checkout error:", error);
 
-    if (error.message.includes("expired")) {
+    if (
+      error.message.includes("expired") ||
+      error.message.includes("Coupon")
+    ) {
       return res.status(400).json({ error: error.message });
     }
 
@@ -301,6 +322,32 @@ export const createPaymentIntent = async (req, res) => {
 
     let paymentIntent;
     if (existingIntentId && typeof existingIntentId === "string") {
+      const existingIntent =
+        await stripe.paymentIntents.retrieve(existingIntentId);
+
+      if (!existingIntent || existingIntent.metadata?.userId !== req.user.id) {
+        return res.status(403).json({
+          error: "Payment intent does not belong to the authenticated user",
+        });
+      }
+
+      const updatableStatuses = [
+        "requires_payment_method",
+        "requires_confirmation",
+        "requires_action",
+      ];
+      if (!updatableStatuses.includes(existingIntent.status)) {
+        return res.status(400).json({
+          error: `Cannot update payment intent with status '${existingIntent.status}'`,
+        });
+      }
+
+      if (existingIntent.currency !== "inr") {
+        return res
+          .status(400)
+          .json({ error: "Payment intent currency must be INR" });
+      }
+
       paymentIntent = await stripe.paymentIntents.update(existingIntentId, {
         amount: Math.round(totalAmount * 100),
         metadata: {

@@ -7,14 +7,31 @@ export const signup = async (req, res) => {
   try {
     let { name, email, password } = req.body;
 
-    if (!name || !email || !password || password.length < 6) {
+    if (!name?.trim() || !email?.trim() || !password) {
       return res.status(400).json({
-        error:
-          "All fields are required and password must be at least 6 characters",
+        error: "Name, email, and password are required",
       });
     }
 
     email = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res
+        .status(400)
+        .json({ error: "Please provide a valid email address" });
+    }
+
+    // Strengthened password requirement: minimum 8 characters with letters and numbers
+    if (
+      password.length < 8 ||
+      !/[A-Za-z]/.test(password) ||
+      !/\d/.test(password)
+    ) {
+      return res.status(400).json({
+        error:
+          "Password must be at least 8 characters long and contain both letters and numbers",
+      });
+    }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -24,7 +41,7 @@ export const signup = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashPassword },
+      data: { name: name.trim(), email, password: hashPassword },
     });
 
     const token = jwt.sign(

@@ -7,6 +7,7 @@ import { createSeats } from "./seatController.js";
 import { ROLES } from "./../config/roles.js";
 
 export const createEvent = async (req, res) => {
+  let newUploadedUrl = null;
   try {
     const {
       title,
@@ -20,12 +21,6 @@ export const createEvent = async (req, res) => {
       capacity,
       status,
     } = req.body;
-
-    let finalImageUrl = img;
-
-    if (req.file) {
-      finalImageUrl = await uploadToCloudinary(req.file.buffer);
-    }
 
     const eventCapacity = Number(capacity ?? 100);
 
@@ -49,17 +44,24 @@ export const createEvent = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    if (!finalImageUrl) {
-      return res
-        .status(400)
-        .json({ error: "Event banner image or image URL is required" });
-    }
-
     const parsedPrice = Number(price);
     if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
       return res
         .status(400)
         .json({ error: "Price must be a valid positive number" });
+    }
+
+    let finalImageUrl = img;
+
+    if (req.file) {
+      newUploadedUrl = await uploadToCloudinary(req.file.buffer);
+      finalImageUrl = newUploadedUrl;
+    }
+
+    if (!finalImageUrl) {
+      return res
+        .status(400)
+        .json({ error: "Event banner image or image URL is required" });
     }
 
     const newEvent = await prisma.$transaction(
@@ -93,6 +95,13 @@ export const createEvent = async (req, res) => {
       .status(201)
       .json({ message: "Event successfully created", event: newEvent });
   } catch (error) {
+    if (newUploadedUrl) {
+      try {
+        await deleteFromCloudinary(newUploadedUrl);
+      } catch (delErr) {
+        console.error("Failed to clean up orphaned Cloudinary image:", delErr);
+      }
+    }
     console.error(error);
     res.status(500).json({ error: "Failed to create event" });
   }
@@ -100,13 +109,68 @@ export const createEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
   try {
+    const { page, limit, category, search } = req.query;
+
+    const where = {
+      status: "Live",
+    };
+
+    if (category && category !== "All") {
+      where.category = { equals: category, mode: "insensitive" };
+    }
+
+    if (search && typeof search === "string" && search.trim()) {
+      where.OR = [
+        { title: { contains: search.trim(), mode: "insensitive" } },
+        { location: { contains: search.trim(), mode: "insensitive" } },
+        { description: { contains: search.trim(), mode: "insensitive" } },
+      ];
+    }
+
+    // Paginated branch
+    if (page || limit) {
+      const parsedPage = Math.max(1, parseInt(page, 10) || 1);
+      const parsedLimit = Math.max(1, Math.min(100, parseInt(limit, 10) || 12));
+      const skip = (parsedPage - 1) * parsedLimit;
+
+      const [events, total] = await Promise.all([
+        prisma.event.findMany({
+          where,
+          skip,
+          take: parsedLimit,
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.event.count({ where }),
+      ]);
+
+      const totalPages = Math.ceil(total / parsedLimit);
+
+      return res.json({
+        events,
+        pagination: {
+          total,
+          page: parsedPage,
+          totalPages,
+          limit: parsedLimit,
+        },
+      });
+    }
+
+    // Unpaginated fallback for initial or simple client consumers
     const events = await prisma.event.findMany({
-      where: {
-        status: "Live",
-      },
+      where,
       orderBy: { createdAt: "desc" },
     });
-    res.json({ events });
+
+    res.json({
+      events,
+      pagination: {
+        total: events.length,
+        page: 1,
+        totalPages: 1,
+        limit: events.length,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch events" });
@@ -123,8 +187,6 @@ export const getEventById = async (req, res) => {
           select: {
             id: true,
             name: true,
-            email: true,
-            role: true,
           },
         },
       },
@@ -169,6 +231,7 @@ export const getMyEvents = async (req, res) => {
 };
 
 export const updateEvent = async (req, res) => {
+  let newUploadedUrl = null;
   try {
     const {
       title,
@@ -215,11 +278,8 @@ export const updateEvent = async (req, res) => {
     let finalImageUrl = existingEvent.img;
 
     if (req.file) {
-      finalImageUrl = await uploadToCloudinary(req.file.buffer);
-
-      if (existingEvent.img) {
-        await deleteFromCloudinary(existingEvent.img);
-      }
+      newUploadedUrl = await uploadToCloudinary(req.file.buffer);
+      finalImageUrl = newUploadedUrl;
     } else if (img) {
       finalImageUrl = img;
     }
@@ -233,6 +293,13 @@ export const updateEvent = async (req, res) => {
       });
 
       if (activeSeats > 0) {
+        if (newUploadedUrl) {
+          try {
+            await deleteFromCloudinary(newUploadedUrl);
+          } catch (delErr) {
+            console.error("Cleanup error:", delErr);
+          }
+        }
         return res.status(400).json({
           error:
             "Cannot change seating capacity after tickets have already been held or booked.",
@@ -240,6 +307,7 @@ export const updateEvent = async (req, res) => {
       }
     }
 
+    // Update database FIRST
     const updatedEvent = await prisma.event.update({
       where: { id: req.params.id },
       data: {
@@ -256,10 +324,30 @@ export const updateEvent = async (req, res) => {
       },
     });
 
+    // Delete old image ONLY after database update succeeds
+    if (
+      newUploadedUrl &&
+      existingEvent.img &&
+      existingEvent.img !== newUploadedUrl
+    ) {
+      try {
+        await deleteFromCloudinary(existingEvent.img);
+      } catch (delErr) {
+        console.error("Failed to delete old image from Cloudinary:", delErr);
+      }
+    }
+
     res
       .status(200)
       .json({ message: "Event updated successfully", event: updatedEvent });
   } catch (error) {
+    if (newUploadedUrl) {
+      try {
+        await deleteFromCloudinary(newUploadedUrl);
+      } catch (delErr) {
+        console.error("Failed to delete uploaded image after DB error:", delErr);
+      }
+    }
     console.error(error);
     res.status(500).json({ error: "Failed to update event" });
   }
@@ -298,9 +386,6 @@ export const deleteEvent = async (req, res) => {
           "Cannot delete an event that already has confirmed attendee bookings. Change status to 'Past' instead.",
       });
     }
-    if (existingEvent.img) {
-      await deleteFromCloudinary(existingEvent.img);
-    }
 
     await prisma.$transaction(
       async (tx) => {
@@ -316,6 +401,18 @@ export const deleteEvent = async (req, res) => {
         timeout: 15000,
       },
     );
+
+    // Delete Cloudinary image ONLY after successful database deletion
+    if (existingEvent.img) {
+      try {
+        await deleteFromCloudinary(existingEvent.img);
+      } catch (delErr) {
+        console.error(
+          "Failed to delete Cloudinary image after event delete:",
+          delErr,
+        );
+      }
+    }
 
     res.status(200).json({ message: "Event deleted successfully" });
   } catch (error) {

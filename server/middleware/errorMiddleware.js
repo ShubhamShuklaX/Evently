@@ -16,10 +16,21 @@ export const errorHandler = (err, req, res, next) => {
   const statusCode =
     res.statusCode !== 200 ? res.statusCode : err.statusCode || 500;
 
-  console.error("Server Error : ", err.message);
+  // Log detailed error internally
+  console.error(
+    `[${new Date().toISOString()}] Server Error (${statusCode}):`,
+    err,
+  );
+
+  // In production, mask unhandled 500 internal errors while preserving 4xx safe client messages
+  const isProduction = process.env.NODE_ENV === "production";
+  const errorMessage =
+    statusCode >= 500 && isProduction
+      ? "An unexpected internal server error occurred"
+      : err.message || "Internal server error";
 
   res.status(statusCode).json({
-    error: err.message || "Internal server error",
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+    error: errorMessage,
+    ...(!isProduction && { stack: err.stack }),
   });
 };
