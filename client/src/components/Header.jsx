@@ -7,15 +7,21 @@ import {
   X,
   LayoutDashboard,
 } from "lucide-react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../assets/Logo.webp";
 import { useState } from "react";
+import { useSearch } from "../context/SearchContext";
 
 const Header = () => {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+  const { query, setQuery, isHeroSearchPast } = useSearch();
+
   const [searchParams] = useSearchParams();
   const urlSearch = searchParams.get("search") || "";
-  const [query, setQuery] = useState(urlSearch);
+  const [prevUrlSearch, setPrevUrlSearch] = useState(urlSearch);
+
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -23,8 +29,10 @@ const Header = () => {
   const user = JSON.parse(localStorage.getItem("evently_user") || "null");
   const isOrganizer = user?.role === "organizer" || user?.role === "admin";
 
+  // When on home page, only show search once the hero search bar has scrolled up to the header
+  const showSearch = !isHome || isHeroSearchPast;
+
   // Sync query when urlSearch changes externally (e.g. Reset All)
-  const [prevUrlSearch, setPrevUrlSearch] = useState(urlSearch);
   if (urlSearch !== prevUrlSearch) {
     setPrevUrlSearch(urlSearch);
     setQuery(urlSearch);
@@ -68,39 +76,59 @@ const Header = () => {
           </span>
         </Link>
 
-        {/* Desktop / Tablet Search */}
-        <form
-          onSubmit={handleSearch}
-          className="hidden md:flex flex-1 max-w-md lg:max-w-lg mx-2 lg:mx-4 items-center"
-        >
-          <div className="relative w-full">
-            <Search
-              strokeWidth={1.7}
-              size={16}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-            />
-            <input
-              className="h-10 w-full pl-9 pr-3 bg-[#F6F7F9] text-sm text-[#1D1F23] placeholder:text-neutral-400 rounded-xl border border-neutral-200 outline-none transition-all focus:border-[#6365f1] focus:bg-white focus:ring-2 focus:ring-[#6365f1]/10"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              type="search"
-              placeholder="Search concerts, sports, theater..."
-            />
-          </div>
-        </form>
+        {/* Desktop / Tablet Search Container */}
+        <div className="hidden md:flex flex-1 max-w-md lg:max-w-lg mx-2 lg:mx-4 items-center justify-center min-h-[40px]">
+          <AnimatePresence mode="wait">
+            {showSearch && (
+              <motion.form
+                key="header-search-form"
+                initial={isHome ? { opacity: 0, scale: 0.88, y: -4 } : false}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.88, y: -4 }}
+                transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                onSubmit={handleSearch}
+                className="w-full flex items-center"
+              >
+                <div className="relative w-full">
+                  <Search
+                    strokeWidth={1.7}
+                    size={16}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                  />
+                  <input
+                    className="h-10 w-full pl-9 pr-3 bg-[#F6F7F9] text-sm text-[#1D1F23] placeholder:text-neutral-400 rounded-xl border border-neutral-200 outline-none transition-all focus:border-[#6365f1] focus:bg-white focus:ring-2 focus:ring-[#6365f1]/10"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    type="search"
+                    placeholder="Search concerts, sports, theater..."
+                  />
+                </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Right side controls */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Mobile search trigger */}
-          <button
-            type="button"
-            title="Search"
-            aria-label="Search"
-            onClick={() => setIsMobileSearchOpen((prev) => !prev)}
-            className="md:hidden p-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-xl transition-colors cursor-pointer active:scale-95"
-          >
-            <Search size={20} strokeWidth={1.8} />
-          </button>
+          <AnimatePresence>
+            {showSearch && (
+              <motion.button
+                key="mobile-search-btn"
+                initial={isHome ? { opacity: 0, scale: 0.75 } : false}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.75 }}
+                transition={{ duration: 0.2 }}
+                type="button"
+                title="Search"
+                aria-label="Search"
+                onClick={() => setIsMobileSearchOpen((prev) => !prev)}
+                className="md:hidden p-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-xl transition-colors cursor-pointer active:scale-95"
+              >
+                <Search size={20} strokeWidth={1.8} />
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           {/* Quick Icons (hidden on mobile when hamburger menu is present) */}
           <div className="hidden sm:flex items-center gap-1 sm:gap-2">

@@ -1,7 +1,9 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ReactLenis } from "lenis/react";
 import { BookingProvider } from "./context/BookingContext";
 import { ToastProvider } from "./context/ToastContext";
+import { SearchProvider } from "./context/SearchContext";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
 
@@ -40,12 +42,14 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 const App = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F9] text-neutral-900 selection:bg-indigo-500 selection:text-white">
-      <BookingProvider>
-        <ToastProvider>
-          <ScrollToTop />
-          <Suspense fallback={<LoadingSpinner message="Loading page..." fullScreen={true} />}>
-            <Routes>
+    <ReactLenis root options={{ lerp: 0.08, duration: 1.2, smoothWheel: true }}>
+      <div className="min-h-screen flex flex-col bg-[#F6F7F9] text-neutral-900 selection:bg-indigo-500 selection:text-white">
+        <BookingProvider>
+          <SearchProvider>
+            <ToastProvider>
+              <ScrollToTop />
+              <Suspense fallback={<LoadingSpinner message="Loading page..." fullScreen={true} />}>
+                <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Login />} />
@@ -149,8 +153,10 @@ const App = () => {
             </Routes>
           </Suspense>
         </ToastProvider>
-      </BookingProvider>
-    </div>
+      </SearchProvider>
+    </BookingProvider>
+  </div>
+</ReactLenis>
   );
 };
 

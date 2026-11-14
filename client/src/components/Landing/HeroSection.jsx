@@ -84,7 +84,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <div className="-mt-8 sm:-mt-10 relative z-20 max-w-5xl mx-auto px-4 sm:px-6">
+      <div id="hero-search-container" className="-mt-8 sm:-mt-10 relative z-20 max-w-5xl mx-auto px-4 sm:px-6">
         <SearchBar />
       </div>
     </div>
