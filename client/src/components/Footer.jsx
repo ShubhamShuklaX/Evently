@@ -1,4 +1,4 @@
-import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
+import { FaTwitter, FaInstagram, FaGithub } from "react-icons/fa";
 import { Send } from "lucide-react";
 const Footer = () => {
   return (
@@ -9,8 +9,8 @@ const Footer = () => {
           <div>
             <h3 className="text-[#1D1F23] font-bold text-lg">Evently</h3>
             <p className="text-neutral-500 text-sm leading-6 mt-3 max-w-xs">
-              Your premium destination for seamless event booking, from live music
-              to sports and theatre. Experience entertainment, simplified.
+              Your premium destination for seamless event booking, from live
+              music to sports and theatre. Experience entertainment, simplified.
             </p>
           </div>
 
@@ -85,32 +85,25 @@ const Footer = () => {
           <p>© 2026 Evently. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a
-              href="#"
-              aria-label="Facebook"
+              href="https://github.com/ShubhamShuklaX"
+              aria-label="Github"
               className="hover:text-[#6365f1] transition-colors p-1"
             >
-              <FaFacebookF size={16} />
+              <FaGithub size={16} />
             </a>
             <a
-              href="#"
+              href="https://x.com/shhubhxx"
               aria-label="Twitter"
               className="hover:text-[#6365f1] transition-colors p-1"
             >
               <FaTwitter size={16} />
             </a>
             <a
-              href="#"
+              href="https://instagram.com/shhubhxx"
               aria-label="Instagram"
               className="hover:text-[#6365f1] transition-colors p-1"
             >
               <FaInstagram size={16} />
-            </a>
-            <a
-              href="#"
-              aria-label="Youtube"
-              className="hover:text-[#6365f1] transition-colors p-1"
-            >
-              <FaYoutube size={16} />
             </a>
           </div>
         </div>

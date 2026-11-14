@@ -1,5 +1,5 @@
 import musicIcon from "../../assets/categoryIcons/Music-icon.webp";
-import sportsIcon from "../../assets/categoryIcons/Sports-icon.webp";
+import sportsIcon from "../../assets/categoryIcons/Sports-Icon.webp";
 import theaterIcon from "../../assets/categoryIcons/Theater-icon.webp";
 import comedyIcon from "../../assets/categoryIcons/Comedy-icon.webp";
 import conferenceIcon from "../../assets/categoryIcons/Conference-icon.webp";
