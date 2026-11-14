@@ -86,77 +86,96 @@ const OrganizerAnalytics = () => {
           ) : (
             <>
               {/* Stat Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-                <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 mb-6 sm:mb-8">
+                <article className="group relative bg-white border border-neutral-200/80 rounded-xl p-3.5 sm:p-4.5 lg:p-5 shadow-xs hover:border-neutral-300 hover:shadow-sm active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-150 ease-out flex flex-col justify-between cursor-default">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] sm:text-xs font-semibold text-neutral-500 uppercase tracking-wider truncate mr-1.5">
                       Gross Sales
                     </span>
-                    <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                      <TrendingUp size={16} />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100/60 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                      <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.2} />
+                    </div>
+                  </div>
+                  <div className="mt-2 sm:mt-3.5 mb-0.5 sm:mb-1 flex items-baseline gap-1.5 sm:gap-2.5 flex-wrap">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1D1F23] tracking-tight tabular-nums">
+                      ₹{totalRevenue.toLocaleString("en-IN")}
+                    </span>
+                    {totalSold > 0 && (
+                      <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-semibold tabular-nums bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                        <ArrowUpRight size={11} strokeWidth={2.5} />
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 sm:mt-3.5 pt-2 sm:pt-3 border-t border-neutral-100 flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400">
+                    <span className="truncate pr-1">
+                      {totalSold > 0 ? `${totalSold} tickets booked` : "No ticket sales yet"}
+                    </span>
+                    <span className="hidden sm:inline-block font-medium text-emerald-600">
+                      {totalSold > 0 ? "Booked" : "0 sales"}
                     </span>
                   </div>
-                  <p className="text-2xl font-bold text-[#1D1F23]">
-                    ₹{totalRevenue.toLocaleString("en-IN")}
-                  </p>
-                  <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                    <ArrowUpRight size={14} />{" "}
-                    {totalSold > 0
-                      ? `${totalSold} tickets booked`
-                      : "No ticket sales yet"}
-                  </p>
-                </div>
+                </article>
 
-                <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <article className="group relative bg-white border border-neutral-200/80 rounded-xl p-3.5 sm:p-4.5 lg:p-5 shadow-xs hover:border-neutral-300 hover:shadow-sm active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-150 ease-out flex flex-col justify-between cursor-default">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] sm:text-xs font-semibold text-neutral-500 uppercase tracking-wider truncate mr-1.5">
                       Avg Ticket Price
                     </span>
-                    <span className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                      <CreditCard size={16} />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-indigo-50 text-[#6365f1] border border-indigo-100/60 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                      <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.2} />
+                    </div>
+                  </div>
+                  <div className="mt-2 sm:mt-3.5 mb-0.5 sm:mb-1 flex items-baseline gap-1.5 sm:gap-2.5 flex-wrap">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1D1F23] tracking-tight tabular-nums">
+                      ₹{avgTicketPrice.toLocaleString("en-IN")}
                     </span>
                   </div>
-                  <p className="text-2xl font-bold text-[#1D1F23]">
-                    ₹{avgTicketPrice.toLocaleString("en-IN")}
-                  </p>
-                  <p className="text-xs text-neutral-500 mt-1">
-                    Across all categories
-                  </p>
-                </div>
+                  <div className="mt-2 sm:mt-3.5 pt-2 sm:pt-3 border-t border-neutral-100 flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400">
+                    <span className="truncate pr-1">Across all categories</span>
+                    <span className="hidden sm:inline-block font-medium text-neutral-500">Tier Avg</span>
+                  </div>
+                </article>
 
-                <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
-                      Total Seats Listed
+                <article className="group relative bg-white border border-neutral-200/80 rounded-xl p-3.5 sm:p-4.5 lg:p-5 shadow-xs hover:border-neutral-300 hover:shadow-sm active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-150 ease-out flex flex-col justify-between cursor-default">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] sm:text-xs font-semibold text-neutral-500 uppercase tracking-wider truncate mr-1.5">
+                      Seats Listed
                     </span>
-                    <span className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                      <Users size={16} />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-amber-50 text-amber-600 border border-amber-100/60 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                      <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.2} />
+                    </div>
+                  </div>
+                  <div className="mt-2 sm:mt-3.5 mb-0.5 sm:mb-1 flex items-baseline gap-1.5 sm:gap-2.5 flex-wrap">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1D1F23] tracking-tight tabular-nums">
+                      {totalCapacity.toLocaleString("en-IN")}
                     </span>
                   </div>
-                  <p className="text-2xl font-bold text-[#1D1F23]">
-                    {totalCapacity.toLocaleString("en-IN")}
-                  </p>
-                  <p className="text-xs text-neutral-500 mt-1">
-                    {events.length} active venue configurations
-                  </p>
-                </div>
+                  <div className="mt-2 sm:mt-3.5 pt-2 sm:pt-3 border-t border-neutral-100 flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400">
+                    <span className="truncate pr-1">{events.length} active venues</span>
+                    <span className="hidden sm:inline-block font-medium text-amber-600">Inventory</span>
+                  </div>
+                </article>
 
-                <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
-                      Sell-Through Rate
+                <article className="group relative bg-white border border-neutral-200/80 rounded-xl p-3.5 sm:p-4.5 lg:p-5 shadow-xs hover:border-neutral-300 hover:shadow-sm active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-150 ease-out flex flex-col justify-between cursor-default">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] sm:text-xs font-semibold text-neutral-500 uppercase tracking-wider truncate mr-1.5">
+                      Sell-Through
                     </span>
-                    <span className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
-                      <BarChart3 size={16} />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-purple-50 text-purple-600 border border-purple-100/60 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                      <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.2} />
+                    </div>
+                  </div>
+                  <div className="mt-2 sm:mt-3.5 mb-0.5 sm:mb-1 flex items-baseline gap-1.5 sm:gap-2.5 flex-wrap">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1D1F23] tracking-tight tabular-nums">
+                      {sellThroughRate}%
                     </span>
                   </div>
-                  <p className="text-2xl font-bold text-[#1D1F23]">
-                    {sellThroughRate}%
-                  </p>
-                  <p className="text-xs text-purple-600 font-medium mt-1">
-                    {totalSold} / {totalCapacity} seats booked
-                  </p>
-                </div>
+                  <div className="mt-2 sm:mt-3.5 pt-2 sm:pt-3 border-t border-neutral-100 flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400">
+                    <span className="truncate pr-1">{totalSold} / {totalCapacity} seats</span>
+                    <span className="hidden sm:inline-block font-medium text-purple-600">Rate</span>
+                  </div>
+                </article>
               </div>
 
               {/* Event Performance Breakdown */}

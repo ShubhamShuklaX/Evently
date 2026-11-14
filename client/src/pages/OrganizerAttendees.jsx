@@ -195,36 +195,66 @@ const OrganizerAttendees = () => {
           </div>
 
           {/* Quick Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-            <div className="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 shadow-sm flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                <UserCheck size={20} />
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-5">
+            <article className="group bg-white border border-neutral-200/80 rounded-xl p-3 sm:p-4.5 lg:p-5 shadow-xs hover:border-neutral-300 hover:shadow-sm active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-150 ease-out flex flex-col justify-between cursor-default">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-xs font-semibold text-neutral-500 uppercase tracking-wider truncate mr-1">
+                  Checked In
+                </span>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100/60 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                  <UserCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.2} />
+                </div>
               </div>
-              <div>
-                <p className="text-xl sm:text-2xl font-bold text-[#1D1F23]">{checkedInCount}</p>
-                <p className="text-xs text-neutral-500">Checked In Guests</p>
+              <div className="mt-2 sm:mt-3.5 mb-0.5 sm:mb-1">
+                <p className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-[#1D1F23] tracking-tight tabular-nums">
+                  {checkedInCount}
+                </p>
               </div>
-            </div>
+              <div className="mt-2 sm:mt-3 pt-2 sm:pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400">
+                <span className="truncate pr-1">Processed guests</span>
+                <span className="hidden sm:inline-block font-medium text-emerald-600">Active</span>
+              </div>
+            </article>
 
-            <div className="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 shadow-sm flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                <Clock size={20} />
+            <article className="group bg-white border border-neutral-200/80 rounded-xl p-3 sm:p-4.5 lg:p-5 shadow-xs hover:border-neutral-300 hover:shadow-sm active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-150 ease-out flex flex-col justify-between cursor-default">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-xs font-semibold text-neutral-500 uppercase tracking-wider truncate mr-1">
+                  Awaiting
+                </span>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-amber-50 text-amber-600 border border-amber-100/60 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                  <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.2} />
+                </div>
               </div>
-              <div>
-                <p className="text-xl sm:text-2xl font-bold text-[#1D1F23]">{attendees.length - checkedInCount}</p>
-                <p className="text-xs text-neutral-500">Awaiting Arrival</p>
+              <div className="mt-2 sm:mt-3.5 mb-0.5 sm:mb-1">
+                <p className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-[#1D1F23] tracking-tight tabular-nums">
+                  {attendees.length - checkedInCount}
+                </p>
               </div>
-            </div>
+              <div className="mt-2 sm:mt-3 pt-2 sm:pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400">
+                <span className="truncate pr-1">Pending arrival</span>
+                <span className="hidden sm:inline-block font-medium text-amber-600">Queue</span>
+              </div>
+            </article>
 
-            <div className="bg-white border border-neutral-200 rounded-2xl p-4 sm:p-5 shadow-sm flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                <Ticket size={20} />
+            <article className="group bg-white border border-neutral-200/80 rounded-xl p-3 sm:p-4.5 lg:p-5 shadow-xs hover:border-neutral-300 hover:shadow-sm active:scale-[0.99] transition-[transform,box-shadow,border-color] duration-150 ease-out flex flex-col justify-between cursor-default">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-xs font-semibold text-neutral-500 uppercase tracking-wider truncate mr-1">
+                  Gates Open
+                </span>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-indigo-50 text-[#6365f1] border border-indigo-100/60 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+                  <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2.2} />
+                </div>
               </div>
-              <div>
-                <p className="text-xl sm:text-2xl font-bold text-[#1D1F23]">{events.length || attendees.length}</p>
-                <p className="text-xs text-neutral-500">Active Door Gates</p>
+              <div className="mt-2 sm:mt-3.5 mb-0.5 sm:mb-1">
+                <p className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-[#1D1F23] tracking-tight tabular-nums">
+                  {events.length || attendees.length}
+                </p>
               </div>
-            </div>
+              <div className="mt-2 sm:mt-3 pt-2 sm:pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400">
+                <span className="truncate pr-1">Active scan lanes</span>
+                <span className="hidden sm:inline-block font-medium text-[#6365f1]">Ready</span>
+              </div>
+            </article>
           </div>
 
           {/* Search Bar */}
