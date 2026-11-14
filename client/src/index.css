@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "lenis/dist/lenis.css";
 
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
 body {
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   -webkit-font-smoothing: antialiased; /* This makes the text look sharper */
