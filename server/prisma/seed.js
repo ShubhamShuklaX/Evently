@@ -611,10 +611,8 @@ async function main() {
     process.env.ADMIN_PASSWORD || "Admin@123",
     10,
   );
-  const organizerPassword = await bcrypt.hash(
-    process.env.ORGANIZER_PASSWORD || "Organizer@123",
-    10,
-  );
+  const demoOrganizerPassword = await bcrypt.hash("Organizer@123", 10);
+  const demoAttendeePassword = await bcrypt.hash("Attendee@123", 10);
 
   const admin = await prisma.user.upsert({
     where: { email: "admin@evently.com" },
@@ -629,17 +627,29 @@ async function main() {
 
   const organizer = await prisma.user.upsert({
     where: { email: "organizer@evently.com" },
-    update: { role: "organizer" },
+    update: { role: "organizer", password: demoOrganizerPassword },
     create: {
-      name: "Default Organizer",
+      name: "Demo Organizer",
       email: "organizer@evently.com",
-      password: organizerPassword,
+      password: demoOrganizerPassword,
       role: "organizer",
     },
   });
 
+  const attendee = await prisma.user.upsert({
+    where: { email: "attendee@evently.com" },
+    update: { role: "user", password: demoAttendeePassword },
+    create: {
+      name: "Demo Attendee",
+      email: "attendee@evently.com",
+      password: demoAttendeePassword,
+      role: "user",
+    },
+  });
+
   console.log(`Admin verified: ${admin.email}`);
-  console.log(`Organizer verified: ${organizer.email}`);
+  console.log(`Organizer verified: ${organizer.email} (Organizer@123)`);
+  console.log(`Attendee verified: ${attendee.email} (Attendee@123)`);
   console.log("Seeding 50 distinct events with 20 seats each...");
 
   // 4 rows (A-D) * 5 columns = 20 seats per event

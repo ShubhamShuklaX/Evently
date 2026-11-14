@@ -1,29 +1,116 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { CheckCircle2 } from "lucide-react";
-
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useBooking } from "../context/BookingContext";
-
 import DigitalTicket from "../components/Success/DigitalTicket";
 import SuccessSummary from "../components/Success/SuccessSummary";
 import RecommendedEvents from "../components/Success/RecommendedEvents";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { API_BASE } from "../utils/api";
 
 const BookingSuccess = () => {
-  const { completedOrder } = useBooking();
+  const { completedOrder, setCompletedOrder, setSelectedSeats } = useBooking();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const paymentIntentId = searchParams.get("payment_intent");
+  const redirectStatus = searchParams.get("redirect_status");
+
+  const [finalizing, setFinalizing] = useState(
+    () =>
+      !completedOrder &&
+      Boolean(
+        paymentIntentId &&
+          redirectStatus === "succeeded" &&
+          sessionStorage.getItem("evently_pending_checkout"),
+      ),
+  );
+
+  useEffect(() => {
+    if (completedOrder) return;
+
+    // Handle return from Stripe redirect (e.g., 3D Secure verification)
+    if (paymentIntentId && redirectStatus === "succeeded") {
+      const pendingRaw = sessionStorage.getItem("evently_pending_checkout");
+      if (pendingRaw) {
+        try {
+          const pending = JSON.parse(pendingRaw);
+          const token = localStorage.getItem("evently_token");
+
+          void fetch(`${API_BASE}/api/orders`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              seatIds: pending.seats.map((s) => s.id),
+              idempotencyKey: pending.idempotencyKey,
+              totalPaid: pending.totalPaid,
+              paymentIntentId,
+              couponCode: pending.couponCode,
+            }),
+          })
+            .then((res) => res.json())
+            .then((result) => {
+              if (result.success && result.order) {
+                const finalOrder = {
+                  customer: pending.customer,
+                  event: pending.event,
+                  seats: pending.seats,
+                  totalPaid: pending.totalPaid,
+                  orderId: result.order.id,
+                };
+                setCompletedOrder(finalOrder);
+                setSelectedSeats([]);
+                sessionStorage.removeItem("evently_pending_checkout");
+              } else {
+                void navigate("/events", { replace: true });
+              }
+            })
+            .catch(() => {
+              void navigate("/events", { replace: true });
+            })
+            .finally(() => setFinalizing(false));
+          return;
+        } catch {
+          // ignore parsing error
+        }
+      }
+    }
+
+    if (!finalizing) {
+      void navigate("/events", { replace: true });
+    }
+  }, [
+    completedOrder,
+    paymentIntentId,
+    redirectStatus,
+    finalizing,
+    navigate,
+    setCompletedOrder,
+    setSelectedSeats,
+  ]);
+
+  if (finalizing) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F6F7F9]">
+        <Loader2 className="animate-spin text-indigo-600 mb-4" size={40} />
+        <h2 className="text-xl font-bold text-neutral-800">
+          Finalizing your ticket reservation...
+        </h2>
+        <p className="text-neutral-500 text-sm mt-1">
+          Payment confirmed. Securing your seats now.
+        </p>
+      </div>
+    );
+  }
+
+  if (!completedOrder) return null;
 
   const name = completedOrder?.customer?.firstName || "Guest";
   const email = completedOrder?.customer?.email || "your email";
-
-  useEffect(() => {
-    if (!completedOrder) {
-      void navigate("/events", { replace: true });
-    }
-  }, [completedOrder, navigate]);
-
-  if (!completedOrder) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F7F9]">

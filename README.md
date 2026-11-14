@@ -213,28 +213,57 @@ _(Alternatively, run locally with `npm install` and `npm run dev` in both `/serv
 
 ### 3. Demo Accounts & Payments
 
-- **Organizer / Admin:** `organizer@evently.com` / `admin@evently.com` (passwords configured in `server/.env`).
-- **Test Payments:** Use Stripe test card `4242 4242 4242 4242` with any future date and 3-digit CVC.
+Explore the platform immediately with seeded demo accounts (no signup or manual account creation required):
+
+| Role | Email | Password | Capabilities & Test Flows |
+| :--- | :--- | :--- | :--- |
+| **Demo Attendee** | `attendee@evently.com` | `Attendee@123` | Browse live events, select seats on the interactive map, apply promo codes, checkout with Stripe, and inspect digital tickets with QR verification. |
+| **Demo Organizer** | `organizer@evently.com` | `Organizer@123` | Access the Organizer Portal (`/organizer`), publish and manage events, monitor ticket occupancy, inspect attendee rosters, and configure discounts. |
+
+- **Test Payments:** Use Stripe test card `4242 4242 4242 4242` with any future expiry date and 3-digit CVC (`123`).
 
 ---
 
 ## Testing Concurrency
 
-A dedicated race-condition test executes parallel competing reservations for the same seat to prove zero double-booking under load:
+Evently includes a dedicated automated race-condition test that fires simultaneous competing hold requests for the exact same seat to verify database-level arbitration under load.
+
+> **Prerequisite:** Ensure the backend server (`npm run dev`) and PostgreSQL database are running before starting the test:
 
 ```bash
 cd server
-npm test
+npm run test:concurrency
 ```
 
+Expected output:
 ```
+========================================================
+  EVENTLY — HIGH-CONTENTION SEAT CONCURRENCY TEST
+========================================================
+
+🎯 Target Seat: Row A - Col 1 (ID: ...)
+🎪 Event: "Coldplay: Music of the Spheres World Tour"
+
+⚡ Firing 2 simultaneous hold requests for the EXACT same seat...
+⏱ Completed in: 48ms
+
   User A HTTP Response: 200 -> {"message":"Successfully held seats","count":1}
   User B HTTP Response: 409 -> {"error":"One or more seats are no longer available"}
 
+📊 Results Analysis:
    - Successful Reservations (200 OK): 1
    - Rejected Conflicts (409 Conflict): 1
 
 ✅ SUCCESS: Zero double-booking detected!
+   Prisma conditional transaction safely granted exactly 1 hold and rejected the race collision.
+🧹 Cleanup: Restored test seat back to 'available'.
+```
+
+To run the security validation suite (validating seat limits, PaymentIntent ownership, currency enforcement, and coupon race conditions):
+
+```bash
+cd server
+npm test
 ```
 
 ---

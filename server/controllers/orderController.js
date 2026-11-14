@@ -356,6 +356,7 @@ export const createPaymentIntent = async (req, res) => {
           seatIds: uniqueSeatIds.join(","),
           couponCode: appliedCoupon?.code || "",
         },
+        payment_method_types: ["card"],
       });
     } else {
       paymentIntent = await stripe.paymentIntents.create({
@@ -367,9 +368,7 @@ export const createPaymentIntent = async (req, res) => {
           seatIds: uniqueSeatIds.join(","),
           couponCode: appliedCoupon?.code || "",
         },
-        automatic_payment_methods: {
-          enabled: true,
-        },
+        payment_method_types: ["card"],
       });
     }
 

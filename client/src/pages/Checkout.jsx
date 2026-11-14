@@ -247,24 +247,47 @@ const Checkout = () => {
         return;
       }
 
-      // Step B: Confirm Payment with Stripe
+      // Persist pending checkout state in case 3D Secure triggers a browser redirect
+      const token = localStorage.getItem("evently_token");
+      const seatIds = selectedSeats.map((s) => s.id);
+      const totalPaid = Math.max(
+        0,
+        currentEvent.price * selectedSeats.length - discountAmount + 19,
+      );
+
+      sessionStorage.setItem(
+        "evently_pending_checkout",
+        JSON.stringify({
+          customer: data,
+          eventId: id,
+          event: currentEvent,
+          seats: selectedSeats,
+          totalPaid,
+          idempotencyKey,
+          couponCode: appliedCoupon?.code,
+        }),
+      );
+
+      // Step B: Confirm Payment with Stripe (restricted to cards with correct return_url)
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `${window.location.origin}/success`,
+          return_url: `${window.location.origin}/events/${id}/seats/success`,
         },
         redirect: "if_required",
       });
 
       if (error) {
         console.error("Stripe payment error:", error);
+        sessionStorage.removeItem("evently_pending_checkout");
         setPaymentError(error.message || "Payment verification failed. Please try again.");
         setIsProcessing(false);
         return;
       }
 
       if (!paymentIntent || paymentIntent.status !== "succeeded") {
+        sessionStorage.removeItem("evently_pending_checkout");
         setPaymentError("Payment was not completed. Please try again.");
         setIsProcessing(false);
         return;
@@ -273,13 +296,6 @@ const Checkout = () => {
       // Step C: Payment Succeeded! Transition to fulfillment screen
       setShowFulfillment(true);
       setStatus("processing");
-
-      const token = localStorage.getItem("evently_token");
-      const seatIds = selectedSeats.map((s) => s.id);
-      const totalPaid = Math.max(
-        0,
-        currentEvent.price * selectedSeats.length - discountAmount + 19,
-      );
 
       const response = await fetch(`${API_BASE}/api/orders`, {
         method: "POST",
@@ -299,6 +315,7 @@ const Checkout = () => {
       const result = await response.json();
 
       if (response.ok) {
+        sessionStorage.removeItem("evently_pending_checkout");
         const finalOrder = {
           customer: data,
           event: currentEvent,
