@@ -74,15 +74,13 @@ const SearchBar = () => {
     }
   }, [scale, opacity, y, setIsHeroSearchPast]);
 
-  // Hook into Lenis smooth-scroll
+  // Hook into Lenis smooth-scroll (avoids duplicate native scroll events)
   useLenis(updateScrollTransform);
 
   useEffect(() => {
     updateScrollTransform();
-    window.addEventListener("scroll", updateScrollTransform, { passive: true });
     window.addEventListener("resize", updateScrollTransform);
     return () => {
-      window.removeEventListener("scroll", updateScrollTransform);
       window.removeEventListener("resize", updateScrollTransform);
     };
   }, [updateScrollTransform]);
