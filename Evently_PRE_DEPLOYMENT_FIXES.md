@@ -156,9 +156,7 @@ Current:
 
 ```json
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }
 ```
 
@@ -179,9 +177,7 @@ If Vercel routing behaves unexpectedly, use:
 
 ```json
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 
@@ -468,24 +464,24 @@ Do these in this order:
 
 # ✅ Deployment Readiness
 
-| Area | Status |
-|---|---|
-| React/Vite frontend | ✅ Ready |
-| Vercel configuration | ✅ Ready |
-| SPA routing | ✅ Configured |
-| Express backend | ✅ Ready |
-| Production `npm start` | ✅ Ready |
-| Render configuration | ✅ Ready |
-| Health endpoint | ✅ Ready |
-| Neon compatibility | ✅ Ready |
-| Stripe integration | ✅ Ready |
-| Cloudinary integration | ✅ Ready |
-| Docker local setup | ✅ Ready |
-| CORS | 🔴 Fix required |
-| Prisma production migrations | 🔴 Fix/handle before deployment |
-| Production seed credentials | 🟠 Configure if seeding |
-| Production env vars | 🟠 Configure |
-| End-to-end production testing | 🟠 Required |
+| Area                          | Status                          |
+| ----------------------------- | ------------------------------- |
+| React/Vite frontend           | ✅ Ready                        |
+| Vercel configuration          | ✅ Ready                        |
+| SPA routing                   | ✅ Configured                   |
+| Express backend               | ✅ Ready                        |
+| Production `npm start`        | ✅ Ready                        |
+| Render configuration          | ✅ Ready                        |
+| Health endpoint               | ✅ Ready                        |
+| Neon compatibility            | ✅ Ready                        |
+| Stripe integration            | ✅ Ready                        |
+| Cloudinary integration        | ✅ Ready                        |
+| Docker local setup            | ✅ Ready                        |
+| CORS                          | 🔴 Fix required                 |
+| Prisma production migrations  | 🔴 Fix/handle before deployment |
+| Production seed credentials   | 🟠 Configure if seeding         |
+| Production env vars           | 🟠 Configure                    |
+| End-to-end production testing | 🟠 Required                     |
 
 ---
 

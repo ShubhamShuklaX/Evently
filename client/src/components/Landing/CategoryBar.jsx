@@ -46,7 +46,7 @@ const CategoryBar = () => {
             <button
               key={categoryName}
               onClick={() => void navigate(`/events?category=${categoryName}`)}
-              className="group cursor-pointer shrink-0 w-28 h-28 sm:w-32 sm:h-32 lg:w-34 lg:h-34 bg-transparent border-1 rounded-2xl flex flex-col items-center justify-center hover:border-[#4f51e9] transition duration-300 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)]"
+              className="group cursor-pointer shrink-0 w-28 h-28 sm:w-32 sm:h-32 lg:w-34 lg:h-34 bg-transparent border rounded-2xl flex flex-col items-center justify-center hover:border-[#4f51e9] transition duration-300 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)]"
             >
               <div className="rounded-full p-2 bg-neutral-100 group-hover:bg-[#4f51e9] group-hover:text-[#F4F6FF] text-neutral-600 transition-colors">
                 <Icon size={23} />

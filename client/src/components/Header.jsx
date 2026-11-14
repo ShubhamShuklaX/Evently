@@ -102,8 +102,8 @@ const Header = () => {
             <Search size={20} strokeWidth={1.8} />
           </button>
 
-          {/* Quick Icons */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          {/* Quick Icons (hidden on mobile when hamburger menu is present) */}
+          <div className="hidden sm:flex items-center gap-1 sm:gap-2">
             <button
               type="button"
               title="Saved Events"
@@ -126,13 +126,17 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Organizer portal shortcut if authorized */}
+          {/* Organizer portal shortcut */}
           {isOrganizer && (
             <Link
               to="/organizer"
-              className="hidden lg:flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-semibold bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors"
+              title="Organizer Hub"
+              className="w-9 h-9 sm:w-auto sm:px-3 flex items-center justify-center gap-1.5 rounded-xl bg-neutral-200 hover:bg-neutral-200 text-neutral-700 transition-colors active:scale-95 shrink-0"
             >
-              <LayoutDashboard className="w-4 h-4" /> Hub
+              <LayoutDashboard className="w-5 h-5 sm:w-4 sm:h-4 text-indigo-600 shrink-0" />
+              <span className="hidden sm:inline text-[15px] font-semibold">
+                Hub
+              </span>
             </Link>
           )}
 
@@ -188,7 +192,6 @@ const Header = () => {
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
                 />
                 <input
-                  autoFocus
                   className="h-10 w-full pl-9 pr-3 bg-white text-sm text-[#1D1F23] placeholder:text-neutral-400 rounded-xl border border-neutral-200 outline-none focus:border-[#6365f1]"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -255,7 +258,7 @@ const Header = () => {
                   type="button"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    navigate("/login");
+                    void navigate("/login");
                   }}
                   className="w-full flex items-center justify-center text-white bg-[#6365f1] font-semibold px-4 py-2.5 rounded-xl text-sm shadow-xs"
                 >

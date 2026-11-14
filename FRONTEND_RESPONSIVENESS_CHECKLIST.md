@@ -19,7 +19,7 @@
 
 ## Layout & Navigation
 
-- [x] `src/components/Header.jsx` — Fluid container with max-w-7xl, added mobile drawer navigation with hamburger toggle, responsive search input.
+- [x] `src/components/Header.jsx` — Fluid container with max-w-[1600px], responsive organizer Hub shortcut across all screens (`flex shrink-0`), mobile search and drawer navigation, responsive search input.
 - [x] `src/components/Footer.jsx` — Responsive 1-to-4 column grid (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-5`), flexible newsletter subscription form.
 - [x] `src/components/Organizer/Sidebar.jsx` — Adapted to horizontal pill bar on mobile and vertical sidebar on desktop (`w-full lg:w-64`).
 
@@ -40,7 +40,7 @@
 ## Landing Page Components
 
 - [x] `src/components/Landing/HeroSection.jsx` — Removed fixed widths `w-135` and heights `h-150`, fluid typography, overlapping responsive SearchBar.
-- [x] `src/components/Landing/SearchBar.jsx` — Stacked vertical layout on mobile, horizontal pill on desktop with fluid input widths.
+- [x] `src/components/Landing/SearchBar.jsx` — Unified horizontal pill layout across all screens (`flex-row`), compact icon-only submit button on mobile (`w-12 h-12 [🔍]`), full "Search Now" label on tablet/desktop, subtle focus ring.
 - [x] `src/components/Landing/CategoryBar.jsx` — Removed `px-30` rigid padding, smooth touch-scrollable category chip row with no-scrollbar.
 - [x] `src/components/Landing/FeaturedEvents.jsx` — Fluid max-w-7xl container, responsive card scroll with smooth touch-drag.
 - [x] `src/components/Landing/WhatsTrending.jsx` — Fluid container, flex-col header on small screens, adaptive card heights.

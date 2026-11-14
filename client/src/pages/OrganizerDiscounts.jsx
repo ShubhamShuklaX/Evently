@@ -2,7 +2,15 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Organizer/Sidebar";
-import { Tag, Plus, Trash2, Loader2, AlertCircle, Copy, Check } from "lucide-react";
+import {
+  Tag,
+  Plus,
+  Trash2,
+  Loader2,
+  AlertCircle,
+  Copy,
+  Check,
+} from "lucide-react";
 import { API_BASE } from "../utils/api";
 import { useToast } from "../context/ToastContext";
 
@@ -84,13 +92,17 @@ const OrganizerDiscounts = () => {
 
       if (data.coupon) {
         setCoupons((prev) => [data.coupon, ...prev]);
-        toast.success("Promo Code Created!", `"${data.coupon.code}" is ready for customers.`);
+        toast.success(
+          "Promo Code Created!",
+          `"${data.coupon.code}" is ready for customers.`,
+        );
       }
       setNewCode({ code: "", discount: "", type: "percentage", maxUses: "50" });
       setShowModal(false);
     } catch (err) {
       console.error("Error creating coupon:", err);
-      const errText = "Network error while creating promo code. Please try again.";
+      const errText =
+        "Network error while creating promo code. Please try again.";
       setError(errText);
       toast.error("Network Error", errText);
     } finally {
@@ -117,21 +129,30 @@ const OrganizerDiscounts = () => {
 
           if (res.ok) {
             setCoupons((prev) => prev.filter((c) => c.id !== id));
-            toast.success("Coupon Deleted", `Promo code "${code}" has been removed.`);
+            toast.success(
+              "Coupon Deleted",
+              `Promo code "${code}" has been removed.`,
+            );
           } else {
             const data = await res.json().catch(() => ({}));
-            toast.error("Deletion Failed", data.error || "Failed to delete coupon");
+            toast.error(
+              "Deletion Failed",
+              data.error || "Failed to delete coupon",
+            );
           }
         } catch (err) {
           console.error("Error deleting coupon:", err);
-          toast.error("Network Error", "Unable to reach server to delete coupon.");
+          toast.error(
+            "Network Error",
+            "Unable to reach server to delete coupon.",
+          );
         }
       },
     });
   };
 
   const copyToClipboard = (code) => {
-    navigator.clipboard.writeText(code);
+    void navigator.clipboard.writeText(code);
     setCopiedCode(code);
     toast.success("Copied to Clipboard", `Code "${code}" copied.`);
     setTimeout(() => setCopiedCode(null), 2000);
@@ -151,7 +172,8 @@ const OrganizerDiscounts = () => {
                 Discount Codes
               </h1>
               <p className="text-neutral-500 text-xs sm:text-sm mt-1">
-                Create promotional promo vouchers and tracking codes for marketing campaigns.
+                Create promotional promo vouchers and tracking codes for
+                marketing campaigns.
               </p>
             </div>
 
@@ -170,7 +192,7 @@ const OrganizerDiscounts = () => {
 
           <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <div className="min-w-[680px]">
+              <div className="min-w-170">
                 <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr_80px] gap-4 px-6 py-3.5 bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
                   <span>Code</span>
                   <span>Discount</span>
@@ -180,103 +202,108 @@ const OrganizerDiscounts = () => {
                   <span className="text-right">Action</span>
                 </div>
 
-            {loading ? (
-              <div className="py-20 flex flex-col items-center justify-center gap-3">
-                <Loader2 size={32} className="text-[#6365f1] animate-spin" />
-                <p className="text-sm text-neutral-500 font-medium">
-                  Loading discount codes...
-                </p>
-              </div>
-            ) : coupons.length === 0 ? (
-              <div className="text-center py-16 px-6">
-                <div className="w-14 h-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-400">
-                  <Tag size={26} />
-                </div>
-                <h3 className="text-lg font-bold text-neutral-800">
-                  No discount codes found
-                </h3>
-                <p className="text-sm text-neutral-500 mt-1 max-w-sm mx-auto mb-6">
-                  You haven't created any promotional promo codes or discount vouchers yet.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setError("");
-                    setShowModal(true);
-                  }}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#6365f1] hover:bg-[#4f51e9] text-white text-sm font-semibold rounded-xl transition-colors shadow-sm cursor-pointer"
-                >
-                  <Plus size={16} />
-                  Create First Promo Code
-                </button>
-              </div>
-            ) : (
-              <div className="divide-y divide-neutral-100">
-                {coupons.map((c) => (
-                  <div
-                    key={c.id}
-                    className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr_80px] gap-4 px-6 py-4 items-center text-sm hover:bg-neutral-50/70 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 font-mono font-bold text-[#1D1F23]">
-                      <Tag size={15} className="text-[#6365f1]" />
-                      {c.code}
-                    </div>
-
-                    <span className="font-semibold text-neutral-800">
-                      {c.type === "percentage"
-                        ? `${c.discount}% OFF`
-                        : `₹${c.discount} OFF`}
-                    </span>
-
-                    <span className="text-neutral-600">
-                      {c.used || 0} / {c.maxUses} redeemed
-                    </span>
-
-                    <span className="font-medium text-emerald-600">
-                      ₹
-                      {(
-                        (c.used || 0) * (c.type === "percentage" ? 250 : c.discount)
-                      ).toLocaleString("en-IN")}
-                    </span>
-
-                    <div>
-                      <span
-                        className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
-                          c.active
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : "bg-neutral-100 text-neutral-500 border border-neutral-200"
-                        }`}
-                      >
-                        {c.active ? "Active" : "Expired"}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(c.code)}
-                        title="Copy Promo Code"
-                        className="p-2 text-neutral-400 hover:text-[#6365f1] hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
-                      >
-                        {copiedCode === c.code ? (
-                          <Check size={16} className="text-emerald-600" />
-                        ) : (
-                          <Copy size={16} />
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteCoupon(c.id, c.code)}
-                        title="Delete Promo Code"
-                        className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                {loading ? (
+                  <div className="py-20 flex flex-col items-center justify-center gap-3">
+                    <Loader2
+                      size={32}
+                      className="text-[#6365f1] animate-spin"
+                    />
+                    <p className="text-sm text-neutral-500 font-medium">
+                      Loading discount codes...
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
+                ) : coupons.length === 0 ? (
+                  <div className="text-center py-16 px-6">
+                    <div className="w-14 h-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-400">
+                      <Tag size={26} />
+                    </div>
+                    <h3 className="text-lg font-bold text-neutral-800">
+                      No discount codes found
+                    </h3>
+                    <p className="text-sm text-neutral-500 mt-1 max-w-sm mx-auto mb-6">
+                      You haven't created any promotional promo codes or
+                      discount vouchers yet.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setError("");
+                        setShowModal(true);
+                      }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#6365f1] hover:bg-[#4f51e9] text-white text-sm font-semibold rounded-xl transition-colors shadow-sm cursor-pointer"
+                    >
+                      <Plus size={16} />
+                      Create First Promo Code
+                    </button>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-neutral-100">
+                    {coupons.map((c) => (
+                      <div
+                        key={c.id}
+                        className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr_80px] gap-4 px-6 py-4 items-center text-sm hover:bg-neutral-50/70 transition-colors"
+                      >
+                        <div className="flex items-center gap-2 font-mono font-bold text-[#1D1F23]">
+                          <Tag size={15} className="text-[#6365f1]" />
+                          {c.code}
+                        </div>
+
+                        <span className="font-semibold text-neutral-800">
+                          {c.type === "percentage"
+                            ? `${c.discount}% OFF`
+                            : `₹${c.discount} OFF`}
+                        </span>
+
+                        <span className="text-neutral-600">
+                          {c.used || 0} / {c.maxUses} redeemed
+                        </span>
+
+                        <span className="font-medium text-emerald-600">
+                          ₹
+                          {(
+                            (c.used || 0) *
+                            (c.type === "percentage" ? 250 : c.discount)
+                          ).toLocaleString("en-IN")}
+                        </span>
+
+                        <div>
+                          <span
+                            className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
+                              c.active
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-neutral-100 text-neutral-500 border border-neutral-200"
+                            }`}
+                          >
+                            {c.active ? "Active" : "Expired"}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(c.code)}
+                            title="Copy Promo Code"
+                            className="p-2 text-neutral-400 hover:text-[#6365f1] hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
+                          >
+                            {copiedCode === c.code ? (
+                              <Check size={16} className="text-emerald-600" />
+                            ) : (
+                              <Copy size={16} />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteCoupon(c.id, c.code)}
+                            title="Delete Promo Code"
+                            className="p-2 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -381,7 +408,9 @@ const OrganizerDiscounts = () => {
                       disabled={submitting}
                       className="px-5 py-2 text-sm font-semibold bg-[#6365f1] hover:bg-[#4f51e9] text-white rounded-xl shadow-sm cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
                     >
-                      {submitting && <Loader2 size={14} className="animate-spin" />}
+                      {submitting && (
+                        <Loader2 size={14} className="animate-spin" />
+                      )}
                       Save Code
                     </button>
                   </div>

@@ -6,7 +6,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
   return (
     <div className="relative mb-12 sm:mb-16">
-      <div className="relative w-full min-h-[560px] sm:min-h-[620px] lg:h-[640px] overflow-hidden flex items-center">
+      <div className="relative w-full min-h-140 sm:min-h-155 lg:h-160 overflow-hidden flex items-center">
         <img
           className="absolute inset-0 object-cover object-[center_75%] w-full h-full"
           src={heroSection1}
@@ -27,8 +27,8 @@ const HeroSection = () => {
             </h1>
             <p className="max-w-xl leading-relaxed text-sm sm:text-base text-[#DFE1E4FF]">
               From world-class concerts to heart-pounding sports matches, find
-              your next adventure on Evently. Secure your seats in seconds
-              with our premium booking experience.
+              your next adventure on Evently. Secure your seats in seconds with
+              our premium booking experience.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1">
