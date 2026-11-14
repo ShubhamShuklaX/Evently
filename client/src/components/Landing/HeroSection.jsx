@@ -1,5 +1,5 @@
 import SearchBar from "./SearchBar";
-import heroSection1 from "../../assets/heroSection1.jpg";
+import heroSection1 from "../../assets/heroSection1.webp";
 import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Compass } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import notFound from "../assets/404Notfound.png";
+import notFound from "../assets/404Notfound.webp";
 
 const NotFound = () => {
   const navigate = useNavigate();

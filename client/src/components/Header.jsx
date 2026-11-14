@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "../assets/Logo.png";
+import logo from "../assets/Logo.webp";
 import { useState } from "react";
 
 const Header = () => {

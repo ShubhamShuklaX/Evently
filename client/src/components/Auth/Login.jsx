@@ -11,8 +11,8 @@ import {
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../../assets/Logo.png";
-import authHeroImg from "../../assets/AuthHeroImg.png";
+import logo from "../../assets/Logo.webp";
+import authHeroImg from "../../assets/AuthHeroImg.webp";
 import { API_BASE } from "../../utils/api";
 import { useToast } from "../../context/ToastContext";
 

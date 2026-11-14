@@ -16,11 +16,35 @@ export default defineConfig({
       binaryInterval: 300,
       ignored: ["**/node_modules/**", "**/dist/**", "**/.git/**"],
     },
-    host: true, // Also ensures the dev server listens on all IPs
+    host: true,
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react-router-dom") || id.includes("react-dom") || id.includes("/react/")) {
+              return "vendor-react";
+            }
+            if (id.includes("framer-motion")) {
+              return "vendor-motion";
+            }
+            if (id.includes("@stripe")) {
+              return "vendor-stripe";
+            }
+            if (id.includes("lucide-react") || id.includes("react-icons")) {
+              return "vendor-icons";
+            }
+          }
+        },
+      },
     },
   },
 });
