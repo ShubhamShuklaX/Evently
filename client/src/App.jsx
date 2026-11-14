@@ -6,9 +6,9 @@ import { ToastProvider } from "./context/ToastContext";
 import { SearchProvider } from "./context/SearchContext";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner";
+import Home from "./pages/Home";
 
 // Lazy-loaded routes for code splitting
-const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./components/Auth/Login"));
 const DiscoverEvents = lazy(() => import("./pages/DiscoverEvents"));
 const EventDetails = lazy(() => import("./pages/EventDetails"));
@@ -48,115 +48,119 @@ const App = () => {
           <SearchProvider>
             <ToastProvider>
               <ScrollToTop />
-              <Suspense fallback={<LoadingSpinner message="Loading page..." fullScreen={true} />}>
-                <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Login />} />
-              <Route path="/events">
-                <Route index element={<DiscoverEvents />} />
-                <Route path=":id" element={<EventDetails />} />
-                <Route path=":id/seats" element={<SeatSelection />} />
-                <Route
-                  path=":id/seats/checkout"
-                  element={
-                    <ProtectedRoute>
-                      <Checkout />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path=":id/seats/success"
-                  element={
-                    <ProtectedRoute>
-                      <BookingSuccess />
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
-
-              <Route
-                path="/bookings"
-                element={
-                  <ProtectedRoute>
-                    <MyBookings />
-                  </ProtectedRoute>
+              <Suspense
+                fallback={
+                  <LoadingSpinner message="Loading page..." fullScreen={true} />
                 }
-              />
-              <Route path="/organizer">
-                <Route
-                  index
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <OrganizerDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="create"
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <CreateEvent />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="edit/:id"
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <EditEvent />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="events/edit/:id"
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <EditEvent />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="my-events"
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <MyEvents />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="analytics"
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <OrganizerAnalytics />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="attendees"
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <OrganizerAttendees />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="discounts"
-                  element={
-                    <ProtectedRoute allowedRoles={["organizer", "admin"]}>
-                      <OrganizerDiscounts />
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </ToastProvider>
-      </SearchProvider>
-    </BookingProvider>
-  </div>
-</ReactLenis>
+              >
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Login />} />
+                  <Route path="/events">
+                    <Route index element={<DiscoverEvents />} />
+                    <Route path=":id" element={<EventDetails />} />
+                    <Route path=":id/seats" element={<SeatSelection />} />
+                    <Route
+                      path=":id/seats/checkout"
+                      element={
+                        <ProtectedRoute>
+                          <Checkout />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path=":id/seats/success"
+                      element={
+                        <ProtectedRoute>
+                          <BookingSuccess />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Route>
+
+                  <Route
+                    path="/bookings"
+                    element={
+                      <ProtectedRoute>
+                        <MyBookings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/organizer">
+                    <Route
+                      index
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <OrganizerDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="create"
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <CreateEvent />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="edit/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <EditEvent />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="events/edit/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <EditEvent />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="my-events"
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <MyEvents />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="analytics"
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <OrganizerAnalytics />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="attendees"
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <OrganizerAttendees />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="discounts"
+                      element={
+                        <ProtectedRoute allowedRoles={["organizer", "admin"]}>
+                          <OrganizerDiscounts />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ToastProvider>
+          </SearchProvider>
+        </BookingProvider>
+      </div>
+    </ReactLenis>
   );
 };
 

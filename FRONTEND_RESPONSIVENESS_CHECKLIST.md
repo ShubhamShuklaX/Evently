@@ -19,7 +19,7 @@
 
 ## Layout & Navigation
 
-- [x] `src/components/Header.jsx` — Fluid container with max-w-[1600px], responsive organizer Hub shortcut across all screens (`flex shrink-0`), mobile search and drawer navigation, responsive search input.
+- [x] `src/components/Header.jsx` — Fluid container with max-w-[1600px], responsive organizer Hub shortcut across all screens (`flex shrink-0`), mobile search and drawer navigation, dynamic scroll morph handoff from Hero SearchBar to Header Search on landing page with AnimatePresence.
 - [x] `src/components/Footer.jsx` — Responsive 1-to-4 column grid (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-5`), flexible newsletter subscription form.
 - [x] `src/components/Organizer/Sidebar.jsx` — Adapted to horizontal pill bar on mobile and vertical sidebar on desktop (`w-full lg:w-64`).
 
@@ -29,9 +29,10 @@
 - [x] `src/components/LoadingSpinner.jsx` — already responsive (fluid centered spinner with scalable typography).
 - [x] `src/components/Pagination.jsx` — Responsive button sizes (`w-8 h-8 sm:w-9 sm:h-9`), wrap-safe pagination controls for small screens.
 - [x] `src/components/Reveal.jsx` — Added `w-full` and custom `className` prop support to prevent child container shrink issues.
-- [x] `src/components/ScrollToTop.jsx` — already responsive (pure logic component, returns null).
+- [x] `src/components/ScrollToTop.jsx` — already responsive (integrated with Lenis smooth-scroll for instant zero-jump top restoration on navigation).
 - [x] `src/context/ToastContext.jsx` — Responsive toast placement (`left-4 right-4 sm:left-auto sm:right-5`), fluid modal dialog padding.
 - [x] `src/context/BookingContext.jsx` — already responsive (pure React context and state provider).
+- [x] `src/context/SearchContext.jsx` — Global search state and scroll-dock sync between Hero SearchBar and Header Search.
 
 ## Authentication
 
@@ -39,8 +40,8 @@
 
 ## Landing Page Components
 
-- [x] `src/components/Landing/HeroSection.jsx` — Removed fixed widths `w-135` and heights `h-150`, fluid typography, overlapping responsive SearchBar.
-- [x] `src/components/Landing/SearchBar.jsx` — Unified horizontal pill layout across all screens (`flex-row`), compact icon-only submit button on mobile (`w-12 h-12 [🔍]`), full "Search Now" label on tablet/desktop, subtle focus ring.
+- [x] `src/components/Landing/HeroSection.jsx` — Removed fixed widths `w-135` and heights `h-150`, fluid typography, hero search container id hooked to morph scroll listener.
+- [x] `src/components/Landing/SearchBar.jsx` — Unified horizontal pill layout across all screens (`flex-row`), compact icon-only submit button on mobile (`w-12 h-12 [🔍]`), full "Search Now" label on tablet/desktop, hardware-accelerated Framer Motion scroll morph (smoothly scales from 1.0 down to 0.82 and docks into Header Search), Lenis smooth-scroll binding.
 - [x] `src/components/Landing/CategoryBar.jsx` — Removed `px-30` rigid padding, smooth touch-scrollable category chip row with no-scrollbar.
 - [x] `src/components/Landing/FeaturedEvents.jsx` — Fluid max-w-7xl container, responsive card scroll with smooth touch-drag.
 - [x] `src/components/Landing/WhatsTrending.jsx` — Fluid container, flex-col header on small screens, adaptive card heights.

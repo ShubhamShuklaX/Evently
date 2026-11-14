@@ -18,9 +18,9 @@ const HeroSection = () => {
 
         <div className="relative z-10 w-full px-4 sm:px-8 lg:px-15 xl:px-25 py-14 sm:py-18 flex flex-col justify-center">
           <div className="text-white flex flex-col gap-5 sm:gap-6 max-w-2xl">
-            <h2 className="px-3 bg-indigo-800/80 rounded-full w-fit h-7 sm:h-8 flex items-center justify-center text-xs sm:text-sm font-medium text-indigo-100">
+            <p className="px-3 bg-indigo-800/80 rounded-full w-fit h-7 sm:h-8 flex items-center justify-center text-xs sm:text-sm font-medium text-indigo-100">
               Live Events are Back
-            </h2>
+            </p>
             <h1 className="text-3xl sm:text-5xl lg:text-[56px] xl:text-[60px] font-extrabold text-[#F6F7F9FF] leading-[1.15] sm:leading-tight lg:leading-[1.1] flex flex-col">
               Discover Unforgettable{" "}
               <span className="text-indigo-400 sm:text-indigo-500 italic font-serif">
@@ -58,25 +58,25 @@ const HeroSection = () => {
 
             <div className="w-full max-w-lg grid grid-cols-3 gap-2 sm:gap-4">
               <div>
-                <h3 className="text-xl sm:text-2xl font-mono font-bold text-[#F4F6FF]">
+                <span className="text-xl sm:text-2xl font-mono font-bold text-[#F4F6FF]">
                   50k+
-                </h3>
+                </span>
                 <p className="text-xs sm:text-sm font-medium text-[#C8CBCFFF]">
                   Active Users
                 </p>
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-mono font-bold text-[#F4F6FF]">
+                <span className="text-xl sm:text-2xl font-mono font-bold text-[#F4F6FF]">
                   1.2k+
-                </h3>
+                </span>
                 <p className="text-xs sm:text-sm font-medium text-[#C8CBCFFF]">
                   Global Venues
                 </p>
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-mono font-bold text-[#F4F6FF]">
+                <span className="text-xl sm:text-2xl font-mono font-bold text-[#F4F6FF]">
                   24/7
-                </h3>
+                </span>
                 <p className="text-xs sm:text-sm font-medium text-[#C8CBCFFF]">
                   Customer Support
                 </p>
