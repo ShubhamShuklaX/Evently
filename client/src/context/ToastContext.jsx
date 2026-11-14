@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -26,21 +27,24 @@ export const ToastProvider = ({ children }) => {
   const [modalState, setModalState] = useState(null);
 
   // Toast functions
-  const addToast = useCallback((type, title, message = "", duration = 4000) => {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    setToasts((prev) => [...prev, { id, type, title, message, duration }]);
-
-    if (duration > 0) {
-      setTimeout(() => {
-        removeToast(id);
-      }, duration);
-    }
-    return id;
-  }, []);
-
   const removeToast = useCallback((id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
+
+  const addToast = useCallback(
+    (type, title, message = "", duration = 4000) => {
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      setToasts((prev) => [...prev, { id, type, title, message, duration }]);
+
+      if (duration > 0) {
+        setTimeout(() => {
+          removeToast(id);
+        }, duration);
+      }
+      return id;
+    },
+    [removeToast],
+  );
 
   const toast = {
     success: (title, message, duration) =>

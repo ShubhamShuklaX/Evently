@@ -65,7 +65,7 @@ const MyEventsStats = ({ myEvents = [] }) => {
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 mb-6 sm:mb-8">
-      {stats.map((stat, i) => (
+      {stats.map((stat) => (
         <article
           key={stat.label}
           style={{ animationDelay: stat.delay }}

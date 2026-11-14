@@ -3,7 +3,7 @@
 ## Pages
 
 - [x] `src/pages/Home.jsx` — Updated root container, spacing, and multi-section responsive wrapper.
-- [x] `src/pages/DiscoverEvents.jsx` — Replaced side-by-side flex with `flex-col lg:flex-row`, safe margins, and fluid filter drawer integration.
+- [x] `src/pages/DiscoverEvents.jsx` — Replaced side-by-side flex with `flex-col md:flex-row md:items-start`, moved mobile filter controls into toolbar below title, integrated slide-over drawer for small screens.
 - [x] `src/pages/EventDetails.jsx` — Replaced fixed columns with responsive grid `grid-cols-1 lg:grid-cols-[1fr_360px]` and sticky booking sidebar on large screens.
 - [x] `src/pages/SeatSelection.jsx` — Removed `px-30` rigid padding, converted grid to `grid-cols-1 lg:grid-cols-[1fr_380px]`, fluid container.
 - [x] `src/pages/Checkout.jsx` — Removed `px-30` in fulfillment state, updated form container with responsive padding and spacing.
@@ -25,7 +25,7 @@
 
 ## Shared & Reusable Components
 
-- [x] `src/components/EventCard.jsx` — Fluid card container, mobile-first stacked list layout, clamped text, responsive image heights.
+- [x] `src/components/EventCard.jsx` — Fluid card container, true horizontal compact row in list view on mobile (`flex-row`, square thumbnail, inline price/action), wide card on desktop, clamped text, responsive image heights.
 - [x] `src/components/LoadingSpinner.jsx` — already responsive (fluid centered spinner with scalable typography).
 - [x] `src/components/Pagination.jsx` — Responsive button sizes (`w-8 h-8 sm:w-9 sm:h-9`), wrap-safe pagination controls for small screens.
 - [x] `src/components/Reveal.jsx` — Added `w-full` and custom `className` prop support to prevent child container shrink issues.
@@ -49,8 +49,8 @@
 
 ## Discover Events Components
 
-- [x] `src/components/DiscoverEvent/FilterBar.jsx` — Added mobile collapsible filter drawer toggle with active count badge; full sidebar on desktop.
-- [x] `src/components/DiscoverEvent/EventList.jsx` — `min-w-0` safety, responsive grid (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`).
+- [x] `src/components/DiscoverEvent/FilterBar.jsx` — Desktop sticky sidebar (`md:sticky md:top-16`, internal scroll safety `overflow-y-auto no-scrollbar`), mobile slide-over drawer with backdrop and apply/reset actions.
+- [x] `src/components/DiscoverEvent/EventList.jsx` — Mobile filter button integrated seamlessly into the controls toolbar below title, responsive grid/list switcher, `min-w-0` safety.
 - [x] `src/components/DiscoverEvent/RecommendedEvents.jsx` — Removed `px-30` rigid padding, responsive max-w-7xl container.
 
 ## Event Details Components

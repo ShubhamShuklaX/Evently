@@ -13,11 +13,11 @@ const EventCard = ({ layout = "grid", event }) => {
 
   if (isList) {
     return (
-      <div className="group bg-white border border-neutral-200/80 hover:border-neutral-300 rounded-2xl shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col sm:flex-row overflow-hidden sm:h-48">
+      <div className="group bg-white border border-neutral-200/80 hover:border-neutral-300 rounded-2xl shadow-xs hover:shadow-lg transition-all duration-300 flex flex-row overflow-hidden sm:h-48">
         {/* Image Container */}
         <Link
           to={`/events/${event.id}`}
-          className="relative shrink-0 w-full sm:w-64 md:w-72 h-44 sm:h-full bg-neutral-100 overflow-hidden block"
+          className="relative shrink-0 w-28 xs:w-36 sm:w-64 md:w-72 h-auto sm:h-full bg-neutral-100 overflow-hidden block"
         >
           <img
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -28,40 +28,60 @@ const EventCard = ({ layout = "grid", event }) => {
               e.currentTarget.src = fallbackImage;
             }}
           />
-          <span className="absolute top-3.5 left-3.5 bg-black/65 backdrop-blur-md text-white text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+          <span className="absolute top-2 left-2 sm:top-3.5 sm:left-3.5 bg-black/65 backdrop-blur-md text-white text-[9px] sm:text-[11px] font-semibold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-sm">
             {event.category}
           </span>
         </Link>
 
         {/* Center Info */}
-        <div className="flex-1 p-5 sm:py-5 sm:px-6 flex flex-col justify-between min-w-0">
+        <div className="flex-1 p-3 sm:py-4 sm:px-6 flex flex-col justify-between min-w-0">
           <div>
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600">
-              <CalendarDays size={14} className="shrink-0" />
-              <span>
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-semibold text-indigo-600">
+              <CalendarDays size={13} className="shrink-0" />
+              <span className="truncate">
                 {event.date} · {event.time}
               </span>
             </div>
 
-            <h2 className="text-lg sm:text-xl font-bold text-neutral-900 group-hover:text-indigo-600 transition-colors line-clamp-1 mt-1.5">
+            <h2 className="text-sm xs:text-base sm:text-lg md:text-xl font-bold text-neutral-900 group-hover:text-indigo-600 transition-colors line-clamp-1 mt-0.5 sm:mt-1.5">
               <Link to={`/events/${event.id}`}>{event.title}</Link>
             </h2>
 
-            <p className="text-xs sm:text-sm text-neutral-500 line-clamp-2 mt-2 leading-relaxed">
+            <p className="hidden sm:line-clamp-2 text-xs sm:text-sm text-neutral-500 mt-1.5 sm:mt-2 leading-relaxed">
               {event.description ||
                 "Join us for an unforgettable live experience. Reserve your seats today."}
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium mt-3 sm:mt-0">
-            <MapPin size={14} className="text-neutral-400 shrink-0" />
+          <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs text-neutral-500 font-medium mt-1 sm:mt-0 shrink-0">
+            <MapPin size={13} className="text-neutral-400 shrink-0" />
             <span className="truncate">{event.location}</span>
+          </div>
+
+          {/* Mobile inline price & action */}
+          <div className="flex sm:hidden items-center justify-between pt-2 mt-1.5 border-t border-neutral-100">
+            <div className="flex items-baseline gap-1">
+              <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                From
+              </span>
+              <span className="text-sm font-mono font-extrabold text-neutral-900">
+                ₹{event.price}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => void navigate(`/events/${event.id}`)}
+              className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-2.5 py-1 rounded-lg shadow-2xs active:scale-95 cursor-pointer shrink-0"
+            >
+              <Ticket size={13} />
+              <span>Book</span>
+            </button>
           </div>
         </div>
 
-        {/* Right CTA & Price Box */}
-        <div className="p-5 sm:py-5 sm:px-6 sm:border-l border-neutral-100 flex sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0 gap-3 bg-neutral-50/50 sm:bg-transparent">
-          <div className="text-left sm:text-right">
+        {/* Right CTA & Price Box (Tablet & Desktop) */}
+        <div className="hidden sm:flex sm:flex-col items-end justify-center p-5 sm:py-5 sm:px-6 sm:border-l border-neutral-100 shrink-0 gap-3 bg-neutral-50/50 sm:bg-transparent">
+          <div className="text-right">
             <span className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
               Starting from
             </span>

@@ -21,28 +21,33 @@ const OrganizerDiscounts = () => {
     maxUses: "50",
   });
 
-  const fetchCoupons = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("evently_token");
-      const res = await fetch(`${API_BASE}/api/coupons`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-      if (res.ok && Array.isArray(data.coupons)) {
-        setCoupons(data.coupons);
-      }
-    } catch (err) {
-      console.error("Error fetching coupons:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    void fetchCoupons();
+    let isMounted = true;
+    async function loadCoupons() {
+      try {
+        const token = localStorage.getItem("evently_token");
+        const res = await fetch(`${API_BASE}/api/coupons`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (isMounted && res.ok && Array.isArray(data.coupons)) {
+          setCoupons(data.coupons);
+        }
+      } catch (err) {
+        console.error("Error fetching coupons:", err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadCoupons();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleCreateCoupon = async (e) => {

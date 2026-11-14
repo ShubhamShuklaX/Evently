@@ -1,4 +1,12 @@
-import { ArrowUpDown, LayoutGrid, List, Loader2, AlertCircle, RotateCcw } from "lucide-react";
+import {
+  ArrowUpDown,
+  LayoutGrid,
+  List,
+  Loader2,
+  AlertCircle,
+  RotateCcw,
+  Filter,
+} from "lucide-react";
 import EventCard from "./../EventCard";
 import { useState } from "react";
 import { useBooking } from "../../context/BookingContext";
@@ -6,7 +14,13 @@ import Pagination from "../Pagination";
 
 const ITEMS_PER_PAGE = 12;
 
-const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
+const EventList = ({
+  activeCategory,
+  locationQuery,
+  searchQuery,
+  onOpenMobileFilter,
+  activeFilterCount = 0,
+}) => {
   const [layout, setLayout] = useState("grid");
   const [sortBy, setSortBy] = useState("relevance");
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,18 +96,34 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
             </p>
           </div>
 
-          {/* Sort & Layout Buttons */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center border border-neutral-200 shadow-sm rounded-xl px-3 py-2 bg-white hover:bg-neutral-50 transition-colors">
+          {/* Controls: Mobile Filter Button + Sort + Layout Switcher */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            {/* Mobile Filter Button (placed below title on small screens, hidden on md: and above) */}
+            <button
+              type="button"
+              onClick={onOpenMobileFilter}
+              className="flex md:hidden items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-200 bg-white text-sm font-semibold text-neutral-800 hover:bg-neutral-50 transition-colors shadow-2xs cursor-pointer active:scale-95"
+            >
+              <Filter size={15} className="text-[#6365f1]" />
+              <span>Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="bg-[#6365f1] text-white text-[11px] px-1.5 py-0.2 rounded-full font-bold">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+
+            {/* Sort Dropdown */}
+            <div className="flex items-center border border-neutral-200 shadow-2xs rounded-xl px-3 py-2 bg-white hover:bg-neutral-50 transition-colors">
               <ArrowUpDown
-                size={16}
-                className="text-neutral-500 mr-2 pointer-events-none"
+                size={15}
+                className="text-neutral-500 mr-1.5 pointer-events-none"
               />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 aria-label="Sort events"
-                className="text-[15px] font-medium text-neutral-700 bg-transparent outline-none cursor-pointer pr-1"
+                className="text-[14px] sm:text-[15px] font-medium text-neutral-700 bg-transparent outline-none cursor-pointer pr-1"
               >
                 <option value="relevance">Sort: Relevance</option>
                 <option value="price-low">Price: Low to High</option>
@@ -102,7 +132,8 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
               </select>
             </div>
 
-            <div className="flex items-center gap-1 border border-neutral-200 p-1 shadow-sm rounded-xl bg-white">
+            {/* Layout Toggle */}
+            <div className="flex items-center gap-1 border border-neutral-200 p-1 shadow-2xs rounded-xl bg-white">
               <button
                 type="button"
                 onClick={() => setLayout("grid")}
@@ -135,10 +166,10 @@ const EventList = ({ activeCategory, locationQuery, searchQuery }) => {
 
       {/* Events Grid/List Container */}
       <div
-        className={`mt-8 ${
+        className={`mt-6 sm:mt-8 ${
           layout === "grid"
             ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
-            : "flex flex-col gap-4"
+            : "flex flex-col gap-3 sm:gap-4"
         }`}
       >
         {eventsLoading ? (

@@ -182,6 +182,7 @@ const Checkout = () => {
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSeats, appliedCoupon]);
 
   const storedUser = JSON.parse(localStorage.getItem("evently_user") || "{}");
